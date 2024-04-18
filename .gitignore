@@ -4,3 +4,4 @@ dist
 target
 python/build
 python/spiderwebai_py.egg-info
+javascript/coverage

@@ -1,0 +1,58 @@
+{
+  "name": "spiderwebai-js",
+  "version": "0.1.2",
+  "description": "A Javascript SDK for SpiderWebAI services",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "prepublishOnly": "npm test && npm run build"
+  },
+  "main": "dist/spiderwebai.js",
+  "types": "dist/spiderwebai.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "keywords": [
+    "spiderwebai",
+    "sdk",
+    "web scraping",
+    "api"
+  ],
+  "author": "Jeff Mendez<jeff@a11ywatch.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.12",
+    "@types/node": "20.12.7",
+    "ts-jest": "^29.1.2",
+    "typescript": "5.4.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx"
+    ],
+    "roots": [
+      "<rootDir>/src",
+      "<rootDir>/__tests__"
+    ],
+    "transform": {
+      "^.+\\\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ],
+    "collectCoverage": true,
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov"
+    ]
+  }
+}
