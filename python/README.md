@@ -1,10 +1,10 @@
 # SpiderWebAI Python SDK
 
-The SpiderWebAI Python SDK offers a toolkit for straightforward website scraping and crawling at scale, enabling you to collect data formatted for compatibility with language models (LLMs). It features a user-friendly interface for seamless integration with the SpiderWebAI API.
+The SpiderWebAI Python SDK offers a toolkit for straightforward website scraping, crawling at scale, and other utilities like extracting links and taking screenshots, enabling you to collect data formatted for compatibility with language models (LLMs). It features a user-friendly interface for seamless integration with the SpiderWebAI API.
 
 ## Installation
 
-To install the spiderwebai Python SDK, you can use pip:
+To install the SpiderWebAI Python SDK, you can use pip:
 
 ```bash
 pip install spiderwebai-py
@@ -28,20 +28,19 @@ url = 'https://spiderwebai.xyz'
 scraped_data = app.scrape_url(url)
 
 # Crawl a website
-crawl_url = 'https://spiderwebai.xyz'
-params = {
+crawler_params = {
     'limit': 1,
     'proxy_enabled': True,
     'store_data': False,
     'metadata': False,
     'request': 'http'
 }
-crawl_result = app.crawl_url(crawl_url, params=params)
+crawl_result = app.crawl_url(crawl_url, params=crawler_params)
 ```
 
 ### Scraping a URL
 
-To scrape a single URL, use the `scrape_url` method. It takes the URL as a parameter and returns the scraped data as a dictionary.
+To scrape data from a single URL:
 
 ```python
 url = 'https://example.com'
@@ -50,15 +49,59 @@ scraped_data = app.scrape_url(url)
 
 ### Crawling a Website
 
-To crawl a website, use the `crawl_url` method. It takes the starting URL and optional parameters as arguments. The `params` argument allows you to specify additional options for the crawl, such as the maximum number of pages to crawl, allowed domains, and the output format.
+To automate crawling a website:
 
 ```python
 crawl_url = 'https://example.com'
-params = {
+crawl_params = {
     'limit': 200,
     'request': 'smart_mode'
 }
-crawl_result = app.crawl_url(crawl_url, params=params)
+crawl_result = app.crawl_url(crawl_url, params=crawl_params)
+```
+
+### Retrieving Links from a URL(s)
+
+Extract all links from a specified URL:
+
+```python
+url = 'https://example.com'
+links = app.links(url)
+```
+
+### Taking Screenshots of a URL(s)
+
+Capture a screenshot of a given URL:
+
+```python
+url = 'https://example.com'
+screenshot = app.screenshot(url)
+```
+
+### Extracting Contact Information
+
+Extract contact details from a specified URL:
+
+```python
+url = 'https://example.com'
+contacts = app.extract_contacts(url)
+```
+
+### Labeling Data from a URL(s)
+
+Label the data extracted from a particular URL:
+
+```python
+url = 'https://example.com'
+labeled_data = app.label(url)
+```
+
+### Checking Available Credits
+
+You can check the remaining credits on your account:
+
+```python
+credits = app.get_credits()
 ```
 
 ## Error Handling
