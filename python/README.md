@@ -35,7 +35,7 @@ crawler_params = {
     'metadata': False,
     'request': 'http'
 }
-crawl_result = app.crawl_url(crawl_url, params=crawler_params)
+crawl_result = app.crawl_url(url, params=crawler_params)
 ```
 
 ### Scraping a URL
@@ -52,12 +52,12 @@ scraped_data = app.scrape_url(url)
 To automate crawling a website:
 
 ```python
-crawl_url = 'https://example.com'
+url = 'https://example.com'
 crawl_params = {
     'limit': 200,
     'request': 'smart_mode'
 }
-crawl_result = app.crawl_url(crawl_url, params=crawl_params)
+crawl_result = app.crawl_url(url, params=crawl_params)
 ```
 
 ### Retrieving Links from a URL(s)
