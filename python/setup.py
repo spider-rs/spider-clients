@@ -8,7 +8,7 @@ def read_file(fname):
 
 setup(
     name="spiderwebai-py",
-    version="0.1.0",
+    version="0.1.2",
     url="https://github.com/spider-rs/spiderwebai-clients/tree/main/python",
     author="Spider",
     author_email="jeff@a11ywatch.com",

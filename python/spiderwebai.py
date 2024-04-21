@@ -59,7 +59,7 @@ class SpiderWebAIApp:
         :return: JSON response containing the scraping results.
         """
         return self.api_post(
-            "crawl", {"url": url, "budget": '{"*":1}', **(params or {})}
+            "crawl", {"url": url, "limit": 1, **(params or {})}
         )
 
     def crawl_url(self, url, params=None, stream=False):

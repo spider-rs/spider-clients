@@ -5,3 +5,39 @@ target
 python/build
 python/spiderwebai_py.egg-info
 javascript/coverage
+# Compiled Python files
+*.pyc
+*.pyo
+__pycache__/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+env/
+.env/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Testing and coverage
+.coverage
+.pytest_cache/
+htmlcov/
+
+# Documentation
+docs/_build/
+docs/api/
+
+# Miscellaneous
+*.log
+.DS_Store
+Thumbs.db
