@@ -104,6 +104,48 @@ You can check the remaining credits on your account:
 credits = app.get_credits()
 ```
 
+## Streaming
+
+If you need to stream the request use the third param:
+
+```python
+url = 'https://example.com'
+
+crawler_params = {
+    'limit': 1,
+    'proxy_enabled': True,
+    'store_data': False,
+    'metadata': False,
+    'request': 'http'
+}
+
+links = app.links(url, crawler_params, True)
+```
+
+## Content-Type
+
+The following Content-type headers are supported using the fourth param:
+
+1. `application/json`
+1. `text/csv`
+1. `application/xml`
+1. `application/jsonl`
+
+```python
+url = 'https://example.com'
+
+crawler_params = {
+    'limit': 1,
+    'proxy_enabled': True,
+    'store_data': False,
+    'metadata': False,
+    'request': 'http'
+}
+
+# stream json lines back to the client
+links = app.crawl(url, crawler_params, True, "application/jsonl")
+```
+
 ## Error Handling
 
 The SDK handles errors returned by the SpiderWebAI API and raises appropriate exceptions. If an error occurs during a request, an exception will be raised with a descriptive error message.
