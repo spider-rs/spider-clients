@@ -1,11 +1,11 @@
 /**
  * A class to interact with the SpiderWeb AI API.
  */
-export default class SpiderWebAIApp {
+export default class Spider {
   private apiKey?: string;
 
   /**
-   * Create an instance of SpiderWebAIApp.
+   * Create an instance of Spider.
    * @param {string | null} apiKey - The API key used to authenticate to the SpiderWeb AI API. If null, attempts to source from environment variables.
    * @throws Will throw an error if the API key is not provided.
    */
@@ -30,7 +30,7 @@ export default class SpiderWebAIApp {
   ) {
     const headers = this.prepareHeaders();
     const response = await fetch(
-      `https://spider.a11ywatch.com/v1/${endpoint}`,
+      `https://spider.cloud/v1/${endpoint}`,
       {
         method: "POST",
         headers: headers,
@@ -56,7 +56,7 @@ export default class SpiderWebAIApp {
   private async _apiGet(endpoint: string) {
     const headers = this.prepareHeaders();
     const response = await fetch(
-      `https://spider.a11ywatch.com/v1/${endpoint}`,
+      `https://spider.cloud/v1/${endpoint}`,
       {
         method: "GET",
         headers: headers,
@@ -129,6 +129,16 @@ export default class SpiderWebAIApp {
    */
   async label(url: string, params = {}) {
     return this._apiPost("pipeline/label", { url: url, ...params });
+  }
+
+  /**
+   * Check the crawl state of the website.
+   * @param {string} url - The URL to check.
+   * @param {object} [params={}] - Configuration parameters for crawl state. Can also pass in "domain" instead of the url to query.
+   * @returns {Promise<any>} The crawl state data.
+   */
+  async getCrawlState(url: string, params = {}) {
+    return this._apiPost("crawl-state", { url: url, ...params });
   }
 
   /**

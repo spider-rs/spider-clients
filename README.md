@@ -1,6 +1,6 @@
-# spiderwebai-clients
+# spider-clients
 
-Clients to use for [spiderwebai](https://spiderwebai.xyz).
+Clients to use for [spider cloud](https://spider.cloud).
 
 ## Python
 

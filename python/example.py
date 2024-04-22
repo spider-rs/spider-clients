@@ -1,7 +1,7 @@
-from spiderwebai import SpiderWebAIApp
+from spider import Spider
 
-# Initialize the SpiderWebAIApp with your API key using the env key SPIDER_API_KEY
-app = SpiderWebAIApp()
+# Initialize the Spider with your API key using the env key SPIDER_API_KEY
+app = Spider()
 
 crawler_params = {
     'limit': 5,
@@ -10,6 +10,6 @@ crawler_params = {
     'metadata': False,
     'request': 'http'
 }
-crawl_result = app.crawl_url('https://spiderwebai.xyz', params=crawler_params)
+crawl_result = app.crawl_url('https://spider.cloud', params=crawler_params)
 
 print(crawl_result)

@@ -2,10 +2,10 @@ import os
 import requests
 
 
-class SpiderWebAIApp:
+class Spider:
     def __init__(self, api_key=None):
         """
-        Initialize the SpiderWebAIApp with an API key.
+        Initialize the Spider with an API key.
 
         :param api_key: A string of the API key for SpiderWeb AI. Defaults to the SPIDER_API_KEY environment variable.
         :raises ValueError: If no API key is provided.
@@ -25,7 +25,7 @@ class SpiderWebAIApp:
         """
         headers = self._prepare_headers(content_type)
         response = self._post_request(
-            f"https://spider.a11ywatch.com/v1/{endpoint}", data, headers, stream
+            f"https://https://spider.cloud/v1/{endpoint}", data, headers, stream
         )
         if stream:
             return response
@@ -43,7 +43,7 @@ class SpiderWebAIApp:
         """
         headers = self._prepare_headers(content_type)
         response = self._get_request(
-            f"https://spider.a11ywatch.com/v1/{endpoint}", headers, stream
+            f"https://https://spider.cloud/v1/{endpoint}", headers, stream
         )
         if response.status_code == 200:
             return response.json()
@@ -64,7 +64,9 @@ class SpiderWebAIApp:
             "crawl", {"url": url, "limit": 1, **(params or {})}, stream, content_type
         )
 
-    def crawl_url(self, url, params=None, stream=False):
+    def crawl_url(
+        self, url, params=None, stream=False, content_type="application/json"
+    ):
         """
         Start crawling at the specified URL.
 
@@ -131,6 +133,14 @@ class SpiderWebAIApp:
         return self.api_post(
             "pipeline/label", {"url": url, **(params or {})}, stream, content_type
         )
+
+    def get_crawl_state(self, url, params=None):
+        """
+        Retrieve the website active crawl state.
+
+        :return: JSON response of the crawl state and credits used.
+        """
+        return self.api_post("crawl-state", {"url": url, **(params or {})})
 
     def get_credits(self):
         """

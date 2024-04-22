@@ -7,12 +7,12 @@ def read_file(fname):
 
 
 setup(
-    name="spiderwebai-py",
-    version="0.1.4",
-    url="https://github.com/spider-rs/spiderwebai-clients/tree/main/python",
+    name="spider-client",
+    version="0.0.6",
+    url="https://github.com/spider-rs/spider-clients/tree/main/python",
     author="Spider",
     author_email="jeff@a11ywatch.com",
-    description="Python SDK for SpiderWebAI API",
+    description="Python SDK for Spider Cloud API",
     packages=find_packages(),
     install_requires=[
         "requests",

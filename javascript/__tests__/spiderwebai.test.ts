@@ -1,7 +1,7 @@
-import SpiderWebAIApp from "../src/spiderwebai";
+import Spider from "../src/spiderwebai";
 
-describe("SpiderWebAIApp", () => {
+describe("Spider", () => {
   it("should throw error if API key is not provided", () => {
-    expect(() => new SpiderWebAIApp()).toThrow("No API key provided");
+    expect(() => new Spider()).toThrow("No API key provided");
   });
 });

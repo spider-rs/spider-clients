@@ -1,30 +1,30 @@
-# SpiderWebAI Python SDK
+# Spider Cloud Python SDK
 
-The SpiderWebAI Python SDK offers a toolkit for straightforward website scraping, crawling at scale, and other utilities like extracting links and taking screenshots, enabling you to collect data formatted for compatibility with language models (LLMs). It features a user-friendly interface for seamless integration with the SpiderWebAI API.
+The Spider Cloud Python SDK offers a toolkit for straightforward website scraping, crawling at scale, and other utilities like extracting links and taking screenshots, enabling you to collect data formatted for compatibility with language models (LLMs). It features a user-friendly interface for seamless integration with the Spider Cloud API.
 
 ## Installation
 
-To install the SpiderWebAI Python SDK, you can use pip:
+To install the Spider Cloud Python SDK, you can use pip:
 
 ```bash
-pip install spiderwebai-py
+pip install spider-client
 ```
 
 ## Usage
 
-1. Get an API key from [spiderwebai.xyz](https://spiderwebai.xyz)
-2. Set the API key as an environment variable named `SPIDER_API_KEY` or pass it as a parameter to the `SpiderWebAIApp` class.
+1. Get an API key from [spider.cloud](https://spider.cloud)
+2. Set the API key as an environment variable named `SPIDER_API_KEY` or pass it as a parameter to the `Spider` class.
 
 Here's an example of how to use the SDK:
 
 ```python
-from spiderwebai import SpiderWebAIApp
+from spider import Spider
 
-# Initialize the SpiderWebAIApp with your API key
-app = SpiderWebAIApp(api_key='your_api_key')
+# Initialize the Spider with your API key
+app = Spider(api_key='your_api_key')
 
 # Scrape a single URL
-url = 'https://spiderwebai.xyz'
+url = 'https://spider.cloud'
 scraped_data = app.scrape_url(url)
 
 # Crawl a website
@@ -96,6 +96,15 @@ url = 'https://example.com'
 labeled_data = app.label(url)
 ```
 
+### Checking Crawl State
+
+You can check the crawl state of the website:
+
+```python
+url = 'https://example.com'
+state = app.get_crawl_state(url)
+```
+
 ### Checking Available Credits
 
 You can check the remaining credits on your account:
@@ -148,12 +157,12 @@ links = app.crawl(url, crawler_params, True, "application/jsonl")
 
 ## Error Handling
 
-The SDK handles errors returned by the SpiderWebAI API and raises appropriate exceptions. If an error occurs during a request, an exception will be raised with a descriptive error message.
+The SDK handles errors returned by the Spider Cloud API and raises appropriate exceptions. If an error occurs during a request, an exception will be raised with a descriptive error message.
 
 ## Contributing
 
-Contributions to the SpiderWebAI Python SDK are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
+Contributions to the Spider Cloud Python SDK are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.
 
 ## License
 
-The SpiderWebAI Python SDK is open-source and released under the [MIT License](https://opensource.org/licenses/MIT).
+The Spider Cloud Python SDK is open-source and released under the [MIT License](https://opensource.org/licenses/MIT).

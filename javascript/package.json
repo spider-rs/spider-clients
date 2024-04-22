@@ -1,7 +1,7 @@
 {
-  "name": "spiderwebai-js",
-  "version": "0.1.2",
-  "description": "A Javascript SDK for SpiderWebAI services",
+  "name": "@spider-cloud/spider-client",
+  "version": "0.0.6",
+  "description": "A Javascript SDK for Spider Cloud services",
   "scripts": {
     "test": "jest",
     "build": "tsc",

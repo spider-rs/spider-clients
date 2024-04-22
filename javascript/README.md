@@ -1,34 +1,34 @@
-# SpiderWebAI JavaScript SDK
+# Spider Cloud JavaScript SDK
 
-The SpiderWebAI JavaScript SDK offers a streamlined set of tools for web scraping and crawling, with capabilities that allow for comprehensive data extraction suitable for interfacing with AI language models. This SDK makes it easy to interact programmatically with the SpiderWebAI API from any JavaScript or Node.js application.
+The Spider Cloud JavaScript SDK offers a streamlined set of tools for web scraping and crawling, with capabilities that allow for comprehensive data extraction suitable for interfacing with AI language models. This SDK makes it easy to interact programmatically with the Spider Cloud API from any JavaScript or Node.js application.
 
 ## Installation
 
-You can install the SpiderWebAI JavaScript SDK via npm:
+You can install the Spider Cloud JavaScript SDK via npm:
 
 ```bash
-npm install spiderwebai-js
+npm install @spider-cloud/spider-client
 ```
 
 Or with yarn:
 
 ```bash
-yarn add spiderwebai-js
+yarn add @spider-cloud/spider-client
 ```
 
 ## Configuration
 
-Before using the SDK, you will need to provide it with your API key. Obtain an API key from [spiderwebai.xyz](https://spiderwebai.xyz) and either pass it directly to the constructor or set it as an environment variable `SPIDER_API_KEY`.
+Before using the SDK, you will need to provide it with your API key. Obtain an API key from [spider.cloud](https://spider.cloud) and either pass it directly to the constructor or set it as an environment variable `SPIDER_API_KEY`.
 
 ## Usage
 
 Here's a basic example to demonstrate how to use the SDK:
 
 ```javascript
-import SpiderWebAIApp from "spiderwebai-js";
+import Spider from "spider-client";
 
 // Initialize the SDK with your API key
-const app = new SpiderWebAIApp("your_api_key");
+const app = new Spider("your_api_key");
 
 // Scrape a URL
 const url = "https://spiderwebai.xyz";
@@ -67,6 +67,7 @@ app
 - **`screenshot(url, params)`**: Take a screenshot of the specified URL.
 - **`extractContacts(url, params)`**: Extract contact information from the specified URL.
 - **`label(url, params)`**: Apply labeling to data extracted from the specified URL.
+- **`getCrawlState(url, params)`**: Check the website crawl state.
 - **`getCredits()`**: Retrieve account's remaining credits.
 
 ## Error Handling
@@ -79,4 +80,4 @@ Contributions are always welcome! Feel free to open an issue or submit a pull re
 
 ## License
 
-The SpiderWebAI JavaScript SDK is open-source and released under the [MIT License](https://opensource.org/licenses/MIT).
+The Spider Cloud JavaScript SDK is open-source and released under the [MIT License](https://opensource.org/licenses/MIT).
