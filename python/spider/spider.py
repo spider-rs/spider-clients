@@ -25,7 +25,7 @@ class Spider:
         """
         headers = self._prepare_headers(content_type)
         response = self._post_request(
-            f"https://https://spider.cloud/v1/{endpoint}", data, headers, stream
+            f"https://spider.cloud/v1/{endpoint}", data, headers, stream
         )
         if stream:
             return response
@@ -43,7 +43,7 @@ class Spider:
         """
         headers = self._prepare_headers(content_type)
         response = self._get_request(
-            f"https://https://spider.cloud/v1/{endpoint}", headers, stream
+            f"https://spider.cloud/v1/{endpoint}", headers, stream
         )
         if response.status_code == 200:
             return response.json()
