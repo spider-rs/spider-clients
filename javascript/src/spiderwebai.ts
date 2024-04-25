@@ -30,7 +30,7 @@ export default class Spider {
   ) {
     const headers = this.prepareHeaders();
     const response = await fetch(
-      `https://spider.cloud/v1/${endpoint}`,
+      `https://api.spider.cloud/v1/${endpoint}`,
       {
         method: "POST",
         headers: headers,
@@ -56,7 +56,7 @@ export default class Spider {
   private async _apiGet(endpoint: string) {
     const headers = this.prepareHeaders();
     const response = await fetch(
-      `https://spider.cloud/v1/${endpoint}`,
+      `https://api.spider.cloud/v1/${endpoint}`,
       {
         method: "GET",
         headers: headers,
@@ -138,7 +138,7 @@ export default class Spider {
    * @returns {Promise<any>} The crawl state data.
    */
   async getCrawlState(url: string, params = {}) {
-    return this._apiPost("crawl-state", { url: url, ...params });
+    return this._apiPost("crawl/status", { url: url, ...params });
   }
 
   /**
