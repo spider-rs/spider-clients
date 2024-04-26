@@ -1,12 +1,12 @@
 /**
- * A class to interact with the SpiderWeb AI API.
+ * A class to interact with the Spider API.
  */
 export default class Spider {
   private apiKey?: string;
 
   /**
    * Create an instance of Spider.
-   * @param {string | null} apiKey - The API key used to authenticate to the SpiderWeb AI API. If null, attempts to source from environment variables.
+   * @param {string | null} apiKey - The API key used to authenticate to the Spider API. If null, attempts to source from environment variables.
    * @throws Will throw an error if the API key is not provided.
    */
   constructor(apiKey?: string) {

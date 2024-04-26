@@ -7,7 +7,7 @@ class Spider:
         """
         Initialize the Spider with an API key.
 
-        :param api_key: A string of the API key for SpiderWeb AI. Defaults to the SPIDER_API_KEY environment variable.
+        :param api_key: A string of the API key for Spider. Defaults to the SPIDER_API_KEY environment variable.
         :raises ValueError: If no API key is provided.
         """
         self.api_key = api_key or os.getenv("SPIDER_API_KEY")
