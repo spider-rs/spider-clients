@@ -1,4 +1,11 @@
 /**
+ * Configuration interface for Spider.
+ */
+export interface SpiderConfig {
+  apiKey?: string | null;
+}
+
+/**
  * A class to interact with the Spider API.
  */
 export default class Spider {
@@ -9,7 +16,7 @@ export default class Spider {
    * @param {string | null} apiKey - The API key used to authenticate to the Spider API. If null, attempts to source from environment variables.
    * @throws Will throw an error if the API key is not provided.
    */
-  constructor(apiKey?: string) {
+  constructor({ apiKey = null }: SpiderConfig) {
     this.apiKey = apiKey || process?.env?.SPIDER_API_KEY;
     if (!this.apiKey) {
       throw new Error("No API key provided");
