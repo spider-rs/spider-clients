@@ -25,13 +25,13 @@ Before using the SDK, you will need to provide it with your API key. Obtain an A
 Here's a basic example to demonstrate how to use the SDK:
 
 ```javascript
-import Spider from "spider-client";
+import Spider from "@spider-cloud/spider-client";
 
 // Initialize the SDK with your API key
-const app = new Spider("your_api_key");
+const app = new Spider({ apiKey: "YOUR_API_KEY" });
 
 // Scrape a URL
-const url = "https://spiderwebai.xyz";
+const url = "https://spider.cloud";
 app
   .scrapeUrl(url)
   .then((data) => {
