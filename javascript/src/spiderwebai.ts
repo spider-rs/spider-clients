@@ -84,7 +84,7 @@ export default class Spider {
    * @returns {Promise<any>} The scraped data from the URL.
    */
   async scrapeUrl(url: string, params = {}) {
-    return this._apiPost("crawl", { url: url, budget: '{"*":1}', ...params });
+    return this._apiPost("crawl", { url: url, limit: 1, ...params });
   }
 
   /**
