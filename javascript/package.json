@@ -1,22 +1,23 @@
 {
   "name": "@spider-cloud/spider-client",
-  "version": "0.0.11",
+  "version": "0.0.19",
   "description": "A Javascript SDK for Spider Cloud services",
   "scripts": {
     "test": "jest",
     "build": "tsc",
     "prepublishOnly": "npm test && npm run build"
   },
-  "main": "dist/spiderwebai.js",
-  "types": "dist/spiderwebai.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/client.d.ts",
   "files": [
     "dist/**/*"
   ],
   "keywords": [
-    "spiderwebai",
+    "spider",
     "sdk",
     "web scraping",
-    "api"
+    "api",
+    "llm scraping"
   ],
   "author": "Jeff Mendez<jeff@a11ywatch.com>",
   "license": "MIT",

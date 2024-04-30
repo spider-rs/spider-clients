@@ -1,5 +1,5 @@
 import { describe, test, expect, jest } from '@jest/globals';
-import Spider from "../src/spiderwebai";
+import { Spider } from "../src";
 
 jest.setTimeout(1000 * 60)
 

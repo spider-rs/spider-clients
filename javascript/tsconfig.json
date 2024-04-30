@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2019",
     "module": "commonjs",
-    "lib": ["es2020"],
+    "moduleResolution": "node",
+    "lib": ["es5", "es6", "dom"],
     "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
@@ -11,7 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "moduleResolution": "node",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true
