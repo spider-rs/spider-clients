@@ -33,17 +33,14 @@ export class Spider {
   private async _apiPost(
     endpoint: string,
     data: Record<string, any>,
-    stream = false,
+    stream = false
   ) {
     const headers = this.prepareHeaders();
-    const response = await fetch(
-      `https://api.spider.cloud/v1/${endpoint}`,
-      {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(data),
-      },
-    );
+    const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(data),
+    });
 
     if (!stream) {
       if (response.ok) {
@@ -62,13 +59,29 @@ export class Spider {
    */
   private async _apiGet(endpoint: string) {
     const headers = this.prepareHeaders();
-    const response = await fetch(
-      `https://api.spider.cloud/v1/${endpoint}`,
-      {
-        method: "GET",
-        headers: headers,
-      },
-    );
+    const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
+      method: "GET",
+      headers: headers,
+    });
+
+    if (response.ok) {
+      return response.json();
+    } else {
+      this.handleError(response, `get from ${endpoint}`);
+    }
+  }
+
+  /**
+   * Internal method to handle DELETE requests.
+   * @param {string} endpoint - The API endpoint from which data should be retrieved.
+   * @returns {Promise<any>} The data returned from the endpoint in JSON format.
+   */
+  private async _apiDelete(endpoint: string) {
+    const headers = this.prepareHeaders();
+    const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
+      method: "DELETE",
+      headers,
+    });
 
     if (response.ok) {
       return response.json();
@@ -154,6 +167,40 @@ export class Spider {
    */
   async getCredits() {
     return this._apiGet("credits");
+  }
+
+  /**
+   * Send a POST request to insert data into a specified table.
+   * @param {string} table - The table name in the database.
+   * @param {object} data - The data to be inserted.
+   * @returns {Promise<any>} The response from the server.
+   */
+  async postData(table: string, data: object): Promise<any> {
+    return this._apiPost(`data/${table}`, data);
+  }
+
+  /**
+   * Send a GET request to retrieve data from a specified table.
+   * @param {string} table - The table name in the database.
+   * @param {object} params - The query parameters for data retrieval.
+   * @returns {Promise<any>} The response from the server.
+   */
+  async getData(table: string, params: object): Promise<any> {
+    return this._apiGet(
+      `data/${table}?${new URLSearchParams(params as any).toString()}`
+    );
+  }
+
+  /**
+   * Send a DELETE request to remove data from a specified table.
+   * @param {string} table - The table name in the database.
+   * @param {object} params - Parameters to identify records to delete.
+   * @returns {Promise<any>} The response from the server.
+   */
+  async deleteData(table: string, params: object): Promise<any> {
+    return this._apiDelete(
+      `data/${table}?${new URLSearchParams(params as any).toString()}`
+    );
   }
 
   /**

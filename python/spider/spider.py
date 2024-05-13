@@ -50,6 +50,22 @@ class Spider:
         else:
             self._handle_error(response, f"get from {endpoint}")
 
+    def api_delete(self, endpoint, stream=False, content_type="application/json"):
+        """
+        Send a DELETE request to the specified endpoint.
+
+        :param endpoint: The API endpoint from which to retrieve data.
+        :return: The JSON decoded response.
+        """
+        headers = self._prepare_headers(content_type)
+        response = self._delete_request(
+            f"https://api.spider.cloud/v1/{endpoint}", headers, stream
+        )
+        if response.status_code in [200, 202]:
+            return response.json()
+        else:
+            self._handle_error(response, f"get from {endpoint}")
+
     def scrape_url(
         self, url, params=None, stream=False, content_type="application/json"
     ):
@@ -150,6 +166,33 @@ class Spider:
         """
         return self.api_get("credits")
 
+    def data_post(self, table, data):
+        """
+        Send data to a specific table via POST request.
+        :param table: The table name to which the data will be posted.
+        :param data: A dictionary representing the data to be posted.
+        :return: The JSON response from the server.
+        """
+        return self.api_post(f"data/{table}", data)
+
+    def data_get(self, table, params=None):
+        """
+        Retrieve data from a specific table via GET request.
+        :param table: The table name from which to retrieve data.
+        :param params: Optional parameters to modify the query.
+        :return: The JSON response from the server.
+        """
+        return self.api_get(f"data/{table}", params=params)
+
+    def data_delete(self, table, params):
+        """
+        Delete data from a specific table via DELETE request.
+        :param table: The table name from which data will be deleted.
+        :param params: Parameters to identify which data to delete.
+        :return: The JSON response from the server.
+        """
+        return self.api_delete(f"data/{table}", params=params)
+
     def _prepare_headers(self, content_type="application/json"):
         return {
             "Content-Type": content_type,
@@ -161,6 +204,9 @@ class Spider:
 
     def _get_request(self, url, headers, stream=False):
         return requests.get(url, headers=headers, stream=stream)
+
+    def _delete_request(self, url, headers, stream=False):
+        return requests.delete(url, headers=headers, stream=stream)
 
     def _handle_error(self, response, action):
         if response.status_code in [402, 409, 500]:

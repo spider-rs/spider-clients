@@ -25,7 +25,7 @@ Before using the SDK, you will need to provide it with your API key. Obtain an A
 Here's a basic example to demonstrate how to use the SDK:
 
 ```javascript
-import { Spider } from '@spider-cloud/spider-client';
+import { Spider } from "@spider-cloud/spider-client";
 
 // Initialize the SDK with your API key
 const app = new Spider({ apiKey: "YOUR_API_KEY" });
@@ -59,6 +59,38 @@ app
   });
 ```
 
+### Data Operations
+
+The Spider client can interact with specific data tables to create, retrieve, and delete data.
+
+#### Retrieve Data from a Table
+
+To fetch data from a specified table by applying query parameters, use the `getData` method. Provide the table name and an object containing query parameters:
+
+```javascript
+const tableName = "pages";
+const queryParams = { limit: 20 };
+spider
+  .getData(tableName, queryParams)
+  .then((response) => console.log(response))
+  .catch((error) => console.error(error));
+```
+
+This example retrieves data from the 'pages' table, limiting the results to 20 entries.
+
+#### Delete Data from a Table
+
+To delete data from a specified table based on certain conditions, use the `deleteData` method. Provide the table name and an object specifying the conditions for deletion:
+
+```javascript
+const tableName = "websites";
+const deleteParams = { domain: "www.example.com" };
+spider
+  .deleteData(tableName, deleteParams)
+  .then((response) => console.log(response))
+  .catch((error) => console.error(error));
+```
+
 ### Available Methods
 
 - **`scrapeUrl(url, params)`**: Scrape data from a specified URL. Optional parameters can be passed to customize the scraping behavior.
@@ -69,6 +101,8 @@ app
 - **`label(url, params)`**: Apply labeling to data extracted from the specified URL.
 - **`getCrawlState(url, params)`**: Check the website crawl state.
 - **`getCredits()`**: Retrieve account's remaining credits.
+- **`getData(table, params)`**: Retrieve data records from the DB.
+- **`deleteData(table, params)`**: Delete records from the DB.
 
 ## Error Handling
 
@@ -81,3 +115,4 @@ Contributions are always welcome! Feel free to open an issue or submit a pull re
 ## License
 
 The Spider Cloud JavaScript SDK is open-source and released under the [MIT License](https://opensource.org/licenses/MIT).
+```

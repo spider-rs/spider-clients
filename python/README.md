@@ -113,6 +113,32 @@ You can check the remaining credits on your account:
 credits = app.get_credits()
 ```
 
+### Data Operations
+
+The Spider client can now interact with specific data tables to create, retrieve, and delete data.
+
+#### Retrieve Data from a Table
+
+To fetch data from a specified table by applying query parameters:
+
+```python
+table_name = 'pages'
+query_params = {'limit': 20 }
+response = app.data_get(table_name, query_params)
+print(response)
+```
+
+#### Delete Data from a Table
+
+To delete data from a specified table based on certain conditions:
+
+```python
+table_name = 'websites'
+delete_params = {'domain': 'www.example.com'}
+response = app.data_delete(table_name, delete_params)
+print(response)
+```
+
 ## Streaming
 
 If you need to stream the request use the third param:
