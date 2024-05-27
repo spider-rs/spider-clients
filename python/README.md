@@ -60,6 +60,21 @@ crawl_params = {
 crawl_result = app.crawl_url(url, params=crawl_params)
 ```
 
+### Search
+
+Perform a search for websites to crawl or gather search results:
+
+```python
+query = 'a sports website'
+crawl_params = {
+    'request': 'smart_mode',
+    'search_limit': 5,
+    'limit': 5,
+    'fetch_page_content': True
+}
+crawl_result = app.search(query, params=crawl_params)
+```
+
 ### Retrieving Links from a URL(s)
 
 Extract all links from a specified URL:
@@ -67,6 +82,19 @@ Extract all links from a specified URL:
 ```python
 url = 'https://example.com'
 links = app.links(url)
+```
+
+### Transform
+
+Transform HTML to markdown or text lightning fast:
+
+```python
+data = [ { 'html': '<html><body><h1>Hello world</h1></body></html>' } ]
+params = {
+    'readability': False,
+    'return_format': 'markdown',
+}
+result = app.transform(data, params=params)
 ```
 
 ### Taking Screenshots of a URL(s)

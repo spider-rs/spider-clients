@@ -132,6 +132,26 @@ export class Spider {
   }
 
   /**
+   *  Perform a search and gather a list of websites to start crawling and collect resources.
+   * @param {string} search - The search query.
+   * @param {object} [params={}] - Configuration parameters for the search.
+   * @returns {Promise<any>} The result of the crawl, either structured data or a Response object if streaming.
+   */
+  async search(q: string, params = {}) {
+    return this._apiPost("search", { search: q, ...params });
+  }
+
+  /**
+   *  Transform HTML to Markdown or text. You can send up to 10MB of data at once.
+   * @param {object} data - The data to trasnform, a list of objects with the key 'html' and optional 'url' key for readability.
+   * @param {object} [params={}] - Configuration parameters for the transformation.
+   * @returns {Promise<any>} The transformation result.
+   */
+  async transform(data: { html: string; url?: string }[], params = {}) {
+    return this._apiPost("transform", { data, ...params });
+  }
+
+  /**
    * Extracts contact information from the specified URL.
    * @param {string} url - The URL from which to extract contacts.
    * @param {object} [params={}] - Configuration parameters for the extraction.

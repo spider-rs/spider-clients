@@ -95,8 +95,10 @@ spider
 
 - **`scrapeUrl(url, params)`**: Scrape data from a specified URL. Optional parameters can be passed to customize the scraping behavior.
 - **`crawlUrl(url, params, stream)`**: Begin crawling from a specific URL with optional parameters for customization and an optional streaming response.
+- **`search(q, params)`**: Perform a search and gather a list of websites to start crawling and collect resources.
 - **`links(url, params)`**: Retrieve all links from the specified URL with optional parameters.
 - **`screenshot(url, params)`**: Take a screenshot of the specified URL.
+- **`transform(data, params)`**: Perform a fast HTML transformation to markdown or text.
 - **`extractContacts(url, params)`**: Extract contact information from the specified URL.
 - **`label(url, params)`**: Apply labeling to data extracted from the specified URL.
 - **`getCrawlState(url, params)`**: Check the website crawl state.

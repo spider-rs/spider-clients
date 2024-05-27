@@ -121,6 +121,34 @@ class Spider:
             "screenshot", {"url": url, **(params or {})}, stream, content_type
         )
 
+    def search(
+        self, q, params=None, stream=False, content_type="application/json"
+    ):
+        """
+        Perform a search and gather a list of websites to start crawling and collect resources.
+
+        :param search: The search query.
+        :param params: Optional parameters to customize the search.
+        :return: JSON response or the raw response stream if streaming enabled.
+        """
+        return self.api_post(
+            "search", {"search": q, **(params or {})}, stream, content_type
+        )
+
+    def transform(
+        self, data, params=None, stream=False, content_type="application/json"
+    ):
+        """
+        Transform HTML to Markdown or text. You can send up to 10MB of data at once.
+
+        :param data: The data to transform a list of objects with the 'html' key and an optional 'url' key only used readability mode.
+        :param params: Optional parameters to customize the search.
+        :return: JSON response or the raw response stream if streaming enabled.
+        """
+        return self.api_post(
+            "transform", {"data": data, **(params or {})}, stream, content_type
+        )
+
     def extract_contacts(
         self, url, params=None, stream=False, content_type="application/json"
     ):
