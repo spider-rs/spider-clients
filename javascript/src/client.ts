@@ -1,3 +1,10 @@
+import { SpiderParams } from "./config";
+
+/**
+ * Generic params for core request.
+ */
+type GenericParams = Omit<SpiderParams, "url">;
+
 /**
  * Configuration interface for Spider.
  */
@@ -93,21 +100,21 @@ export class Spider {
   /**
    * Scrapes data from a specified URL.
    * @param {string} url - The URL to scrape.
-   * @param {object} [params={}] - Additional parameters for the scraping request.
+   * @param {GenericParams} [params={}] - Additional parameters for the scraping request.
    * @returns {Promise<any>} The scraped data from the URL.
    */
-  async scrapeUrl(url: string, params = {}) {
+  async scrapeUrl(url: string, params: GenericParams = {}) {
     return this._apiPost("crawl", { url: url, limit: 1, ...params });
   }
 
   /**
    * Initiates a crawling job starting from the specified URL.
    * @param {string} url - The URL to start crawling.
-   * @param {object} [params={}] - Additional parameters for the crawl.
+   * @param {GenericParams} [params={}] - Additional parameters for the crawl.
    * @param {boolean} [stream=false] - Whether to receive the response as a stream.
    * @returns {Promise<any | Response>} The result of the crawl, either structured data or a Response object if streaming.
    */
-  async crawlUrl(url: string, params = {}, stream = false) {
+  async crawlUrl(url: string, params: GenericParams = {}, stream = false) {
     return this._apiPost("crawl", { url: url, ...params }, stream);
   }
 
@@ -124,20 +131,20 @@ export class Spider {
   /**
    * Takes a screenshot of the specified URL.
    * @param {string} url - The URL to screenshot.
-   * @param {object} [params={}] - Configuration parameters for the screenshot.
+   * @param {GenericParams} [params={}] - Configuration parameters for the screenshot.
    * @returns {Promise<any>} The screenshot data.
    */
-  async screenshot(url: string, params = {}) {
+  async screenshot(url: string, params: GenericParams = {}) {
     return this._apiPost("screenshot", { url: url, ...params });
   }
 
   /**
    *  Perform a search and gather a list of websites to start crawling and collect resources.
    * @param {string} search - The search query.
-   * @param {object} [params={}] - Configuration parameters for the search.
+   * @param {GenericParams} [params={}] - Configuration parameters for the search.
    * @returns {Promise<any>} The result of the crawl, either structured data or a Response object if streaming.
    */
-  async search(q: string, params = {}) {
+  async search(q: string, params: GenericParams = {}) {
     return this._apiPost("search", { search: q, ...params });
   }
 
@@ -154,30 +161,30 @@ export class Spider {
   /**
    * Extracts contact information from the specified URL.
    * @param {string} url - The URL from which to extract contacts.
-   * @param {object} [params={}] - Configuration parameters for the extraction.
+   * @param {GenericParams} [params={}] - Configuration parameters for the extraction.
    * @returns {Promise<any>} The contact information extracted.
    */
-  async extractContacts(url: string, params = {}) {
+  async extractContacts(url: string, params: GenericParams = {}) {
     return this._apiPost("pipeline/extract-contacts", { url: url, ...params });
   }
 
   /**
    * Applies labeling to data extracted from a specified URL.
    * @param {string} url - The URL to label.
-   * @param {object} [params={}] - Configuration parameters for labeling.
+   * @param {GenericParams} [params={}] - Configuration parameters for labeling.
    * @returns {Promise<any>} The labeled data.
    */
-  async label(url: string, params = {}) {
+  async label(url: string, params: GenericParams = {}) {
     return this._apiPost("pipeline/label", { url: url, ...params });
   }
 
   /**
    * Check the crawl state of the website.
    * @param {string} url - The URL to check.
-   * @param {object} [params={}] - Configuration parameters for crawl state. Can also pass in "domain" instead of the url to query.
+   * @param {GenericParams} [params={}] - Configuration parameters for crawl state. Can also pass in "domain" instead of the url to query.
    * @returns {Promise<any>} The crawl state data.
    */
-  async getCrawlState(url: string, params = {}) {
+  async getCrawlState(url: string, params: GenericParams = {}) {
     return this._apiPost("crawl/status", { url: url, ...params });
   }
 
@@ -195,7 +202,10 @@ export class Spider {
    * @param {object} data - The data to be inserted.
    * @returns {Promise<any>} The response from the server.
    */
-  async postData(table: string, data: object): Promise<any> {
+  async postData(
+    table: string,
+    data: GenericParams | Record<string, any>
+  ): Promise<any> {
     return this._apiPost(`data/${table}`, data);
   }
 
@@ -205,7 +215,10 @@ export class Spider {
    * @param {object} params - The query parameters for data retrieval.
    * @returns {Promise<any>} The response from the server.
    */
-  async getData(table: string, params: object): Promise<any> {
+  async getData(
+    table: string,
+    params: GenericParams | Record<string, any>
+  ): Promise<any> {
     return this._apiGet(
       `data/${table}?${new URLSearchParams(params as any).toString()}`
     );
@@ -217,7 +230,10 @@ export class Spider {
    * @param {object} params - Parameters to identify records to delete.
    * @returns {Promise<any>} The response from the server.
    */
-  async deleteData(table: string, params: object): Promise<any> {
+  async deleteData(
+    table: string,
+    params: GenericParams | Record<string, any>
+  ): Promise<any> {
     return this._apiDelete(
       `data/${table}?${new URLSearchParams(params as any).toString()}`
     );

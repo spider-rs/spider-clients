@@ -1,9 +1,42 @@
-import os
-import requests
+import os, requests
+from typing import TypedDict, Optional, Dict, List, Literal
+
+
+class RequestParamsDict(TypedDict, total=False):
+    url: Optional[str]
+    request: Optional[Literal['http', 'chrome', 'smart']]
+    limit: Optional[int]
+    return_format: Optional[Literal['raw', 'markdown', 'html2text', 'text', 'bytes']]
+    tld: Optional[bool]
+    depth: Optional[int]
+    cache: Optional[bool]
+    budget: Optional[Dict[str, int]]
+    locale: Optional[str]
+    cookies: Optional[str]
+    stealth: Optional[bool]
+    headers: Optional[Dict[str, str]]
+    anti_bot: Optional[bool]
+    metadata: Optional[bool]
+    viewport: Optional[Dict[str, int]]
+    encoding: Optional[str]
+    subdomains: Optional[bool]
+    user_agent: Optional[str]
+    store_data: Optional[bool]
+    gpt_config: Optional[List[str]]
+    fingerprint: Optional[bool]
+    storageless: Optional[bool]
+    readability: Optional[bool]
+    proxy_enabled: Optional[bool]
+    respect_robots: Optional[bool]
+    query_selector: Optional[str]
+    full_resources: Optional[bool]
+    request_timeout: Optional[int]
+    run_in_background: Optional[bool]
+    skip_config_checks: Optional[bool]
 
 
 class Spider:
-    def __init__(self, api_key=None):
+    def __init__(self, api_key: Optional[str] = None):
         """
         Initialize the Spider with an API key.
 
@@ -14,7 +47,13 @@ class Spider:
         if self.api_key is None:
             raise ValueError("No API key provided")
 
-    def api_post(self, endpoint, data, stream=False, content_type="application/json"):
+    def api_post(
+        self,
+        endpoint: str,
+        data: dict,
+        stream: bool,
+        content_type: str = "application/json",
+    ):
         """
         Send a POST request to the specified API endpoint.
 
@@ -34,7 +73,9 @@ class Spider:
         else:
             self._handle_error(response, f"post to {endpoint}")
 
-    def api_get(self, endpoint, stream=False, content_type="application/json"):
+    def api_get(
+        self, endpoint: str, stream: bool, content_type: str = "application/json"
+    ):
         """
         Send a GET request to the specified endpoint.
 
@@ -50,7 +91,9 @@ class Spider:
         else:
             self._handle_error(response, f"get from {endpoint}")
 
-    def api_delete(self, endpoint, stream=False, content_type="application/json"):
+    def api_delete(
+        self, endpoint: str, stream: bool, content_type: str = "application/json"
+    ):
         """
         Send a DELETE request to the specified endpoint.
 
@@ -67,7 +110,11 @@ class Spider:
             self._handle_error(response, f"get from {endpoint}")
 
     def scrape_url(
-        self, url, params=None, stream=False, content_type="application/json"
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
     ):
         """
         Scrape data from the specified URL.
@@ -81,7 +128,11 @@ class Spider:
         )
 
     def crawl_url(
-        self, url, params=None, stream=False, content_type="application/json"
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
     ):
         """
         Start crawling at the specified URL.
@@ -95,7 +146,13 @@ class Spider:
             "crawl", {"url": url, **(params or {})}, stream, content_type
         )
 
-    def links(self, url, params=None, stream=False, content_type="application/json"):
+    def links(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ):
         """
         Retrieve links from the specified URL.
 
@@ -108,7 +165,11 @@ class Spider:
         )
 
     def screenshot(
-        self, url, params=None, stream=False, content_type="application/json"
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
     ):
         """
         Take a screenshot of the specified URL.
@@ -122,7 +183,11 @@ class Spider:
         )
 
     def search(
-        self, q, params=None, stream=False, content_type="application/json"
+        self,
+        q: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
     ):
         """
         Perform a search and gather a list of websites to start crawling and collect resources.
@@ -150,7 +215,11 @@ class Spider:
         )
 
     def extract_contacts(
-        self, url, params=None, stream=False, content_type="application/json"
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
     ):
         """
         Extract contact information from the specified URL.
@@ -166,7 +235,13 @@ class Spider:
             content_type,
         )
 
-    def label(self, url, params=None, stream=False, content_type="application/json"):
+    def label(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ):
         """
         Apply labeling to data extracted from the specified URL.
 
@@ -178,13 +253,21 @@ class Spider:
             "pipeline/label", {"url": url, **(params or {})}, stream, content_type
         )
 
-    def get_crawl_state(self, url, params=None):
+    def get_crawl_state(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ):
         """
         Retrieve the website active crawl state.
 
         :return: JSON response of the crawl state and credits used.
         """
-        return self.api_post("crawl/status", {"url": url, **(params or {})})
+        return self.api_post(
+            "crawl/status", {"url": url, **(params or {}, stream, content_type)}
+        )
 
     def get_credits(self):
         """
@@ -194,7 +277,7 @@ class Spider:
         """
         return self.api_get("credits")
 
-    def data_post(self, table, data):
+    def data_post(self, table: str, data: Optional[RequestParamsDict] = None):
         """
         Send data to a specific table via POST request.
         :param table: The table name to which the data will be posted.
@@ -203,7 +286,11 @@ class Spider:
         """
         return self.api_post(f"data/{table}", data)
 
-    def data_get(self, table, params=None):
+    def data_get(
+        self,
+        table: str,
+        params: Optional[RequestParamsDict] = None,
+    ):
         """
         Retrieve data from a specific table via GET request.
         :param table: The table name from which to retrieve data.
@@ -212,7 +299,11 @@ class Spider:
         """
         return self.api_get(f"data/{table}", params=params)
 
-    def data_delete(self, table, params):
+    def data_delete(
+        self,
+        table: str,
+        params: Optional[RequestParamsDict] = None,
+    ):
         """
         Delete data from a specific table via DELETE request.
         :param table: The table name from which data will be deleted.
@@ -221,19 +312,19 @@ class Spider:
         """
         return self.api_delete(f"data/{table}", params=params)
 
-    def _prepare_headers(self, content_type="application/json"):
+    def _prepare_headers(self, content_type: str = "application/json"):
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
         }
 
-    def _post_request(self, url, data, headers, stream=False):
+    def _post_request(self, url: str, data, headers, stream=False):
         return requests.post(url, headers=headers, json=data, stream=stream)
 
-    def _get_request(self, url, headers, stream=False):
+    def _get_request(self, url: str, headers, stream=False):
         return requests.get(url, headers=headers, stream=stream)
 
-    def _delete_request(self, url, headers, stream=False):
+    def _delete_request(self, url: str, headers, stream=False):
         return requests.delete(url, headers=headers, stream=stream)
 
     def _handle_error(self, response, action):
