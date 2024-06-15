@@ -1,4 +1,5 @@
 import { SpiderParams } from "./config";
+import { version } from "../package.json";
 
 /**
  * Generic params for core request.
@@ -247,6 +248,7 @@ export class Spider {
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.apiKey}`,
+      "User-Agent": `Spider-Client/${version}`,
     };
   }
 

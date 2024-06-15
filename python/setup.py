@@ -1,14 +1,16 @@
 from setuptools import setup, find_packages
 import os
 
-
 def read_file(fname):
     return open(os.path.join(os.path.dirname(__file__), fname), encoding="utf-8").read()
 
+version_ns = {}
+with open(os.path.join(os.path.dirname(__file__), "version.py")) as f:
+    exec(f.read(), version_ns)
 
 setup(
     name="spider-client",
-    version="0.0.24",
+    version=version_ns["__version__"],
     url="https://github.com/spider-rs/spider-clients/tree/main/python",
     author="Spider",
     author_email="jeff@a11ywatch.com",

@@ -1,5 +1,6 @@
 import os, requests
 from typing import TypedDict, Optional, Dict, List, Literal
+from version import __version__ as version
 
 
 class RequestParamsDict(TypedDict, total=False):
@@ -316,6 +317,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
+            "User-Agent": f"Spider-Client/{version}",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):
