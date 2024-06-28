@@ -275,7 +275,7 @@ class Spider:
 
         :return: JSON response containing the number of credits left.
         """
-        return self.api_get("credits")
+        return self.api_get("credits", stream=False)
 
     def data_post(self, table: str, data: Optional[RequestParamsDict] = None):
         """
