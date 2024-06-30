@@ -1,42 +1,7 @@
 import os, requests
-from typing import TypedDict, Optional, Dict, List, Literal, Any
+from typing import Optional 
+from spider_types import RequestParamsDict
 
-class RequestParamsDict(TypedDict, total=False):
-    url: Optional[str]
-    request: Optional[Literal["http", "chrome", "smart"]]
-    limit: Optional[int]
-    return_format: Optional[
-        Literal["raw", "markdown", "commonmark", "html2text", "text", "bytes"]
-    ]
-    tld: Optional[bool]
-    depth: Optional[int]
-    cache: Optional[bool]
-    budget: Optional[Dict[str, int]]
-    locale: Optional[str]
-    cookies: Optional[str]
-    stealth: Optional[bool]
-    headers: Optional[Dict[str, str]]
-    anti_bot: Optional[bool]
-    metadata: Optional[bool]
-    viewport: Optional[Dict[str, int]]
-    encoding: Optional[str]
-    subdomains: Optional[bool]
-    user_agent: Optional[str]
-    store_data: Optional[bool]
-    gpt_config: Optional[List[str]]
-    fingerprint: Optional[bool]
-    storageless: Optional[bool]
-    readability: Optional[bool]
-    proxy_enabled: Optional[bool]
-    respect_robots: Optional[bool]
-    page_insights: Optional[bool]
-    sitemap: Optional[bool]
-    return_embeddings: Optional[bool]
-    query_selector: Optional[str]
-    full_resources: Optional[bool]
-    request_timeout: Optional[int]
-    run_in_background: Optional[bool]
-    skip_config_checks: Optional[bool]
 
 class Spider:
     def __init__(self, api_key: Optional[str] = None):
