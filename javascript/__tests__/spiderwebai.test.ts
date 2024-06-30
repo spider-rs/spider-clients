@@ -32,7 +32,7 @@ describe("Spider JS SDK", () => {
 
     if (process.env.SPIDER_API_KEY) {
       const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
-      const spiderData = await spiderClient.downloadFiles("spider.cloud", { limit: 1, page: 0  });
+      const spiderData = await spiderClient.createSignedUrl("spider.cloud", { limit: 1, page: 0  });
       
       expect(spiderData)
     }

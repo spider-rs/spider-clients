@@ -1,4 +1,4 @@
-from typing import TypedDict, Optional, Dict, List, Literal, Any
+from typing import TypedDict, Optional, Dict, List, Literal
 
 class RequestParamsDict(TypedDict, total=False):
     url: Optional[str]

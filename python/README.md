@@ -139,11 +139,14 @@ You can download the results of the website:
 
 ```python
 url = 'https://example.com'
-limit = 100
-page = 0
+options = {
+    'page': 0,
+    'limit': 100,
+    'expiresIn': 3600  # Optional, add if needed
+}
 stream = True
 
-state = app.download_files(url, page, limit, stream)
+state = app.create_signed_url(url, options, stream)
 ```
 
 ### Checking Available Credits

@@ -1,5 +1,5 @@
 import os, requests
-from typing import Optional 
+from typing import Optional, Dict
 from spider.spider_types import RequestParamsDict
 
 
@@ -221,29 +221,28 @@ class Spider:
             "pipeline/label", {"url": url, **(params or {})}, stream, content_type
         )
 
-    def download_files(
+    def create_signed_url(
         self,
         domain: Optional[str] = None,
-        page: Optional[int] = None,
-        limit: Optional[int] = None,
-        stream: bool = True,
+        options: Optional[Dict[str, int]] = None,
+        stream: Optional[bool] = True,
     ):
         """
-        Download storage files from the new endpoint.
+        Create a signed url to download files from the storage.
 
         :param domain: Optional domain name to specify the storage path.
-        :param page: Optional page number for pagination.
-        :param limit: Optional page limit for pagination.
+        :param options: Optional dictionary containing configuration parameters, such as:
+            - 'page': Optional page number for pagination.
+            - 'limit': Optional page limit for pagination.
+            - 'expiresIn': Optional expiration time for the signed URL.
         :param stream: Boolean indicating if the response should be streamed. Defaults to True.
         :return: The raw response stream if stream is True.
         """
         params = {}
         if domain:
             params["domain"] = domain
-        if page:
-            params["page"] = page
-        if limit:
-            params["limit"] = limit
+        if options:
+            params.update(options)
 
         endpoint = "data/storage"
         headers = self._prepare_headers("application/octet-stream")
@@ -321,7 +320,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.33",
+            "User-Agent": f"Spider-Client/0.0.36",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

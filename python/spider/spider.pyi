@@ -85,12 +85,12 @@ class Spider:
     def data_post(
         self, table: str, data: Optional[RequestParamsDict] = None
     ) -> Any: ...
-    def download_storage_files(
+    def create_signed_url(
         self,
         domain: Optional[str] = None,
         page: Optional[int] = None,
         limit: Optional[int] = None,
-        stream: bool = True,
+        stream: Optional[bool] = True,
     ) -> Any: ...
     def data_get(
         self,
