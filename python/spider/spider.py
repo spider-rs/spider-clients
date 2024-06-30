@@ -257,7 +257,6 @@ class Spider:
     def data_get(
         self,
         table: str,
-        params: Optional[RequestParamsDict] = None,
     ):
         """
         Retrieve data from a specific table via GET request.
@@ -265,7 +264,7 @@ class Spider:
         :param params: Optional parameters to modify the query.
         :return: The JSON response from the server.
         """
-        return self.api_get(f"data/{table}", params=params)
+        return self.api_get(f"data/{table}")
 
     def data_delete(
         self,
