@@ -221,6 +221,43 @@ class Spider:
             "pipeline/label", {"url": url, **(params or {})}, stream, content_type
         )
 
+    def download_files(
+        self,
+        domain: Optional[str] = None,
+        page: Optional[int] = None,
+        limit: Optional[int] = None,
+        stream: bool = True,
+    ):
+        """
+        Download storage files from the new endpoint.
+
+        :param domain: Optional domain name to specify the storage path.
+        :param page: Optional page number for pagination.
+        :param limit: Optional page limit for pagination.
+        :param stream: Boolean indicating if the response should be streamed. Defaults to True.
+        :return: The raw response stream if stream is True.
+        """
+        params = {}
+        if domain:
+            params["domain"] = domain
+        if page:
+            params["page"] = page
+        if limit:
+            params["limit"] = limit
+
+        endpoint = "data/storage"
+        headers = self._prepare_headers("application/octet-stream")
+        response = self._get_request(
+            f"https://api.spider.cloud/v1/{endpoint}", headers, stream, params=params
+        )
+        if response.status_code == 200:
+            if stream:
+                return response.raw
+            else:
+                return response.content
+        else:
+            self._handle_error(response, f"download from {endpoint}")
+
     def get_crawl_state(
         self,
         url: str,
@@ -284,7 +321,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.31",
+            "User-Agent": f"Spider-Client/0.0.33",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

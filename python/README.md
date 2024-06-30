@@ -133,6 +133,19 @@ url = 'https://example.com'
 state = app.get_crawl_state(url)
 ```
 
+### Downloading files
+
+You can download the results of the website:
+
+```python
+url = 'https://example.com'
+limit = 100
+page = 0
+stream = True
+
+state = app.download_files(url, page, limit, stream)
+```
+
 ### Checking Available Credits
 
 You can check the remaining credits on your account:

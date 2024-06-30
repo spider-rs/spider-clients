@@ -1,7 +1,6 @@
 from typing import Optional, Dict, Any
 from spider_types import RequestParamsDict
 
-
 class Spider:
     api_key: str
 
@@ -85,6 +84,13 @@ class Spider:
     def get_credits(self) -> Any: ...
     def data_post(
         self, table: str, data: Optional[RequestParamsDict] = None
+    ) -> Any: ...
+    def download_storage_files(
+        self,
+        domain: Optional[str] = None,
+        page: Optional[int] = None,
+        limit: Optional[int] = None,
+        stream: bool = True,
     ) -> Any: ...
     def data_get(
         self,
