@@ -91,6 +91,19 @@ spider
   .catch((error) => console.error(error));
 ```
 
+#### Download storage data
+
+To download stored data like raw HTML or markdown  use the `downloadFiles` method. Provide the website name and an object containing query parameters:
+
+```javascript
+const websiteName = "spider.cloud";
+const queryParams = { limit: 20, page: 0 };
+spider
+  .downloadFiles(websiteName, queryParams)
+  .then((response) => console.log(response))
+  .catch((error) => console.error(error));
+```
+
 ### Available Methods
 
 - **`scrapeUrl(url, params)`**: Scrape data from a specified URL. Optional parameters can be passed to customize the scraping behavior.
@@ -105,6 +118,7 @@ spider
 - **`getCredits()`**: Retrieve account's remaining credits.
 - **`getData(table, params)`**: Retrieve data records from the DB.
 - **`deleteData(table, params)`**: Delete records from the DB.
+- **`downloadFiles(domain, params)`**: Download the records from the DB.
 
 ## Error Handling
 

@@ -12,7 +12,7 @@ describe("Spider JS SDK", () => {
 
     if (process.env.SPIDER_API_KEY) {
       const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
-      const spiderData = await spiderClient.scrapeUrl("https://spider.cloud");
+      const spiderData = await spiderClient.scrapeUrl("https://spider.cloud", {store_data: true});
 
       expect(Array.isArray(spiderData))
     }
@@ -25,6 +25,16 @@ describe("Spider JS SDK", () => {
       const spiderData = await spiderClient.getData("websites", { limit: 1 });
       
       expect(Array.isArray(spiderData))
+    }
+  });
+  test("should download data from the api", async () => {
+    await import("dotenv/config")
+
+    if (process.env.SPIDER_API_KEY) {
+      const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
+      const spiderData = await spiderClient.downloadFiles("spider.cloud", { limit: 1, page: 0  });
+      
+      expect(spiderData)
     }
   });
 });

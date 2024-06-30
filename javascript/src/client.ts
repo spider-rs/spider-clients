@@ -190,6 +190,43 @@ export class Spider {
   }
 
   /**
+   * Downloads files from the specified user's storage.
+   * @param {string} [domain] - The domain for the user's storage. If not provided, downloads all files.
+   * @param {number} [page] - The page number for pagination.
+   * @param {number} [limit] - The number of files to return per page.
+   * @returns {Promise<Response>} The response containing the file stream.
+   */
+  async downloadFiles(
+    domain?: string,
+    options?: {
+      page?: number,
+      limit?: number
+    }
+  ): Promise<Response> {
+    const { page, limit} = options ?? {}
+
+    const params = new URLSearchParams({
+      ...(domain && { domain }),
+      ...(page && { page: page.toString() }),
+      ...(limit && { limit: limit.toString() }),
+    });
+
+    const endpoint = `https://api.spider.cloud/v1/data/storage?${params.toString()}`;
+    const headers = this.prepareHeaders();
+
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers,
+    });
+
+    if (!response.ok) {
+      this.handleError(response, `Failed to download files`);
+    }
+
+    return response;
+  }
+
+  /**
    * Retrieves the number of credits available on the account.
    * @returns {Promise<any>} The current credit balance.
    */
