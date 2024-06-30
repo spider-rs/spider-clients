@@ -1,6 +1,6 @@
 {
   "name": "@spider-cloud/spider-client",
-  "version": "0.0.27",
+  "version": "0.0.30",
   "description": "A Javascript SDK for Spider Cloud services",
   "scripts": {
     "test": "jest",

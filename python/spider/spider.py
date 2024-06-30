@@ -1,12 +1,13 @@
 import os, requests
-from typing import TypedDict, Optional, Dict, List, Literal
-
+from typing import TypedDict, Optional, Dict, List, Literal, Any
 
 class RequestParamsDict(TypedDict, total=False):
     url: Optional[str]
     request: Optional[Literal["http", "chrome", "smart"]]
     limit: Optional[int]
-    return_format: Optional[Literal["raw", "markdown", "html2text", "text", "bytes"]]
+    return_format: Optional[
+        Literal["raw", "markdown", "commonmark", "html2text", "text", "bytes"]
+    ]
     tld: Optional[bool]
     depth: Optional[int]
     cache: Optional[bool]
@@ -28,12 +29,14 @@ class RequestParamsDict(TypedDict, total=False):
     readability: Optional[bool]
     proxy_enabled: Optional[bool]
     respect_robots: Optional[bool]
+    page_insights: Optional[bool]
+    sitemap: Optional[bool]
+    return_embeddings: Optional[bool]
     query_selector: Optional[str]
     full_resources: Optional[bool]
     request_timeout: Optional[int]
     run_in_background: Optional[bool]
     skip_config_checks: Optional[bool]
-
 
 class Spider:
     def __init__(self, api_key: Optional[str] = None):
@@ -316,7 +319,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.27",
+            "User-Agent": f"Spider-Client/0.0.30",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

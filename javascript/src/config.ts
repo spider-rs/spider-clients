@@ -42,7 +42,13 @@ export interface SpiderParams {
   /**
    * The format in which the result should be returned.
    */
-  return_format?: "markdown" | "raw" | "text" | "html2text" | "bytes";
+  return_format?:
+    | "markdown"
+    | "commonmark"
+    | "raw"
+    | "text"
+    | "html2text"
+    | "bytes";
 
   /**
    * Specifies whether to only visit the top-level domain.
@@ -158,6 +164,21 @@ export interface SpiderParams {
    * Specifies whether to load all resources of the crawl target.
    */
   full_resources?: boolean;
+
+  /**
+   * Specifies whether to use the sitemap links.
+   */
+  sitemap?: boolean;
+
+  /**
+   * Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
+   */
+  page_insights?: boolean;
+
+  /**
+   * Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
+   */
+  return_embeddings?: boolean;
 
   /**
    * The timeout for the request, in milliseconds.
