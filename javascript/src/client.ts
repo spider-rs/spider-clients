@@ -186,7 +186,7 @@ export class Spider {
    * @returns {Promise<any>} The crawl state data.
    */
   async getCrawlState(url: string, params: GenericParams = {}) {
-    return this._apiPost("crawl/status", { url: url, ...params });
+    return this._apiPost("data/crawl_state", { url: url, ...params });
   }
 
   /**

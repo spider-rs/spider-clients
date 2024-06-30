@@ -269,7 +269,7 @@ class Spider:
         :return: JSON response of the crawl state and credits used.
         """
         return self.api_post(
-            "crawl/status", {"url": url, **(params or {}, stream, content_type)}
+            "data/crawl_status", {"url": url, **(params or {}, stream, content_type)}
         )
 
     def get_credits(self):
@@ -319,7 +319,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.30",
+            "User-Agent": f"Spider-Client/0.0.31",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):
