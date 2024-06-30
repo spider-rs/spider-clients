@@ -1,6 +1,6 @@
 import os, requests
 from typing import Optional 
-from spider_types import RequestParamsDict
+from spider.spider_types import RequestParamsDict
 
 
 class Spider:
@@ -32,7 +32,7 @@ class Spider:
         """
         headers = self._prepare_headers(content_type)
         response = self._post_request(
-            f"https://api.spider.cloud/v1/{endpoint}", data, headers, stream
+            f"https://api.spider.cloud/{endpoint}", data, headers, stream
         )
         if stream:
             return response
@@ -52,7 +52,7 @@ class Spider:
         """
         headers = self._prepare_headers(content_type)
         response = self._get_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers, stream
+            f"https://api.spider.cloud/{endpoint}", headers, stream
         )
         if response.status_code == 200:
             return response.json()
@@ -243,7 +243,7 @@ class Spider:
 
         :return: JSON response containing the number of credits left.
         """
-        return self.api_get("credits", stream=False)
+        return self.api_get("data/credits", stream=False)
 
     def data_post(self, table: str, data: Optional[RequestParamsDict] = None):
         """
@@ -252,11 +252,12 @@ class Spider:
         :param data: A dictionary representing the data to be posted.
         :return: The JSON response from the server.
         """
-        return self.api_post(f"data/{table}", data)
+        return self.api_post(f"data/{table}", data, stream=False)
 
     def data_get(
         self,
         table: str,
+        params: Optional[RequestParamsDict] = None,
     ):
         """
         Retrieve data from a specific table via GET request.
@@ -264,7 +265,7 @@ class Spider:
         :param params: Optional parameters to modify the query.
         :return: The JSON response from the server.
         """
-        return self.api_get(f"data/{table}")
+        return self.api_get(f"data/{table}", params)
 
     def data_delete(
         self,
@@ -301,6 +302,14 @@ class Spider:
             raise Exception(
                 f"Failed to {action}. Status code: {response.status_code}. Error: {error_message}"
             )
+        elif response.status_code == 201:
+            json_response = response.json()
+            if json_response.get("data") == None:
+                return json_response
+            else:
+                raise Exception(
+                    f"Unexpected error occurred while trying to {action}. Status code: {response.status_code}"
+                )
         else:
             raise Exception(
                 f"Unexpected error occurred while trying to {action}. Status code: {response.status_code}"
