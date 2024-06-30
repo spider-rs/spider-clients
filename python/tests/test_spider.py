@@ -1,4 +1,5 @@
-from spider.spider import Spider, RequestParamsDict
+from spider.spider import Spider
+from spider.spider_types import RequestParamsDict
 
 def main():
     spider = Spider()
@@ -83,7 +84,7 @@ def main():
 
     # Test data_post method
     try:
-        table = "example_table"
+        table = "websites"
         post_data: RequestParamsDict = {"url": url}
         response = spider.data_post(table, post_data)
         print("data_post response:", response)
