@@ -19,7 +19,7 @@ class Spider:
         self,
         endpoint: str,
         data: dict,
-        stream: bool,
+        stream: Optional[bool],
         content_type: str = "application/json",
     ):
         """
@@ -60,22 +60,29 @@ class Spider:
             self._handle_error(response, f"get from {endpoint}")
 
     def api_delete(
-        self, endpoint: str, stream: bool, content_type: str = "application/json"
+        self,
+        endpoint: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: Optional[bool] = False,
+        content_type: Optional[str] = "application/json",
     ):
         """
         Send a DELETE request to the specified endpoint.
 
         :param endpoint: The API endpoint from which to retrieve data.
+        :param params: Optional parameters to include in the DELETE request.
+        :param stream: Boolean indicating if the response should be streamed.
+        :param content_type: The content type of the request.
         :return: The JSON decoded response.
         """
         headers = self._prepare_headers(content_type)
         response = self._delete_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers, stream
-        )
+            f"https://api.spider.cloud/v1/{endpoint}", headers, params, stream
+        )        
         if response.status_code in [200, 202]:
             return response.json()
         else:
-            self._handle_error(response, f"get from {endpoint}")
+            self._handle_error(response, f"delete from {endpoint}")
 
     def scrape_url(
         self,
@@ -261,17 +268,19 @@ class Spider:
         self,
         url: str,
         params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
+        stream: Optional[bool] = False,
+        content_type: Optional[str] = "application/json",
     ):
         """
         Retrieve the website active crawl state.
 
         :return: JSON response of the crawl state and credits used.
         """
-        return self.api_post(
-            "data/crawl_status", {"url": url, **(params or {}, stream, content_type)}
-        )
+        payload = {"url": url, "stream": stream, "content_type": content_type}
+        if params:
+            payload.update(params)
+
+        return self.api_post("data/crawl_state", payload, stream)
 
     def get_credits(self):
         """
@@ -320,7 +329,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.37",
+            "User-Agent": f"Spider-Client/0.0.38",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):
@@ -329,8 +338,8 @@ class Spider:
     def _get_request(self, url: str, headers, stream=False):
         return requests.get(url, headers=headers, stream=stream)
 
-    def _delete_request(self, url: str, headers, stream=False):
-        return requests.delete(url, headers=headers, stream=stream)
+    def _delete_request(self, url: str, headers, params=None, stream=False):
+        return requests.delete(url, headers=headers, params=params, stream=stream)
 
     def _handle_error(self, response, action):
         if response.status_code in [402, 409, 500]:

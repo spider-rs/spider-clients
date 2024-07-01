@@ -1,109 +1,81 @@
+import pytest
 from spider.spider import Spider
 from spider.spider_types import RequestParamsDict
+from dotenv import load_dotenv
 
-def main():
-    spider = Spider()
+load_dotenv()
 
-    # Test scrape_url method
-    url = "http://example.com"
-    params: RequestParamsDict = {
+@pytest.fixture
+def spider():
+    return Spider()
+
+@pytest.fixture
+def url():
+    return "http://example.com"
+
+@pytest.fixture
+def params():
+    return {
         "limit": 1,
-        "return_format": "html2text",
+        "return_format": "markdown",
         "depth": 2,
         "cache": True,
+        "domain": "example.com"
     }
-    try:
-        response = spider.scrape_url(url, params=params)
-        print("scrape_url response:", response)
-    except Exception as e:
-        print("scrape_url error:", e)
 
-    # Test crawl_url method
-    try:
-        response = spider.crawl_url(url, params=params)
-        print("crawl_url response:", response)
-    except Exception as e:
-        print("crawl_url error:", e)
+def test_scrape_url(spider, url, params):
+    response = spider.scrape_url(url, params=params)
+    assert response is not None
 
-    # Test links method
-    try:
-        response = spider.links(url, params=params)
-        print("links response:", response)
-    except Exception as e:
-        print("links error:", e)
+def test_crawl_url(spider, url, params):
+    response = spider.crawl_url(url, params=params)
+    assert response is not None
 
-    # Test screenshot method
-    try:
-        response = spider.screenshot(url, params=params)
-        print("screenshot response:", response)
-    except Exception as e:
-        print("screenshot error:", e)
+def test_links(spider, url, params):
+    response = spider.links(url, params=params)
+    assert response is not None
 
-    # Test search method
-    try:
-        response = spider.search("example search query", params=params)
-        print("search response:", response)
-    except Exception as e:
-        print("search error:", e)
+def test_screenshot(spider, url, params):
+    response = spider.screenshot(url, params=params)
+    assert response is not None
 
-    # Test transform method
-    try:
-        transform_data = [{"html": "<html><body>Example</body></html>", "url": url}]
-        response = spider.transform(transform_data, params=params)
-        print("transform response:", response)
-    except Exception as e:
-        print("transform error:", e)
+def test_search(spider, params):
+    response = spider.search("example search query", params=params)
+    assert response is not None
 
-    # Test extract_contacts method
-    try:
-        response = spider.extract_contacts(url, params=params)
-        print("extract_contacts response:", response)
-    except Exception as e:
-        print("extract_contacts error:", e)
+def test_transform(spider, url, params):
+    transform_data = [{"html": "<html><body>Example</body></html>", "url": url}]
+    response = spider.transform(transform_data, params=params)
+    assert response is not None
 
-    # Test label method
-    try:
-        response = spider.label(url, params=params)
-        print("label response:", response)
-    except Exception as e:
-        print("label error:", e)
+def test_extract_contacts(spider, url, params):
+    response = spider.extract_contacts(url, params=params)
+    assert response is not None
 
-    # Test get_crawl_state method
-    try:
-        response = spider.get_crawl_state(url, params=params)
-        print("get_crawl_state response:", response)
-    except Exception as e:
-        print("get_crawl_state error:", e)
+def test_label(spider, url, params):
+    response = spider.label(url, params=params)
+    assert response is not None
 
-    # Test get_credits method
-    try:
-        response = spider.get_credits()
-        print("get_credits response:", response)
-    except Exception as e:
-        print("get_credits error:", e)
+def test_get_crawl_state(spider, url, params):
+    response = spider.get_crawl_state(url, params=params)
+    assert response is not None
 
-    # Test data_post method
-    try:
-        table = "websites"
-        post_data: RequestParamsDict = {"url": url}
-        response = spider.data_post(table, post_data)
-        print("data_post response:", response)
-    except Exception as e:
-        print("data_post error:", e)
+def test_get_credits(spider):
+    response = spider.get_credits()
+    assert response is not None
 
-    # Test data_get method
-    try:
-        response = spider.data_get(table, params=params)
-        print("data_get response:", response)
-    except Exception as e:
-        print("data_get error:", e)
+def test_data_post(spider, url):
+    table = "websites"
+    post_data: RequestParamsDict = {"url": url}
+    response = spider.data_post(table, post_data)
+    assert response is not None
 
-    # Test data_delete method
-    try:
-        response = spider.data_delete(table, params=params)
-        print("data_delete response:", response)
-    except Exception as e:
-        print("data_delete error:", e)
+def test_data_get(spider, url, params):
+    table = "websites"
+    response = spider.data_get(table, params=params)
+    assert response is not None
 
-if __name__ == "__main__":
-    main()
+# def test_data_delete(spider, url, params):
+#     table = "websites"
+#     response = spider.data_delete(table, params=params)
+#     assert response is not None
