@@ -20,12 +20,16 @@ Integrate Spider effortlessly into your Javascript projects. Visit our [Javascri
 - **HTTP Proxies Support:** Navigate through the web anonymously and bypass content restrictions.
 - **Cron Jobs:** Schedule your crawling tasks to run automatically, saving time and resources.
 - **Smart Mode:** Automate crawling tasks with AI-driven strategies for smarter data collection.
-- **Blacklisting and Budgeting Depth:** Fine-tune your crawls to focus on relevant data and manage resource utilization.
+- **Blacklisting, Whitelisting, and Budgeting Depth:** Fine-tune your crawls to focus on relevant data and manage resource utilization.
 - **Dynamic AI Prompt Scripting Headless:** Leverage AI to script dynamic interactions with web pages, simulating real user behavior.
 
 ### Getting Started
 
 Dive into the world of high-speed web crawling with Spider. Whether you're looking to deploy Spider locally or utilize our hosted services, we've got you covered. Start by exploring our client libraries above, or visit the main [Spider repository](https://github.com/spider-rs/spider) for comprehensive documentation, installation guides, and more.
+
+#### Supabase
+
+Both clients allow you to optionally install [Supabase](https://supabase.com/docs/reference) and use the client underneath to utilize custom queries and more. You can log in and perform all actions on your account with the client. Some features may be limited or rate-limited.
 
 ### Support & Contribution
 

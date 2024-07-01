@@ -122,7 +122,8 @@ spider
 
 ## Supabase
 
-You can use superbase to directly connect to instances and write your own logic. You first need to install `@supabase/supabase-js` since this package does not install the dep to keep the bundle small and lazy imports the client.
+You can use [Supabase](https://supabase.com/docs/reference/javascript) to directly connect to instances and write your own logic. First, you need to install `@supabase/supabase-js` since this package does not include the dependency by default. This keeps the bundle size small and allows for lazy imports of the client.
+
 
 ```ts
 const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });

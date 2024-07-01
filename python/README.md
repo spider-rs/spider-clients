@@ -225,6 +225,21 @@ crawler_params = {
 links = app.crawl(url, crawler_params, True, "application/jsonl")
 ```
 
+## Supabase
+
+You can use [Supabase](https://supabase.com/docs/reference/python) to directly connect to instances and write your own logic. First, you need to run `pip install supabase` since this package does not include the dependency by default. This keeps the bundle size small and allows for lazy imports of the client.
+
+```python
+    spider.init_supabase()
+
+    auth_response = spider.supabase.auth.sign_in_with_password(
+        {
+            "email": os.getenv("SPIDER_EMAIL", ""),
+            "password": os.getenv("SPIDER_PASSWORD", ""),
+        }
+    )
+```
+
 ## Error Handling
 
 The SDK handles errors returned by the Spider Cloud API and raises appropriate exceptions. If an error occurs during a request, an exception will be raised with a descriptive error message.

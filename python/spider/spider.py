@@ -1,6 +1,7 @@
 import os, requests
 from typing import Optional, Dict
 from spider.spider_types import RequestParamsDict
+from spider.supabase_client import Supabase
 
 
 class Spider:
@@ -14,6 +15,30 @@ class Spider:
         self.api_key = api_key or os.getenv("SPIDER_API_KEY")
         if self.api_key is None:
             raise ValueError("No API key provided")
+
+    def init_supabase(self):
+        """
+        Initialize the Supabase client if it is not already initialized.
+
+        This method is optional and only needs to be called if you plan to use the Supabase client.
+
+        :raises ImportError: If the 'supabase' package is not installed.
+        :raises Exception: If there is an issue fetching the anon key or initializing the client.
+        """
+        Supabase.init()
+
+    @property
+    def supabase(self):
+        """
+        Get the Supabase client instance.
+
+        This property is optional and only needs to be accessed if you plan to use the Supabase client.
+        Ensure that the Supabase client has been initialized by calling 'init_supabase()' before accessing this property.
+
+        :return: The initialized Supabase client instance.
+        :raises Exception: If the Supabase client has not been initialized.
+        """
+        return Supabase.get_client()
 
     def api_post(
         self,
@@ -78,7 +103,7 @@ class Spider:
         headers = self._prepare_headers(content_type)
         response = self._delete_request(
             f"https://api.spider.cloud/v1/{endpoint}", headers, params, stream
-        )        
+        )
         if response.status_code in [200, 202]:
             return response.json()
         else:
@@ -329,7 +354,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.38",
+            "User-Agent": f"Spider-Client/0.0.39",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):
