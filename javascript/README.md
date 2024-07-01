@@ -93,7 +93,7 @@ spider
 
 #### Download storage data
 
-To download stored data like raw HTML or markdown  use the `createSignedUrl` method. Provide the website name and an object containing query parameters:
+To download stored data like raw HTML or markdown use the `createSignedUrl` method. Provide the website name and an object containing query parameters:
 
 ```javascript
 const websiteName = "spider.cloud";
@@ -120,6 +120,24 @@ spider
 - **`deleteData(table, params)`**: Delete records from the DB.
 - **`createSignedUrl(domain, params)`**: Download the records from the DB.
 
+## Supabase
+
+You can use superbase to directly connect to instances and write your own logic. You first need to install `@supabase/supabase-js` since this package does not install the dep to keep the bundle small and lazy imports the client.
+
+```ts
+const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
+
+// first init the supabase client to get the anon_key from the server.
+await spiderClient.init_supabase();
+
+const auth = await spiderClient.supabase?.auth.signInWithPassword({
+  email: process.env.SPIDER_EMAIL || "",
+  password: process.env.SPIDER_PASSWORD || "",
+});
+
+// now you can do anything with spiderClient.supabase
+```
+
 ## Error Handling
 
 The SDK provides robust error handling and will throw exceptions when it encounters critical issues. Always use `.catch()` on promises to handle these errors gracefully.
@@ -131,4 +149,7 @@ Contributions are always welcome! Feel free to open an issue or submit a pull re
 ## License
 
 The Spider Cloud JavaScript SDK is open-source and released under the [MIT License](https://opensource.org/licenses/MIT).
+
+```
+
 ```

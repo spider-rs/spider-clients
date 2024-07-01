@@ -1,5 +1,6 @@
 import { SpiderParams } from "./config";
 import { version } from "../package.json";
+import { Supabase } from "./supabase";
 
 /**
  * Generic params for core request.
@@ -26,9 +27,24 @@ export class Spider {
    */
   constructor(props?: SpiderConfig) {
     this.apiKey = props?.apiKey || process?.env?.SPIDER_API_KEY;
+
     if (!this.apiKey) {
       throw new Error("No API key provided");
     }
+  }
+
+  /**
+   * Init a supabase client.
+   */
+  async init_supabase() {
+    return await Supabase.init();
+  }
+
+  /**
+   *  The supabase client to manage data.
+   */
+  get supabase() {
+    return Supabase.client;
   }
 
   /**
@@ -200,13 +216,13 @@ export class Spider {
   async createSignedUrl(
     domain?: string,
     options?: {
-      page?: number,
-      limit?: number,
-      expiresIn?: number
+      page?: number;
+      limit?: number;
+      expiresIn?: number;
     },
     raw?: boolean
   ): Promise<Response> {
-    const { page, limit, expiresIn } = options ?? {}
+    const { page, limit, expiresIn } = options ?? {};
 
     const params = new URLSearchParams({
       ...(domain && { domain }),
