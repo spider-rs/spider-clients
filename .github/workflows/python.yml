@@ -37,3 +37,4 @@ jobs:
           SPIDER_API_KEY: ${{ secrets.SPIDER_API_KEY }}
           SPIDER_EMAIL: ${{ secrets.SPIDER_EMAIL }}
           SPIDER_PASSWORD: ${{ secrets.SPIDER_PASSWORD }}
+          SUPABASE_AUTO_REFRESH_TOKEN: "false"
