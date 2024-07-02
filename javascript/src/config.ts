@@ -21,6 +21,23 @@ export interface Budget {
 }
 
 /**
+ * The chunking algorithm to use.
+ */
+export type ChunkingAlgType =
+  | "ByWords"
+  | "ByLines"
+  | "ByCharacterLength"
+  | "BySentence";
+
+/**
+ * The chunking algorithm with the value to chunk by.
+ */
+export interface ChunkingAlg {
+  type: ChunkingAlgType;
+  value: number;
+}
+
+/**
  * Represents the options available for making a spider request.
  */
 export interface SpiderParams {
@@ -194,4 +211,9 @@ export interface SpiderParams {
    * Specifies whether to skip configuration checks.
    */
   skip_config_checks?: boolean;
+
+  /**
+   * The chunking algorithm to use.
+   */
+  chunking_alg?: ChunkingAlg;
 }
