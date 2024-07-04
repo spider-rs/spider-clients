@@ -1,6 +1,6 @@
-import os, requests
+import os, requests, json, logging
 from typing import Optional, Dict
-from spider.spider_types import RequestParamsDict
+from spider.spider_types import RequestParamsDict, JsonCallback
 from spider.supabase_client import Supabase
 
 
@@ -44,7 +44,7 @@ class Spider:
         self,
         endpoint: str,
         data: dict,
-        stream: Optional[bool],
+        stream: bool = False,
         content_type: str = "application/json",
     ):
         """
@@ -130,21 +130,35 @@ class Spider:
     def crawl_url(
         self,
         url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
+        params: Optional[RequestParamsDict],
+        stream: Optional[bool] = False,
+        content_type: Optional[str] = "application/json",
+        callback: Optional[JsonCallback] = None,
     ):
         """
         Start crawling at the specified URL.
 
         :param url: The URL to begin crawling.
         :param params: Optional dictionary with additional parameters to customize the crawl.
-        :param stream: Boolean indicating if the response should be streamed. Defaults to False.
+        :param stream: Optional Boolean indicating if the response should be streamed. Defaults to False.
+        :param content_type: Optional str to determine the content-type header of the request.
+        :param callback: Optional callback to use with streaming. This will only send the data via callback.
+
         :return: JSON response or the raw response stream if streaming enabled.
         """
-        return self.api_post(
+        jsonl = stream and callable(callback)
+
+        if jsonl:
+            content_type = "application/jsonl"
+
+        response = self.api_post(
             "crawl", {"url": url, **(params or {})}, stream, content_type
         )
+
+        if jsonl:
+            return self.stream_reader(response, callback)
+        else:
+            return response
 
     def links(
         self,
@@ -350,11 +364,20 @@ class Spider:
         """
         return self.api_delete(f"data/{table}", params=params)
 
+    def stream_reader(self, response, callback):
+        response.raise_for_status()
+        for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+            try:
+                json_obj = json.loads(chunk.strip())
+                callback(json_obj)
+            except json.JSONDecodeError:
+                logging.warning("Failed to parse chunk: %s", chunk)
+
     def _prepare_headers(self, content_type: str = "application/json"):
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.43",
+            "User-Agent": f"Spider-Client/0.0.48",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

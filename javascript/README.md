@@ -59,6 +59,34 @@ app
   });
 ```
 
+A real world crawl example streaming the response.
+
+```javascript
+import { Spider } from "@spider-cloud/spider-client";
+
+// Initialize the SDK with your API key
+const app = new Spider({ apiKey: "YOUR_API_KEY" });
+
+// The target URL
+const url = "https://spider.cloud";
+
+// Crawl a website
+const crawlParams = {
+  limit: 5,
+  store_data: false,
+  metadata: true,
+  request: "http",
+};
+
+const stream = true;
+
+const streamCallback = (data) => {
+  console.log(data["url"]);
+};
+
+app.crawlUrl(url, crawlParams, stream, streamCallback);
+```
+
 ### Data Operations
 
 The Spider client can interact with specific data tables to create, retrieve, and delete data.
@@ -124,7 +152,6 @@ spider
 
 You can use [Supabase](https://supabase.com/docs/reference/javascript) to directly connect to instances and write your own logic. First, you need to install `@supabase/supabase-js` since this package does not include the dependency by default. This keeps the bundle size small and allows for lazy imports of the client.
 
-
 ```ts
 const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
 
@@ -150,7 +177,3 @@ Contributions are always welcome! Feel free to open an issue or submit a pull re
 ## License
 
 The Spider Cloud JavaScript SDK is open-source and released under the [MIT License](https://opensource.org/licenses/MIT).
-
-```
-
-```

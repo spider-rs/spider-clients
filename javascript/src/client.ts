@@ -1,6 +1,11 @@
-import { SpiderParams } from "./config";
+import {
+  ChunkCallbackFunction,
+  SpiderCoreResponse,
+  SpiderParams,
+} from "./config";
 import { version } from "../package.json";
 import { Supabase } from "./supabase";
+import { streamReader } from "./utils/stream-reader";
 
 /**
  * Generic params for core request.
@@ -57,9 +62,10 @@ export class Spider {
   private async _apiPost(
     endpoint: string,
     data: Record<string, any>,
-    stream = false
+    stream?: boolean,
+    jsonl?: boolean
   ) {
-    const headers = this.prepareHeaders();
+    const headers = jsonl ? this.prepareHeadersJsonL : this.prepareHeaders;
     const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
       method: "POST",
       headers: headers,
@@ -82,7 +88,7 @@ export class Spider {
    * @returns {Promise<any>} The data returned from the endpoint in JSON format.
    */
   private async _apiGet(endpoint: string) {
-    const headers = this.prepareHeaders();
+    const headers = this.prepareHeaders;
     const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
       method: "GET",
       headers: headers,
@@ -101,7 +107,7 @@ export class Spider {
    * @returns {Promise<any>} The data returned from the endpoint in JSON format.
    */
   private async _apiDelete(endpoint: string) {
-    const headers = this.prepareHeaders();
+    const headers = this.prepareHeaders;
     const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
       method: "DELETE",
       headers,
@@ -129,10 +135,28 @@ export class Spider {
    * @param {string} url - The URL to start crawling.
    * @param {GenericParams} [params={}] - Additional parameters for the crawl.
    * @param {boolean} [stream=false] - Whether to receive the response as a stream.
+   * @param {function} [callback=function] - The callback function when streaming per chunk. If this is set with stream you will not get a end response.
    * @returns {Promise<any | Response>} The result of the crawl, either structured data or a Response object if streaming.
    */
-  async crawlUrl(url: string, params: GenericParams = {}, stream = false) {
-    return this._apiPost("crawl", { url: url, ...params }, stream);
+  async crawlUrl(
+    url: string,
+    params: GenericParams = {},
+    stream = false,
+    cb?: ChunkCallbackFunction
+  ): Promise<SpiderCoreResponse[] | void> {
+    const jsonl = stream && cb;
+    const res = await this._apiPost(
+      "crawl",
+      { url: url, ...params },
+      stream,
+      !!jsonl
+    );
+
+    if (jsonl) {
+      return await streamReader(res, cb);
+    }
+
+    return res;
   }
 
   /**
@@ -146,8 +170,8 @@ export class Spider {
   }
 
   /**
-   * Takes a screenshot of the specified URL.
-   * @param {string} url - The URL to screenshot.
+   * Takes a screenshot of the website starting from this URL.
+   * @param {string} url - The URL to start the screenshot.
    * @param {GenericParams} [params={}] - Configuration parameters for the screenshot.
    * @returns {Promise<any>} The screenshot data.
    */
@@ -231,7 +255,7 @@ export class Spider {
       ...(expiresIn && { expiresIn: expiresIn.toString() }),
     });
     const endpoint = `https://api.spider.cloud/v1/data/storage?${params.toString()}`;
-    const headers = this.prepareHeaders();
+    const headers = this.prepareHeaders;
 
     const response = await fetch(endpoint, {
       method: "GET",
@@ -304,11 +328,22 @@ export class Spider {
    * Prepares common headers for each API request.
    * @returns {HeadersInit} A headers object for fetch requests.
    */
-  prepareHeaders() {
+  get prepareHeaders() {
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${this.apiKey}`,
       "User-Agent": `Spider-Client/${version}`,
+    };
+  }
+
+  /**
+   * Prepares common headers for each API request with JSONl content-type suitable for streaming.
+   * @returns {HeadersInit} A headers object for fetch requests.
+   */
+  get prepareHeadersJsonL() {
+    return {
+      ...this.prepareHeaders,
+      "Content-Type": "application/jsonl",
     };
   }
 

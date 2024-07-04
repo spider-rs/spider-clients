@@ -1,9 +1,9 @@
 {
   "name": "@spider-cloud/spider-client",
-  "version": "0.0.43",
+  "version": "0.0.48",
   "description": "A Javascript SDK for Spider Cloud services",
   "scripts": {
-    "test": "jest",
+    "test": "node --import tsx  --test __tests__/*test.ts",
     "build": "tsc",
     "prepublishOnly": "npm test && npm run build"
   },
@@ -23,40 +23,10 @@
   "author": "Jeff Mendez<jeff@a11ywatch.com>",
   "license": "MIT",
   "devDependencies": {
-    "@jest/globals": "^29.7.0",
-    "@types/jest": "^29.5.12",
+    "@supabase/supabase-js": "^2.44.2",
     "@types/node": "20.14.2",
     "dotenv": "^16.4.5",
-    "ts-jest": "^29.1.5",
-    "typescript": "5.4.5",
-    "@supabase/supabase-js": "^2.44.2"
-  },
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx"
-    ],
-    "roots": [
-      "<rootDir>/src",
-      "<rootDir>/__tests__"
-    ],
-    "transform": {
-      "^.+\\\\.tsx?$": "ts-jest"
-    },
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
-    "moduleDirectories": [
-      "node_modules",
-      "src"
-    ],
-    "collectCoverage": true,
-    "coverageDirectory": "coverage",
-    "coverageReporters": [
-      "text",
-      "lcov"
-    ]
+    "tsx": "^4.16.2",
+    "typescript": "5.4.5"
   }
 }

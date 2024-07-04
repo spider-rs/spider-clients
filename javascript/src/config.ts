@@ -217,3 +217,19 @@ export interface SpiderParams {
    */
   chunking_alg?: ChunkingAlg;
 }
+
+// Core actions response type.
+export type SpiderCoreResponse = {
+  // The data of the request like html or transformation markdown etc.
+  data?: string;
+  // A detailed message of a response.
+  message?: string;
+  // If an error occured.
+  error?: string;
+  // The HTTP status code.
+  status?: number;
+  // The website url.
+  url?: string;
+}
+
+export type ChunkCallbackFunction =  (data: SpiderCoreResponse) => void

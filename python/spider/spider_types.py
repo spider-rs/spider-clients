@@ -1,4 +1,4 @@
-from typing import TypedDict, Optional, Dict, List, Literal
+from typing import TypedDict, Optional, Dict, List, Literal, Callable
 
 
 class ChunkingAlgDict(TypedDict):
@@ -112,3 +112,6 @@ class RequestParamsDict(TypedDict, total=False):
 
     # The chunking algorithm to use.
     chunking_alg: Optional[ChunkingAlgDict]
+
+
+JsonCallback = Callable[[dict], None]

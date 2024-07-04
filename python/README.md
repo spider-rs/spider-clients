@@ -60,6 +60,27 @@ crawl_params = {
 crawl_result = app.crawl_url(url, params=crawl_params)
 ```
 
+#### Crawl Streaming
+
+Stream crawl the website in chunks to scale.
+
+```python
+    def handle_json(json_obj: dict) -> None:
+        assert json_obj["url"] is not None
+
+    url = 'https://example.com'
+    crawl_params = {
+        'limit': 200,
+        'store_data': False
+    }
+    response = app.crawl_url(
+        url,
+        params=params,
+        stream=True,
+        callback=handle_json,
+    )
+```
+
 ### Search
 
 Perform a search for websites to crawl or gather search results:

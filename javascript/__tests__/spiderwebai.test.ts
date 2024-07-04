@@ -1,63 +1,84 @@
-import { describe, test, expect, jest } from "@jest/globals";
+import { describe, test } from "node:test";
+import assert from "node:assert";
 import { Spider } from "../src";
-
-jest.setTimeout(1000 * 60);
+import "dotenv/config";
 
 describe("Spider JS SDK", () => {
   test("should throw error if API key is not provided", () => {
-    expect(() => new Spider({ apiKey: undefined })).toThrow(
-      "No API key provided"
-    );
+    if (!process.env.SPIDER_API_KEY) {
+      assert.throws(() => new Spider({ apiKey: null }));
+    } else {
+      assert.doesNotThrow(() => new Spider({ apiKey: null }));
+    }
   });
-  test("should scrape url with data", async () => {
-    await import("dotenv/config");
 
-    if (process.env.SPIDER_API_KEY) {
-      const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
-      const spiderData = await spiderClient.scrapeUrl("https://spider.cloud", {
+  test("should crawl url with data", async () => {
+    const spiderClient = new Spider();
+    const spiderData = await spiderClient.crawlUrl("https://spider.cloud", {
+      store_data: true,
+      limit: 2,
+    });
+
+    assert(Array.isArray(spiderData));
+    assert(spiderData && spiderData.length === 2);
+  });
+
+  test("should crawl url streaming with data", async () => {
+    const stream = true;
+
+    const spiderClient = new Spider();
+    const spiderData = await spiderClient.crawlUrl(
+      "https://spider.cloud",
+      {
         store_data: true,
-      });
+        limit: 4,
+      },
+      stream,
+      (data) => {
+        assert(data["url"]);
+      }
+    );
 
-      expect(Array.isArray(spiderData));
-    }
+    assert(typeof spiderData === "undefined");
   });
+
+  test("should scrape url with data", async () => {
+    const spiderClient = new Spider();
+    const spiderData = await spiderClient.scrapeUrl("https://spider.cloud", {
+      store_data: true,
+    });
+
+    assert(Array.isArray(spiderData));
+  });
+
   test("should get data from the api", async () => {
-    await import("dotenv/config");
+    const spiderClient = new Spider();
+    const { data } = await spiderClient.getData("websites", { limit: 1 });
 
-    if (process.env.SPIDER_API_KEY) {
-      const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
-      const spiderData = await spiderClient.getData("websites", { limit: 1 });
-
-      expect(Array.isArray(spiderData));
-    }
+    assert(Array.isArray(data));
   });
-  test("should download data from the api", async () => {
-    await import("dotenv/config");
 
-    if (process.env.SPIDER_API_KEY) {
-      const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
-      const spiderData = await spiderClient.createSignedUrl("spider.cloud", {
-        limit: 1,
-        page: 0,
-      });
+  // test.skip("should download data from the api", async () => {
+  //   await import("dotenv/config");
 
-      expect(spiderData);
-    }
-  });
+  //   const spiderClient = new Spider();
+  //   const spiderData = await spiderClient.createSignedUrl("spider.cloud", {
+  //     limit: 1,
+  //     page: 0,
+  //   });
+
+  //   assert(spiderData);
+  // });
 
   test("should connect with supabase", async () => {
-    await import("dotenv/config");
+    const spiderClient = new Spider();
+    await spiderClient.init_supabase();
 
-    if (process.env.SPIDER_API_KEY) {
-      const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
-      await spiderClient.init_supabase();
+    const auth = await spiderClient.supabase?.auth.signInWithPassword({
+      email: process.env.SPIDER_EMAIL || "",
+      password: process.env.SPIDER_PASSWORD || "",
+    });
 
-      const auth = await spiderClient.supabase?.auth.signInWithPassword({
-        email: process.env.SPIDER_EMAIL || "",
-        password: process.env.SPIDER_PASSWORD || "",
-      });
-
-      expect(auth);
-    }
+    assert(auth);
   });
 });

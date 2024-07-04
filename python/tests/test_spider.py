@@ -37,6 +37,20 @@ def test_crawl_url(spider, url, params):
     assert response is not None
 
 
+def test_crawl_url_streaming(spider, url, params):
+    def handle_json(json_obj: dict) -> None:
+        assert json_obj["url"] is not None
+
+    response = spider.crawl_url(
+        url,
+        params=params,
+        stream=True,
+        content_type="application/jsonl",
+        callback=handle_json,
+    )
+    assert response is None
+
+
 def test_links(spider, url, params):
     response = spider.links(url, params=params)
     assert response is not None
