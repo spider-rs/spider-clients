@@ -1,0 +1,57 @@
+name: Rust CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        rust-version: [stable, beta, nightly]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust ${{ matrix.rust-version }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust-version }}
+          profile: minimal
+          override: true
+
+      - name: Cache cargo registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/registry
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      - name: Cache cargo index
+        uses: actions/cache@v3
+        with:
+          path: ~/.cargo/git
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-git-
+
+      - name: Check toolchain
+        run: rustc --version
+
+      - name: Build
+        run: cargo build --verbose
+        working-directory: ./rust
+
+      - name: Run tests
+        run: cargo test --verbose --lib
+        working-directory: ./rust
+        env:
+            SPIDER_API_KEY: ${{ secrets.SPIDER_API_KEY }}
+            SPIDER_EMAIL: ${{ secrets.SPIDER_EMAIL }}
+            SPIDER_PASSWORD: ${{ secrets.SPIDER_PASSWORD }}
+            SUPABASE_AUTO_REFRESH_TOKEN: "false"

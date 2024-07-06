@@ -10,6 +10,10 @@ Leverage the power of Spider in your Python applications. Navigate to our [Pytho
 
 Integrate Spider effortlessly into your Javascript projects. Visit our [Javascript client library directory](./javascript/) to explore how you can utilize Spider in Node.js or browser environments. Enhance your web scraping capabilities, improve data collection strategies, and unlock new possibilities with our cutting-edge technology.
 
+## Rust (WIP)
+
+Integrate Spider effortlessly into your Rust projects. Visit our [Rust client library directory](./rust/) to explore how you can utilize Spider in your applications. Enhance your web scraping capabilities, improve data collection strategies, and unlock new possibilities with our cutting-edge technology.
+
 ---
 
 ### Features

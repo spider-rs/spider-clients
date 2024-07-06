@@ -1,0 +1,23 @@
+[package]
+name = "spider-client"
+version = "0.1.1"
+edition = "2021"
+authors = [ "j-mendez <jeff@a11ywatch.com>"]
+description = "Spider Cloud client"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/spider-rs/spider-clients"
+keywords = ["crawler", "web-crawler", "spider", "web-indexer", "site-map-generator"]
+categories = ["web-programming"]
+include = ["src/*", "../../LICENSE", "README.md"]
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json", "stream"] }
+tokio = { version = "1", features = ["full"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1" }
+tokio-stream = "0.1.15"
+
+[dev-dependencies]
+dotenv = "0.15.0"
+lazy_static = "1.5.0"
