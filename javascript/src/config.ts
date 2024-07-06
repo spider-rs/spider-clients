@@ -88,6 +88,16 @@ export interface SpiderParams {
   budget?: Budget;
 
   /**
+   * The blacklist routes to ignore. This can be a Regex string pattern.
+   */
+  black_list?: string[];
+
+  /**
+   * The whitelist routes to only crawl. This can be a Regex string pattern and used with black_listing.
+   */
+  white_list?: string[];
+
+  /**
    * The locale to be used during the crawl.
    */
   locale?: string;
@@ -230,6 +240,6 @@ export type SpiderCoreResponse = {
   status?: number;
   // The website url.
   url?: string;
-}
+};
 
-export type ChunkCallbackFunction =  (data: SpiderCoreResponse) => void
+export type ChunkCallbackFunction = (data: SpiderCoreResponse) => void;
