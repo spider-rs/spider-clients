@@ -230,8 +230,8 @@ export interface SpiderParams {
 
 // Core actions response type.
 export type SpiderCoreResponse = {
-  // The data of the request like html or transformation markdown etc.
-  data?: string;
+  // The content of the request like html or transformation markdown etc.
+  content?: string;
   // A detailed message of a response.
   message?: string;
   // If an error occured.
