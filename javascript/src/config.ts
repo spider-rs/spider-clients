@@ -90,12 +90,12 @@ export interface SpiderParams {
   /**
    * The blacklist routes to ignore. This can be a Regex string pattern.
    */
-  black_list?: string[];
+  blacklist?: string[];
 
   /**
    * The whitelist routes to only crawl. This can be a Regex string pattern and used with black_listing.
    */
-  white_list?: string[];
+  whitelist?: string[];
 
   /**
    * The locale to be used during the crawl.
