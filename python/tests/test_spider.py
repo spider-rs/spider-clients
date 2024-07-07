@@ -232,7 +232,7 @@ def test_data_get(mock_get, spider, url, params):
     mock_get.assert_called_once()
 
 @patch('requests.delete')
-def test_data_delete(mock_delete, spider, url, params):
+def test_data_delete(mock_delete, spider, params):
     mock_response = MagicMock()
     mock_response.status_code = 204
     mock_delete.return_value = mock_response
