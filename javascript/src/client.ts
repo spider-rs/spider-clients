@@ -10,7 +10,7 @@ import { streamReader } from "./utils/stream-reader";
 /**
  * Generic params for core request.
  */
-type GenericParams = Omit<SpiderParams, "url">;
+export type GenericParams = Omit<SpiderParams, "url">;
 
 /**
  * Configuration interface for Spider.
@@ -114,7 +114,7 @@ export class Spider {
     });
 
     if (response.ok) {
-      return response.json();
+      return response;
     } else {
       this.handleError(response, `get from ${endpoint}`);
     }
