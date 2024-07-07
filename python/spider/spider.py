@@ -102,7 +102,7 @@ class Spider:
         """
         headers = self._prepare_headers(content_type)
         response = self._delete_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers, params, stream
+            f"https://api.spider.cloud/v1/{endpoint}", headers=headers, json=params, stream=stream
         )
         if response.status_code in [200, 202]:
             return response.json()
@@ -383,11 +383,11 @@ class Spider:
     def _post_request(self, url: str, data, headers, stream=False):
         return requests.post(url, headers=headers, json=data, stream=stream)
 
-    def _get_request(self, url: str, headers, stream=False):
-        return requests.get(url, headers=headers, stream=stream)
+    def _get_request(self, url: str, headers, stream=False, params=None):
+        return requests.get(url, headers=headers, stream=stream, params=params)
 
-    def _delete_request(self, url: str, headers, params=None, stream=False):
-        return requests.delete(url, headers=headers, params=params, stream=stream)
+    def _delete_request(self, url: str, headers, json=None, stream=False):
+        return requests.delete(url, headers=headers, json=json, stream=stream)
 
     def _handle_error(self, response, action):
         if response.status_code in [402, 409, 500]:
@@ -403,7 +403,9 @@ class Spider:
                 raise Exception(
                     f"Unexpected error occurred while trying to {action}. Status code: {response.status_code}"
                 )
+        elif response.status_code == 204:
+            return response
         else:
             raise Exception(
-                f"Unexpected error occurred while trying to {action}. Status code: {response.status_code}"
+                f"Unexpected error occurred while trying to {action}. Status code: {response.status_code}. Here is the response: {response.text}"
             )
