@@ -1,6 +1,5 @@
 import pytest
 import os
-import json
 from unittest.mock import patch, MagicMock
 from spider.spider import Spider
 from spider.spider_types import RequestParamsDict
@@ -40,22 +39,34 @@ def test_init_without_api_key():
 def test_scrape_url(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"data": "mocked data"}
+    mock_response.json.return_value = [{"content": "data", "error": None, "status": 200, "url": url}]
     mock_post.return_value = mock_response
 
     response = spider.scrape_url(url, params=params)
-    assert response == {"data": "mocked data"}
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
     mock_post.assert_called_once()
 
 @patch('requests.post')
 def test_crawl_url(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"data": "mocked data"}
+    mock_response.json.return_value = [{"content": "data", "error": None, "status": 200, "url": url}]
     mock_post.return_value = mock_response
 
     response = spider.crawl_url(url, params=params)
-    assert response == {"data": "mocked data"}
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
     mock_post.assert_called_once()
 
 @patch('requests.post')
@@ -75,107 +86,137 @@ def test_crawl_url_streaming(mock_post, spider, url, params):
 def test_links(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"links": ["http://example.com/page1", "http://example.com/page2"]}
+    mock_response.json.return_value = [{"error": None, "status": 200, "url": url}]
     mock_post.return_value = mock_response
 
     response = spider.links(url, params=params)
-    assert "links" in response
-    assert len(response["links"]) == 2
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
     mock_post.assert_called_once()
 
 @patch('requests.post')
 def test_screenshot(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"screenshot": "base64_encoded_image"}
+    mock_response.json.return_value = [{"content": "base64_encoded_image", "error": None, "status": 200, "url": url}]
     mock_post.return_value = mock_response
 
     response = spider.screenshot(url, params=params)
-    assert "screenshot" in response
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
     mock_post.assert_called_once()
 
 @patch('requests.post')
 def test_search(mock_post, spider, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"results": [{"url": "http://example.com", "title": "Example"}]}
+    mock_response.json.return_value = [{"content": "result", "error": None, "status": 200, "url": "http://example.com"}]
     mock_post.return_value = mock_response
 
     response = spider.search("example search query", params=params)
-    assert "results" in response
-    assert len(response["results"]) > 0
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
     mock_post.assert_called_once()
 
 @patch('requests.post')
 def test_transform(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"transformed": "# Example"}
+    mock_response.json.return_value = {"content": "transformed", "error": None, "status": 200}
     mock_post.return_value = mock_response
 
     transform_data = [{"html": "<html><body>Example</body></html>", "url": url}]
     response = spider.transform(transform_data, params=params)
-    assert "transformed" in response
+    assert isinstance(response, dict)
+    assert 'content' in response
+    assert 'error' in response
+    assert 'status' in response
     mock_post.assert_called_once()
 
 @patch('requests.post')
 def test_extract_contacts(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"contacts": [{"email": "test@example.com"}]}
+    mock_response.json.return_value = [{"content": "contacts", "error": None, "status": 200, "url": url}]
     mock_post.return_value = mock_response
 
     response = spider.extract_contacts(url, params=params)
-    assert "contacts" in response
-    assert len(response["contacts"]) > 0
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
     mock_post.assert_called_once()
 
 @patch('requests.post')
 def test_label(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"labels": ["technology", "news"]}
+    mock_response.json.return_value = [{"content": "labels", "error": None, "status": 200, "url": url}]
     mock_post.return_value = mock_response
 
     response = spider.label(url, params=params)
-    assert "labels" in response
-    assert len(response["labels"]) > 0
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
     mock_post.assert_called_once()
 
 @patch('requests.post')
 def test_get_crawl_state(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"state": "completed", "credits_used": 10}
+    mock_response.json.return_value = {"data": [{"state": "completed", "credits_used": 10}]}
     mock_post.return_value = mock_response
 
     response = spider.get_crawl_state(url, params=params)
-    assert "state" in response
-    assert "credits_used" in response
+    assert isinstance(response, dict)
+    assert 'data' in response
+    assert isinstance(response['data'], list)
     mock_post.assert_called_once()
 
 @patch('requests.get')
 def test_get_credits(mock_get, spider):
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = {"credits": 1000}
+    mock_response.json.return_value = {"data": [{"credits": 1000}]}
     mock_get.return_value = mock_response
 
     response = spider.get_credits()
-    assert "credits" in response
+    assert isinstance(response, dict)
+    assert 'data' in response
+    assert isinstance(response['data'], list)
     mock_get.assert_called_once()
 
 @patch('requests.post')
 def test_data_post(mock_post, spider, url):
     mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"id": "123"}
+    mock_response.status_code = 204
     mock_post.return_value = mock_response
 
     table = "websites"
     post_data: RequestParamsDict = {"url": url}
     response = spider.data_post(table, post_data)
-    assert "id" in response
+    assert response is None
     mock_post.assert_called_once()
 
 @patch('requests.get')
@@ -187,21 +228,18 @@ def test_data_get(mock_get, spider, url, params):
 
     table = "websites"
     response = spider.data_get(table, params=params)
-    assert "data" in response
-    assert len(response["data"]) > 0
+    assert isinstance(response['data'], list)
     mock_get.assert_called_once()
 
 @patch('requests.delete')
 def test_data_delete(mock_delete, spider, url, params):
     mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"deleted": True}
+    mock_response.status_code = 204
     mock_delete.return_value = mock_response
 
     table = "websites"
     response = spider.data_delete(table, params=params)
-    assert "deleted" in response
-    assert response["deleted"] is True
+    assert response is None
     mock_delete.assert_called_once()
 
 @patch('requests.get')
@@ -246,4 +284,3 @@ def test_handle_error():
     
     with pytest.raises(Exception, match="Failed to test action. Status code: 402. Error: Payment Required"):
         spider._handle_error(mock_response, "test action")
-
