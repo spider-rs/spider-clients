@@ -537,7 +537,6 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -571,7 +570,6 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -606,7 +604,6 @@ impl Spider {
         &self,
         q: &str,
         params: Option<SearchRequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let body = match params {
@@ -642,7 +639,6 @@ impl Spider {
         &self,
         data: Vec<HashMap<&str, serde_json::Value>>,
         params: Option<RequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut payload = HashMap::new();
@@ -679,7 +675,6 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -717,7 +712,6 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -796,7 +790,6 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut payload = HashMap::new();
