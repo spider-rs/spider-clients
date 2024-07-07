@@ -36,10 +36,10 @@ class RequestParamsDict(TypedDict, total=False):
     budget: Optional[Dict[str, int]]
 
     # The blacklist routes to ignore. This can be a Regex string pattern.
-    black_list: Optional[List[str]]
+    blacklist: Optional[List[str]]
 
     # The whitelist routes to only crawl. This can be a Regex string pattern and used with black_listing.
-    white_list: Optional[List[str]]
+    whitelist: Optional[List[str]]
 
     # The locale to be used during the crawl.
     locale: Optional[str]

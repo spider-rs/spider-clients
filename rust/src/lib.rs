@@ -26,7 +26,7 @@
 //! ```rust
 //! use spider_client::{Spider, RequestType, RequestParams};
 //! use tokio;
-//! 
+//!
 //!  # #[ignore]
 //! #[tokio::main]
 //! async fn main() {
@@ -68,7 +68,7 @@ use std::collections::HashMap;
 use tokio_stream::StreamExt;
 
 /// Structure representing the Chunking algorithm dictionary.
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChunkingAlgDict {
     /// The chunking algorithm to use, defined as a specific type.
     r#type: ChunkingType,
@@ -77,7 +77,7 @@ pub struct ChunkingAlgDict {
 }
 
 /// Enum representing different types of Chunking.
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ChunkingType {
     #[default]
@@ -91,17 +91,40 @@ pub enum ChunkingType {
     BySentence,
 }
 
+#[derive(Default, Debug, Deserialize, Serialize, Clone)]
+/// View port handling for chrome.
+pub struct Viewport {
+    /// Device screen Width
+    pub width: u32,
+    /// Device screen size
+    pub height: u32,
+    /// Device scale factor
+    pub device_scale_factor: Option<f64>,
+    /// Emulating Mobile?
+    pub emulating_mobile: bool,
+    /// Use landscape mode instead of portrait.
+    pub is_landscape: bool,
+    /// Touch screen device?
+    pub has_touch: bool,
+}
+
+/// The API url.
+const API_URL: &'static str = "https://api.spider.cloud";
+
 /// Structure representing request parameters.
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct RequestParams {
+    #[serde(default)]
     /// The URL to be crawled.
-    pub url: Option<String>,
+    pub url: String,
+    #[serde(default)]
     /// The type of request to be made.
-    pub request: Option<RequestType>,
+    pub request: RequestType,
     /// The maximum number of pages the crawler should visit.
     pub limit: Option<u32>,
+    #[serde(default)]
     /// The format in which the result should be returned.
-    pub return_format: Option<ReturnFormat>,
+    pub return_format: ReturnFormat,
     /// Specifies whether to only visit the top-level domain.
     pub tld: Option<bool>,
     /// The depth of the crawl.
@@ -111,9 +134,9 @@ pub struct RequestParams {
     /// The budget for various resources.
     pub budget: Option<HashMap<String, u32>>,
     /// The blacklist routes to ignore. This can be a Regex string pattern.
-    pub black_list: Option<Vec<String>>,
+    pub blacklist: Option<Vec<String>>,
     /// The whitelist routes to only crawl. This can be a Regex string pattern and used with black_listing.
-    pub white_list: Option<Vec<String>>,
+    pub whitelist: Option<Vec<String>>,
     /// The locale to be used during the crawl.
     pub locale: Option<String>,
     /// The cookies to be set for the request, formatted as a single string.
@@ -122,104 +145,160 @@ pub struct RequestParams {
     pub stealth: Option<bool>,
     /// The headers to be used for the request.
     pub headers: Option<HashMap<String, String>>,
+    #[serde(default)]
     /// Specifies whether anti-bot measures should be used.
-    pub anti_bot: Option<bool>,
+    pub anti_bot: bool,
+    #[serde(default)]
     /// Specifies whether to include metadata in the response.
-    pub metadata: Option<bool>,
+    pub metadata: bool,
     /// The dimensions of the viewport.
-    pub viewport: Option<HashMap<String, i32>>,
+    pub viewport: Option<Viewport>,
+    #[serde(default)]
     /// The encoding to be used for the request.
     pub encoding: Option<String>,
+    #[serde(default)]
     /// Specifies whether to include subdomains in the crawl.
     pub subdomains: Option<bool>,
+    #[serde(default)]
     /// The user agent string to be used for the request.
     pub user_agent: Option<String>,
+    #[serde(default)]
     /// Specifies whether the response data should be stored.
-    pub store_data: Option<bool>,
+    pub store_data: bool,
     /// Configuration settings for GPT (general purpose texture mappings).
-    pub gpt_config: Option<Vec<String>>,
+    pub gpt_config: Option<HashMap<String, String>>,
+    #[serde(default)]
     /// Specifies whether to use fingerprinting protection.
-    pub fingerprint: Option<bool>,
+    pub fingerprint: bool,
+    #[serde(default)]
     /// Specifies whether to perform the request without using storage.
-    pub storageless: Option<bool>,
+    pub storageless: bool,
+    #[serde(default)]
     /// Specifies whether readability optimizations should be applied.
-    pub readability: Option<bool>,
+    pub readability: bool,
+    #[serde(default)]
     /// Specifies whether to use a proxy for the request.
-    pub proxy_enabled: Option<bool>,
+    pub proxy_enabled: bool,
+    #[serde(default)]
     /// Specifies whether to respect the site's robots.txt file.
-    pub respect_robots: Option<bool>,
+    pub respect_robots: bool,
+    #[serde(default)]
     /// CSS selector to be used to filter the content.
-    pub query_selector: Option<String>,
+    pub query_selector: String,
+    #[serde(default)]
     /// Specifies whether to load all resources of the crawl target.
-    pub full_resources: Option<bool>,
+    pub full_resources: bool,
+    #[serde(default)]
+    /// The websites limit if a list is sent from text or urls comma split. This helps automatic configuration of the system.
+    pub website_limit:u32,
+    /// The text string to extract data from.
+    pub text: Option<String>,
+    #[serde(default)]
     /// Specifies whether to use the sitemap links.
-    pub sitemap: Option<bool>,
+    pub sitemap: bool,
+    #[serde(default)]
     /// Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
-    pub page_insights: Option<bool>,
+    pub page_insights: bool,
+    #[serde(default)]
     /// Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
-    pub return_embeddings: Option<bool>,
+    pub return_embeddings: bool,
     /// The timeout for the request, in milliseconds.
-    pub request_timeout: Option<u32>,
+    pub request_timeout: Option<u8>,
+    #[serde(default)]
     /// Specifies whether to run the request in the background.
-    pub run_in_background: Option<bool>,
+    pub run_in_background: bool,
+    #[serde(default)]
     /// Specifies whether to skip configuration checks.
-    pub skip_config_checks: Option<bool>,
+    pub skip_config_checks: bool,
     /// The chunking algorithm to use.
     pub chunking_alg: Option<ChunkingAlgDict>,
+    #[serde(default)]
+    /// Clean the markdown or text for AI.
+    pub clean: bool,
+    #[serde(default)]
+    /// Clean the markdown or text for AI removing footers, navigation, and more.
+    pub clean_full: bool,
 }
 
 /// The structure representing request parameters for a search request.
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct SearchRequestParams {
     /// The base request parameters.
-    #[serde(flatten, skip)]
+    #[serde(default, flatten)]
     pub base: RequestParams,
-    /// The search query string.
+    // The search request.
     pub search: String,
-    /// The limit amount of URLs to fetch or crawl from the search results.
+    /// The search limit.
     pub search_limit: Option<u32>,
-    /// Fetch all the content of the websites by performing crawls.
+    // Fetch the page content
     pub fetch_page_content: Option<bool>,
-    /// The country code to use for the search. It's a two-letter country code (e.g., 'us' for the United States).
-    pub country: Option<String>,
-    /// The location from where you want the search to originate.
+    /// The search location of the request
     pub location: Option<String>,
-    /// The language to use for the search. It's a two-letter language code (e.g., 'en' for English).
+    /// The country code of the request
+    pub country: Option<String>,
+    /// The language code of the request.
     pub language: Option<String>,
-    /// The maximum number of results to return for the search.
+    /// The number of search results
     pub num: Option<u32>,
+    /// The page of the search results.
+    pub page: Option<u32>,
 }
 
-/// Enum representing different types of Requests.
-#[derive(Default, Debug, Deserialize, Serialize)]
-#[serde(rename_all = "lowercase")]
+/// the request type to perform
+#[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum RequestType {
     #[default]
+    #[serde(alias = "http", alias = "Http", alias = "HTTP")]
     Http,
+    #[serde(
+        alias = "chrome",
+        alias = "Chrome",
+        alias = "CHROME",
+        alias = "Headless",
+        alias = "headless",
+        alias = "HEADLESS"
+    )]
     Chrome,
-    Smart,
+    #[serde(
+        alias = "Smart",
+        alias = "SMART",
+        alias = "smart",
+        alias = "smart_mode",
+        alias = "smartmode",
+        alias = "SMARTMODE",
+        alias = "SMART_MODE",
+        alias = "SmartMode",
+        alias = "Smart_Mode"
+    )]
+    SmartMode,
 }
 
 /// Enum representing different return formats.
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Default, Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ReturnFormat {
     #[default]
+    /// The default return format of the resource.
     Raw,
+    /// Return the response as Markdown.
     Markdown,
+    /// Return the response as Commonmark.
     Commonmark,
+    /// Return the response as Html2text.
     Html2text,
+    /// Return the response as Text.
     Text,
+    /// Return the response as Bytes.
     Bytes,
 }
 
 /// Represents a Spider with API key and HTTP client.
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Spider {
     /// The Spider API key.
-    api_key: String,
+    pub api_key: String,
     /// The Spider Client to re-use.
-    client: Client,
+    pub client: Client,
 }
 
 impl Spider {
@@ -259,10 +338,11 @@ impl Spider {
     async fn api_post(
         &self,
         endpoint: &str,
-        data: impl Serialize,
+        data: impl Serialize + std::fmt::Debug,
         content_type: &str,
     ) -> Result<Response, Error> {
-        let url: String = format!("https://api.spider.cloud/{}", endpoint);
+        let url: String = format!("{API_URL}/{}", endpoint);
+
         self.client
             .post(&url)
             .header(
@@ -286,7 +366,7 @@ impl Spider {
     ///
     /// The response from the API as a JSON value.
     async fn api_get(&self, endpoint: &str) -> Result<serde_json::Value, reqwest::Error> {
-        let url = format!("https://api.spider.cloud/{}", endpoint);
+        let url = format!("{API_URL}/{}", endpoint);
         let res = self
             .client
             .get(&url)
@@ -359,7 +439,7 @@ impl Spider {
         endpoint: &str,
         params: Option<HashMap<String, serde_json::Value>>,
     ) -> Result<Response, Error> {
-        let url = format!("https://api.spider.cloud/v1/{}", endpoint);
+        let url = format!("{API_URL}/v1/{}", endpoint);
         let request_builder = self
             .client
             .delete(&url)
@@ -542,7 +622,7 @@ impl Spider {
         };
 
         let res = self.api_post("search", body, content_type).await?;
-        
+
         res.json().await
     }
 
@@ -684,7 +764,7 @@ impl Spider {
             }
         }
 
-        let url = format!("https://api.spider.cloud/v1/data/storage");
+        let url = format!("{API_URL}/v1/data/storage");
         let request = self
             .client
             .get(&url)
@@ -854,17 +934,20 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    // #[tokio::test]
-    // async fn test_search() {
-    //     let mut params = SearchRequestParams::default();
-    //     params.search_limit = Some(1);
-    //     params.num = Some(1);
+    #[tokio::test]
+    async fn test_search() {
+        let mut params = SearchRequestParams::default();
 
-    //     let response = SPIDER_CLIENT
-    //         .search("a sports website", Some(params), false, "application/json")
-    //         .await;
-    //     assert!(response.is_ok());
-    // }
+        params.search_limit = Some(1);
+        params.num = Some(1);
+        params.base.limit = Some(1);
+
+        let response = SPIDER_CLIENT
+            .search("a sports website", Some(params), false, "application/json")
+            .await;
+
+        assert!(response.is_ok());
+    }
 
     // #[tokio::test]
     // async fn test_transform() {
