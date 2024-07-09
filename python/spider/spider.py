@@ -61,7 +61,7 @@ class Spider:
         )
         if stream:
             return response
-        elif response.status_code == 200:
+        elif 200 <= response.status_code < 300:
             return response.json()
         else:
             self._handle_error(response, f"post to {endpoint}")
@@ -79,7 +79,7 @@ class Spider:
         response = self._get_request(
             f"https://api.spider.cloud/{endpoint}", headers, stream
         )
-        if response.status_code == 200:
+        if 200 <= response.status_code < 300:
             return response.json()
         else:
             self._handle_error(response, f"get from {endpoint}")
