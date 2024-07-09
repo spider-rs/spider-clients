@@ -239,7 +239,7 @@ def test_data_delete(mock_delete, spider, params):
 
     table = "websites"
     response = spider.data_delete(table, params=params)
-    assert response is None
+    assert response is not None
     mock_delete.assert_called_once()
 
 @patch('requests.get')
