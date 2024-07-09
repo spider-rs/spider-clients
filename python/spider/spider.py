@@ -61,6 +61,8 @@ class Spider:
         )
         if stream:
             return response
+        elif response.status_code == 204:
+            return None
         elif 200 <= response.status_code < 300:
             return response.json()
         else:
@@ -109,6 +111,8 @@ class Spider:
         )
         if response.status_code in [200, 202]:
             return response.json()
+        elif response.status_code == 204:
+            return None
         else:
             self._handle_error(response, f"delete from {endpoint}")
 
