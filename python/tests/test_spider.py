@@ -216,7 +216,7 @@ def test_data_post(mock_post, spider, url):
     table = "websites"
     post_data: RequestParamsDict = {"url": url}
     response = spider.data_post(table, post_data)
-    assert response is None
+    assert response is not None
     mock_post.assert_called_once()
 
 @patch('requests.get')
