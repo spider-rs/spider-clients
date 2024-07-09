@@ -137,8 +137,7 @@ describe("Spider JS SDK", () => {
     const table = "websites";
     const postData = { url: url };
     const response = await spiderClient.postData(table, postData);
-
-    assert(response.data === null);
+    assert(response.status == 201);
   });
 
   // 500 error code
