@@ -88,8 +88,7 @@ class Spider:
     def create_signed_url(
         self,
         domain: Optional[str] = None,
-        page: Optional[int] = None,
-        limit: Optional[int] = None,
+        params: Optional[Dict[str, int]] = None,
         stream: Optional[bool] = True,
     ) -> Any: ...
     def data_get(

@@ -102,7 +102,10 @@ class Spider:
         """
         headers = self._prepare_headers(content_type)
         response = self._delete_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers=headers, json=params, stream=stream
+            f"https://api.spider.cloud/v1/{endpoint}",
+            headers=headers,
+            json=params,
+            stream=stream,
         )
         if response.status_code in [200, 202]:
             return response.json()
@@ -270,32 +273,31 @@ class Spider:
     def create_signed_url(
         self,
         domain: Optional[str] = None,
-        options: Optional[Dict[str, int]] = None,
+        params: Optional[Dict[str, int]] = None,
         stream: Optional[bool] = True,
     ):
         """
         Create a signed url to download files from the storage.
 
         :param domain: Optional domain name to specify the storage path.
-        :param options: Optional dictionary containing configuration parameters, such as:
+        :param params: Optional dictionary containing configuration parameters, such as:
             - 'page': Optional page number for pagination.
             - 'limit': Optional page limit for pagination.
             - 'expiresIn': Optional expiration time for the signed URL.
         :param stream: Boolean indicating if the response should be streamed. Defaults to True.
         :return: The raw response stream if stream is True.
         """
-        params = {}
         if domain:
             params["domain"] = domain
-        if options:
-            params.update(options)
+        if params:
+            params.update(params)
 
         endpoint = "data/storage"
         headers = self._prepare_headers("application/octet-stream")
         response = self._get_request(
             f"https://api.spider.cloud/v1/{endpoint}", headers, stream, params=params
         )
-        if response.status_code == 200:
+        if 200 <= response.status_code < 300:
             if stream:
                 return response.raw
             else:
@@ -395,16 +397,6 @@ class Spider:
             raise Exception(
                 f"Failed to {action}. Status code: {response.status_code}. Error: {error_message}"
             )
-        elif response.status_code == 201:
-            json_response = response.json()
-            if json_response.get("data") == None:
-                return json_response
-            else:
-                raise Exception(
-                    f"Unexpected error occurred while trying to {action}. Status code: {response.status_code}"
-                )
-        elif response.status_code == 204:
-            return response
         else:
             raise Exception(
                 f"Unexpected error occurred while trying to {action}. Status code: {response.status_code}. Here is the response: {response.text}"

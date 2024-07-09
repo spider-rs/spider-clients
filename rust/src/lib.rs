@@ -116,41 +116,53 @@ const API_URL: &'static str = "https://api.spider.cloud";
 pub struct RequestParams {
     #[serde(default)]
     /// The URL to be crawled.
-    pub url: String,
+    pub url: Option<String>,
     #[serde(default)]
     /// The type of request to be made.
-    pub request: RequestType,
+    pub request: Option<RequestType>,
+    #[serde(default)]
     /// The maximum number of pages the crawler should visit.
     pub limit: Option<u32>,
     #[serde(default)]
     /// The format in which the result should be returned.
-    pub return_format: ReturnFormat,
+    pub return_format: Option<ReturnFormat>,
+    #[serde(default)]
     /// Specifies whether to only visit the top-level domain.
     pub tld: Option<bool>,
+    #[serde(default)]
     /// The depth of the crawl.
     pub depth: Option<u32>,
+    #[serde(default)]
     /// Specifies whether the request should be cached.
     pub cache: Option<bool>,
+    #[serde(default)]
     /// The budget for various resources.
     pub budget: Option<HashMap<String, u32>>,
+    #[serde(default)]
     /// The blacklist routes to ignore. This can be a Regex string pattern.
     pub blacklist: Option<Vec<String>>,
+    #[serde(default)]
     /// The whitelist routes to only crawl. This can be a Regex string pattern and used with black_listing.
     pub whitelist: Option<Vec<String>>,
+    #[serde(default)]
     /// The locale to be used during the crawl.
     pub locale: Option<String>,
+    #[serde(default)]
     /// The cookies to be set for the request, formatted as a single string.
     pub cookies: Option<String>,
+    #[serde(default)]
     /// Specifies whether to use stealth techniques to avoid detection.
     pub stealth: Option<bool>,
+    #[serde(default)]
     /// The headers to be used for the request.
     pub headers: Option<HashMap<String, String>>,
     #[serde(default)]
     /// Specifies whether anti-bot measures should be used.
-    pub anti_bot: bool,
+    pub anti_bot: Option<bool>,
     #[serde(default)]
     /// Specifies whether to include metadata in the response.
-    pub metadata: bool,
+    pub metadata: Option<bool>,
+    #[serde(default)]
     /// The dimensions of the viewport.
     pub viewport: Option<Viewport>,
     #[serde(default)]
@@ -164,60 +176,64 @@ pub struct RequestParams {
     pub user_agent: Option<String>,
     #[serde(default)]
     /// Specifies whether the response data should be stored.
-    pub store_data: bool,
+    pub store_data: Option<bool>,
+    #[serde(default)]
     /// Configuration settings for GPT (general purpose texture mappings).
     pub gpt_config: Option<HashMap<String, String>>,
     #[serde(default)]
     /// Specifies whether to use fingerprinting protection.
-    pub fingerprint: bool,
+    pub fingerprint: Option<bool>,
     #[serde(default)]
     /// Specifies whether to perform the request without using storage.
-    pub storageless: bool,
+    pub storageless: Option<bool>,
     #[serde(default)]
     /// Specifies whether readability optimizations should be applied.
-    pub readability: bool,
+    pub readability: Option<bool>,
     #[serde(default)]
     /// Specifies whether to use a proxy for the request.
-    pub proxy_enabled: bool,
+    pub proxy_enabled: Option<bool>,
     #[serde(default)]
     /// Specifies whether to respect the site's robots.txt file.
-    pub respect_robots: bool,
+    pub respect_robots: Option<bool>,
     #[serde(default)]
     /// CSS selector to be used to filter the content.
-    pub query_selector: String,
+    pub query_selector: Option<String>,
     #[serde(default)]
     /// Specifies whether to load all resources of the crawl target.
-    pub full_resources: bool,
+    pub full_resources: Option<bool>,
     #[serde(default)]
     /// The websites limit if a list is sent from text or urls comma split. This helps automatic configuration of the system.
-    pub website_limit:u32,
+    pub website_limit: Option<u32>,
+    #[serde(default)]
     /// The text string to extract data from.
     pub text: Option<String>,
     #[serde(default)]
     /// Specifies whether to use the sitemap links.
-    pub sitemap: bool,
+    pub sitemap: Option<bool>,
     #[serde(default)]
     /// Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
-    pub page_insights: bool,
+    pub page_insights: Option<bool>,
     #[serde(default)]
     /// Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
-    pub return_embeddings: bool,
+    pub return_embeddings: Option<bool>,
+    #[serde(default)]
     /// The timeout for the request, in milliseconds.
     pub request_timeout: Option<u8>,
     #[serde(default)]
     /// Specifies whether to run the request in the background.
-    pub run_in_background: bool,
+    pub run_in_background: Option<bool>,
     #[serde(default)]
     /// Specifies whether to skip configuration checks.
-    pub skip_config_checks: bool,
+    pub skip_config_checks: Option<bool>,
+    #[serde(default)]
     /// The chunking algorithm to use.
     pub chunking_alg: Option<ChunkingAlgDict>,
     #[serde(default)]
     /// Clean the markdown or text for AI.
-    pub clean: bool,
+    pub clean: Option<bool>,
     #[serde(default)]
     /// Clean the markdown or text for AI removing footers, navigation, and more.
-    pub clean_full: bool,
+    pub clean_full: Option<bool>,
 }
 
 /// The structure representing request parameters for a search request.
@@ -246,30 +262,11 @@ pub struct SearchRequestParams {
 
 /// the request type to perform
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(rename_all = "lowercase")]
 pub enum RequestType {
     #[default]
-    #[serde(alias = "http", alias = "Http", alias = "HTTP")]
     Http,
-    #[serde(
-        alias = "chrome",
-        alias = "Chrome",
-        alias = "CHROME",
-        alias = "Headless",
-        alias = "headless",
-        alias = "HEADLESS"
-    )]
     Chrome,
-    #[serde(
-        alias = "Smart",
-        alias = "SMART",
-        alias = "smart",
-        alias = "smart_mode",
-        alias = "smartmode",
-        alias = "SMARTMODE",
-        alias = "SMART_MODE",
-        alias = "SmartMode",
-        alias = "Smart_Mode"
-    )]
     SmartMode,
 }
 
@@ -575,7 +572,6 @@ impl Spider {
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
-        data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
@@ -585,6 +581,8 @@ impl Spider {
                 _ => (),
             }
         }
+
+        data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("screenshot", data, content_type).await?;
         res.json().await
@@ -920,7 +918,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_links() {
-        let response = SPIDER_CLIENT
+        let response: Result<serde_json::Value, Error> = SPIDER_CLIENT
             .links("https://example.com", None, false, "application/json")
             .await;
         assert!(response.is_ok());
@@ -928,8 +926,16 @@ mod tests {
 
     #[tokio::test]
     async fn test_screenshot() {
+        let mut params = RequestParams::default();
+        params.limit = Some(1);
+
         let response = SPIDER_CLIENT
-            .screenshot("https://example.com", None, false, "application/json")
+            .screenshot(
+                "https://example.com",
+                Some(params),
+                false,
+                "application/json",
+            )
             .await;
         assert!(response.is_ok());
     }

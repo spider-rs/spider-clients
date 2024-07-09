@@ -160,14 +160,14 @@ You can download the results of the website:
 
 ```python
 url = 'https://example.com'
-options = {
+params = {
     'page': 0,
     'limit': 100,
     'expiresIn': 3600  # Optional, add if needed
 }
 stream = True
 
-state = app.create_signed_url(url, options, stream)
+state = app.create_signed_url(url, params, stream)
 ```
 
 ### Checking Available Credits

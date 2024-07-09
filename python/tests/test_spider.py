@@ -249,7 +249,7 @@ def test_create_signed_url(mock_get, spider):
     mock_response.raw = b"mocked raw data"
     mock_get.return_value = mock_response
 
-    response = spider.create_signed_url(domain="example.com", options={"page": 1, "limit": 10})
+    response = spider.create_signed_url(domain="example.com", params={"page": 1, "limit": 10})
     assert response == b"mocked raw data"
     mock_get.assert_called_once()
 
