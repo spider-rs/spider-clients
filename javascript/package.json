@@ -1,7 +1,7 @@
 {
   "name": "@spider-cloud/spider-client",
-  "version": "0.0.52",
-  "description": "A Javascript SDK for Spider Cloud services",
+  "version": "0.0.53",
+  "description": "Isomorphic Javascript SDK for Spider Cloud services",
   "scripts": {
     "test": "node --import tsx  --test __tests__/*test.ts",
     "build": "tsc",
@@ -23,7 +23,7 @@
   "author": "Jeff Mendez<jeff@a11ywatch.com>",
   "license": "MIT",
   "devDependencies": {
-    "@supabase/supabase-js": "^2.44.2",
+    "@supabase/supabase-js": "^2.44.3",
     "@types/node": "20.14.2",
     "dotenv": "^16.4.5",
     "tsx": "^4.16.2",
