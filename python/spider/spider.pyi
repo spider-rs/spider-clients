@@ -1,5 +1,5 @@
 from typing import Optional, Dict, Any
-from spider_types import RequestParamsDict
+from spider_types import RequestParamsDict, QueryRequest
 
 class Spider:
     api_key: str
@@ -80,6 +80,10 @@ class Spider:
         params: Optional[RequestParamsDict] = None,
         stream: bool = False,
         content_type: str = "application/json",
+    ) -> Any: ...
+    def query(
+        self,
+        params: QueryRequest
     ) -> Any: ...
     def get_credits(self) -> Any: ...
     def data_post(

@@ -1,2 +1,2 @@
 export { Spider } from "./client";
-export type { SpiderParams, Budget, Viewport } from "./config"
+export type { SpiderParams, Budget, Viewport, QueryRequest } from "./config"

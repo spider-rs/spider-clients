@@ -1,6 +1,6 @@
 import os, requests, json, logging
 from typing import Optional, Dict
-from spider.spider_types import RequestParamsDict, JsonCallback
+from spider.spider_types import RequestParamsDict, JsonCallback, QueryRequest
 from spider.supabase_client import Supabase
 
 
@@ -67,17 +67,25 @@ class Spider:
             self._handle_error(response, f"post to {endpoint}")
 
     def api_get(
-        self, endpoint: str, stream: bool, content_type: str = "application/json"
+        self,
+        endpoint: str,
+        params: Optional[dict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
     ):
         """
         Send a GET request to the specified endpoint.
 
         :param endpoint: The API endpoint from which to retrieve data.
+        :param params: Query parameters to attach to the URL.
         :return: The JSON decoded response.
         """
         headers = self._prepare_headers(content_type)
-        response = self._get_request(
-            f"https://api.spider.cloud/{endpoint}", headers, stream
+        response = requests.get(
+            f"https://api.spider.cloud/{endpoint}",
+            headers=headers,
+            params=params,
+            stream=stream,
         )
         if 200 <= response.status_code < 300:
             return response.json()
@@ -270,6 +278,19 @@ class Spider:
             "pipeline/label", {"url": url, **(params or {})}, stream, content_type
         )
 
+    def query(
+        self,
+        params: QueryRequest = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ):
+        """
+        Query a website resource from our database. This costs 1 credit per successful retrieval.
+        :param params: Optional parameters to guide the labeling process.
+        :return: The website contents markup.
+        """
+        return self.api_get("data/query", {**(params or {})}, stream, content_type)
+
     def create_signed_url(
         self,
         domain: Optional[str] = None,
@@ -329,7 +350,7 @@ class Spider:
 
         :return: JSON response containing the number of credits left.
         """
-        return self.api_get("data/credits", stream=False)
+        return self.api_get("data/credits")
 
     def data_post(self, table: str, data: Optional[RequestParamsDict] = None):
         """
@@ -379,7 +400,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.54",
+            "User-Agent": f"Spider-Client/0.0.56",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

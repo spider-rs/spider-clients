@@ -15,7 +15,7 @@
 //!   of crawling, user-agent strings, delays between requests,
 //!   and more.
 //!
-//! - **Link Gathering:** The primary objective of Spider is to
+//! - **Link Gathering:** One of the primary objectives of Spider is to
 //!   gather and manage links from the web pages it crawls,
 //!   compiling them into a structured format for further use.
 //!
@@ -115,6 +115,17 @@ pub struct WaitFor {
     pub delay: Option<Delay>,
     /// Wait until page navigation happen. Default is true.
     pub page_navigations: Option<bool>,
+}
+
+/// Query request to get a document.
+#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+pub struct QueryRequest {
+    /// The exact website url.
+    url: Option<String>,
+    /// The website domain.
+    domain: Option<String>,
+    /// The path of the resource.
+    pathname: Option<String>,
 }
 
 /// Enum representing different types of Chunking.
@@ -405,11 +416,16 @@ impl Spider {
     /// # Returns
     ///
     /// The response from the API as a JSON value.
-    async fn api_get(&self, endpoint: &str) -> Result<serde_json::Value, reqwest::Error> {
+    async fn api_get<T: Serialize>(
+        &self,
+        endpoint: &str,
+        query_params: Option<&T>,
+    ) -> Result<serde_json::Value, reqwest::Error> {
         let url = format!("{API_URL}/{}", endpoint);
         let res = self
             .client
             .get(&url)
+            .query(&query_params)
             .header(
                 "User-Agent",
                 format!("Spider-Client/{}", env!("CARGO_PKG_VERSION")),
@@ -862,8 +878,10 @@ impl Spider {
         res.json().await
     }
 
+    /// Get the account credits left.
     pub async fn get_credits(&self) -> Result<serde_json::Value, reqwest::Error> {
-        self.api_get("data/credits").await
+        self.api_get::<serde_json::Value>("data/credits", None)
+            .await
     }
 
     pub async fn data_post(
@@ -877,6 +895,14 @@ impl Spider {
         res.json().await
     }
 
+    /// Query a record from the global DB.
+    pub async fn query(&self, params: &QueryRequest) -> Result<serde_json::Value, reqwest::Error> {
+        let res = self.api_get::<QueryRequest>(&"data/query", Some(params)).await?;
+
+        Ok(res)
+    }
+
+    /// Get a table record.
     pub async fn data_get(
         &self,
         table: &str,
@@ -895,10 +921,13 @@ impl Spider {
             );
         }
 
-        let res = self.api_get(&format!("data/{}", table)).await?;
+        let res = self
+            .api_get::<serde_json::Value>(&format!("data/{}", table), None)
+            .await?;
         Ok(res)
     }
 
+    /// Delete a record.
     pub async fn data_delete(
         &self,
         table: &str,
@@ -1036,6 +1065,16 @@ mod tests {
         let response = SPIDER_CLIENT
             .get_crawl_state("https://example.com", None, false, "application/json")
             .await;
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_query() {
+        let mut query = QueryRequest::default();
+
+        query.domain = Some("spider.cloud".into());
+
+        let response = SPIDER_CLIENT.query(&query).await;
         assert!(response.is_ok());
     }
 

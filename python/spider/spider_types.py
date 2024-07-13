@@ -1,5 +1,11 @@
 from typing import TypedDict, Optional, Dict, List, Literal, Callable
+from dataclasses import dataclass, field
 
+@dataclass
+class QueryRequest:
+    url: Optional[str] = field(default=None)
+    domain: Optional[str] = field(default=None)
+    pathname: Optional[str] = field(default=None)
 
 class ChunkingAlgDict(TypedDict):
     # The chunking algorithm to use with the value to chunk by.

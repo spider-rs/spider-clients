@@ -231,6 +231,16 @@ def test_data_get(mock_get, spider, url, params):
     assert isinstance(response['data'], list)
     mock_get.assert_called_once()
 
+@patch('requests.get')
+def test_query(mock_get, spider, params):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"data": {"status": 200}}
+    mock_get.return_value = mock_response
+    response = spider.data_get("query", params=params)
+    assert isinstance(response['data'], object)
+    mock_get.assert_called_once()
+
 @patch('requests.delete')
 def test_data_delete(mock_delete, spider, params):
     mock_response = MagicMock()

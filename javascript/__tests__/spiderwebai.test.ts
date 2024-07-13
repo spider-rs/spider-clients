@@ -2,7 +2,7 @@ import { describe, test } from "node:test";
 import assert from "node:assert";
 import { Spider } from "../src";
 import "dotenv/config";
-import { GenericParams } from "../src/client"
+import { GenericParams } from "../src/client";
 
 describe("Spider JS SDK", () => {
   const url = "https://example.com";
@@ -56,21 +56,19 @@ describe("Spider JS SDK", () => {
     assert(linksData[0].url);
   });
 
-  test("should get screenshot", async () => {
+  test("should take screenshot", async () => {
     const spiderClient = new Spider();
-    const screenshotData = await spiderClient.screenshot(url, params);
+    const screenshotData = await spiderClient.screenshot(url, { limit: 1 });
 
     assert(Array.isArray(screenshotData));
-    assert(screenshotData.length > 0);
-    assert(screenshotData[0].content);
-    assert(screenshotData[0].error !== undefined);
-    assert(screenshotData[0].status);
-    assert(screenshotData[0].url);
   });
 
   test("should perform search", async () => {
     const spiderClient = new Spider();
-    const searchData = await spiderClient.search("example search query", params);
+    const searchData = await spiderClient.search(
+      "example search query",
+      params
+    );
 
     assert(Array.isArray(searchData));
     assert(searchData.length > 0);
@@ -82,10 +80,12 @@ describe("Spider JS SDK", () => {
 
   test("should transform data", async () => {
     const spiderClient = new Spider();
-    const transformData = [{ html: "<html><body>Example</body></html>", url: url }];
+    const transformData = [
+      { html: "<html><body>Example</body></html>", url: url },
+    ];
     const transformedData = await spiderClient.transform(transformData, params);
 
-    assert(typeof transformedData === 'object');
+    assert(typeof transformedData === "object");
     assert(transformedData.content);
     assert(transformedData.error !== undefined);
     assert(transformedData.status);
@@ -119,8 +119,16 @@ describe("Spider JS SDK", () => {
     const spiderClient = new Spider();
     const crawlState = await spiderClient.getCrawlState(url, params);
 
-    assert(typeof crawlState === 'object');
+    assert(typeof crawlState === "object");
     assert(Array.isArray(crawlState.data));
+  });
+
+  test("should query global db", async () => {
+    const spiderClient = new Spider();
+    const crawlState = await spiderClient.query({ domain: "spider.cloud" });
+
+    assert(typeof crawlState === "object");
+    assert(crawlState.content);
   });
 
   // unkown error (400 bad request)

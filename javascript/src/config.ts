@@ -93,6 +93,24 @@ interface WaitFor {
 }
 
 /**
+ * Represents the query API endpoint request to get documents from the global spider collection.
+ */
+export interface QueryRequest {
+  /**
+   * The exact URL to get.
+   */
+  url?: string;
+  /**
+   * The domain to get a document from.
+   */
+  domain?: string;
+  /**
+   * The path of the webpage to get the document. This is used with the domain key.
+   */
+  pathname?: string;
+}
+
+/**
  * Represents the options available for making a spider request.
  */
 export interface SpiderParams {

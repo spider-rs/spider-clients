@@ -1,5 +1,6 @@
 import {
   ChunkCallbackFunction,
+  QueryRequest,
   SpiderCoreResponse,
   SpiderParams,
 } from "./config";
@@ -306,6 +307,17 @@ export class Spider {
   ): Promise<any> {
     return this._apiGet(
       `data/${table}?${new URLSearchParams(params as any).toString()}`
+    );
+  }
+
+  /**
+   * Perform a query to get a document.
+   * @param {QueryRequest} params - The query parameters for data retrieval.
+   * @returns {Promise<any>} The response from the server.
+   */
+  async query(query: QueryRequest): Promise<any> {
+    return this._apiGet(
+      `data/query?${new URLSearchParams(query as Record<string, string>).toString()}`
     );
   }
 
