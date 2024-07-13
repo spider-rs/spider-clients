@@ -38,6 +38,61 @@ export interface ChunkingAlg {
 }
 
 /**
+ * Represents a timeout configuration.
+ * @typedef {Object} Timeout
+ * @property {number} secs - The number of seconds.
+ * @property {number} nanos - The number of nanoseconds.
+ */
+interface Timeout {
+  secs: number;
+  nanos: number;
+}
+
+/**
+ * Represents the idle network configuration.
+ * @typedef {Object} IdleNetwork
+ * @property {Timeout} timeout - The timeout configuration.
+ */
+interface IdleNetwork {
+  timeout: Timeout;
+}
+
+/**
+ * Represents the selector configuration.
+ * @typedef {Object} Selector
+ * @property {Timeout} timeout - The timeout configuration.
+ * @property {string} selector - The CSS selector to wait for.
+ */
+interface Selector {
+  timeout: Timeout;
+  selector: string;
+}
+
+/**
+ * Represents the delay configuration.
+ * @typedef {Object} Delay
+ * @property {Timeout} timeout - The timeout configuration.
+ */
+interface Delay {
+  timeout: Timeout;
+}
+
+/**
+ * Represents the wait_for configuration.
+ * @typedef {Object} WaitFor
+ * @property {IdleNetwork} [idle_network] - Configuration to wait for network to be idle.
+ * @property {Selector} [selector] - Configuration to wait for a CSS selector.
+ * @property {Delay} [delay] - Configuration to wait for a delay.
+ * @property {boolean} [page_navigations] - Whether to wait for page navigations.
+ */
+interface WaitFor {
+  idle_network?: IdleNetwork;
+  selector?: Selector;
+  delay?: Delay;
+  page_navigations?: boolean;
+}
+
+/**
  * Represents the options available for making a spider request.
  */
 export interface SpiderParams {
@@ -226,6 +281,11 @@ export interface SpiderParams {
    * The chunking algorithm to use.
    */
   chunking_alg?: ChunkingAlg;
+
+  /**
+   * The wait for events on the page. You need to make your `request` `chrome` or `smart`.
+   */
+  wait_for?: WaitFor;
 }
 
 // Core actions response type.

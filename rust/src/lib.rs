@@ -76,6 +76,47 @@ pub struct ChunkingAlgDict {
     value: i32,
 }
 
+// The nested structures
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Timeout {
+    /// The seconds up to 60.
+    pub secs: u64,
+    /// The nanoseconds.
+    pub nanos: u32,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct IdleNetwork {
+    /// The timeout to wait until.
+    pub timeout: Timeout,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Selector {
+    /// The timeout to wait until.
+    pub timeout: Timeout,
+    /// The selector to wait for.
+    pub selector: String,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct Delay {
+    /// The timeout to wait until.
+    pub timeout: Timeout,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct WaitFor {
+    /// Wait until idle networks with a timeout of idleness.
+    pub idle_network: Option<IdleNetwork>,
+    /// Wait until a selector exist. Can determine if a selector exist after executing all js and network events.
+    pub selector: Option<Selector>,
+    /// Wait until a hard delay.
+    pub delay: Option<Delay>,
+    /// Wait until page navigation happen. Default is true.
+    pub page_navigations: Option<bool>,
+}
+
 /// Enum representing different types of Chunking.
 #[derive(Default, Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
@@ -234,6 +275,8 @@ pub struct RequestParams {
     #[serde(default)]
     /// Clean the markdown or text for AI removing footers, navigation, and more.
     pub clean_full: Option<bool>,
+    /// The wait for events on the page. You need to make your `request` `chrome` or `smart`.
+    pub wait_for: Option<WaitFor>,
 }
 
 /// The structure representing request parameters for a search request.

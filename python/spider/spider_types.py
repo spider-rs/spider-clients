@@ -7,6 +7,25 @@ class ChunkingAlgDict(TypedDict):
     # The amount to chunk by.
     value: int
 
+class TimeoutDict(TypedDict):
+    secs: int
+    nanos: int
+
+class IdleNetworkDict(TypedDict):
+    timeout: TimeoutDict
+
+class SelectorDict(TypedDict):
+    timeout: TimeoutDict
+    selector: str
+
+class DelayDict(TypedDict):
+    timeout: TimeoutDict
+
+class WaitForDict(TypedDict, total=False):
+    idle_network: Optional[IdleNetworkDict]
+    selector: Optional[SelectorDict]
+    delay: Optional[DelayDict]
+    page_navigations: Optional[bool]
 
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
@@ -119,5 +138,7 @@ class RequestParamsDict(TypedDict, total=False):
     # The chunking algorithm to use.
     chunking_alg: Optional[ChunkingAlgDict]
 
+    # The wait for events on the page. You need to make your `request` `chrome` or `smart`.
+    wait_for: Optional[WaitForDict]
 
 JsonCallback = Callable[[dict], None]

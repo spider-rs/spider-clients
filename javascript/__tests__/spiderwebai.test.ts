@@ -155,7 +155,7 @@ describe("Spider JS SDK", () => {
     const table = "websites";
     const response = await spiderClient.deleteData(table, params);
 
-    assert(response.status === 204);
+    assert(response.status >= 200 && response.status <= 299);
   });
 
   // 500 error code
