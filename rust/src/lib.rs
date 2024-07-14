@@ -286,6 +286,8 @@ pub struct RequestParams {
     #[serde(default)]
     /// Clean the markdown or text for AI removing footers, navigation, and more.
     pub clean_full: Option<bool>,
+    /// Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
+    pub disable_intercept: Option<bool>,
     /// The wait for events on the page. You need to make your `request` `chrome` or `smart`.
     pub wait_for: Option<WaitFor>,
 }
@@ -919,7 +921,9 @@ impl Spider {
 
     /// Query a record from the global DB.
     pub async fn query(&self, params: &QueryRequest) -> Result<serde_json::Value, reqwest::Error> {
-        let res = self.api_get::<QueryRequest>(&"data/query", Some(params)).await?;
+        let res = self
+            .api_get::<QueryRequest>(&"data/query", Some(params))
+            .await?;
 
         Ok(res)
     }
@@ -988,13 +992,16 @@ mod tests {
         static ref SPIDER_CLIENT: Spider = {
             dotenv().ok();
             let client = ClientBuilder::new();
-            let client = client.tcp_keepalive(Some(Duration::from_secs(5))).build().unwrap();
+            let client = client
+                .tcp_keepalive(Some(Duration::from_secs(5)))
+                .build()
+                .unwrap();
 
             Spider::new_with_client(None, client).unwrap()
         };
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_scrape_url() {
         let response = SPIDER_CLIENT
             .scrape_url("https://example.com", None, "application/json")
@@ -1002,7 +1009,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_crawl_url() {
         let response = SPIDER_CLIENT
             .crawl_url(
@@ -1016,7 +1023,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_links() {
         let response: Result<serde_json::Value, Error> = SPIDER_CLIENT
             .links("https://example.com", None, false, "application/json")
@@ -1024,7 +1031,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_screenshot() {
         let mut params = RequestParams::default();
         params.limit = Some(1);
@@ -1040,7 +1047,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_search() {
         let mut params = SearchRequestParams::default();
 
@@ -1055,16 +1062,19 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_transform() {
-        let data = vec![HashMap::from([("<html><body><h1>Transformation</h1></body></html>".into(), "".into())])];
+        let data = vec![HashMap::from([(
+            "<html><body><h1>Transformation</h1></body></html>".into(),
+            "".into(),
+        )])];
         let response = SPIDER_CLIENT
             .transform(data, None, false, "application/json")
             .await;
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_extract_contacts() {
         let response = SPIDER_CLIENT
             .extract_contacts("https://example.com", None, false, "application/json")
@@ -1072,7 +1082,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_label() {
         let response = SPIDER_CLIENT
             .label("https://example.com", None, false, "application/json")
@@ -1080,7 +1090,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_create_signed_url() {
         let response = SPIDER_CLIENT
             .create_signed_url(Some("example.com"), None)
@@ -1088,7 +1098,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_get_crawl_state() {
         let response = SPIDER_CLIENT
             .get_crawl_state("https://example.com", None, "application/json")
@@ -1096,7 +1106,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_query() {
         let mut query = QueryRequest::default();
 
@@ -1106,7 +1116,7 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_get_credits() {
         let response = SPIDER_CLIENT.get_credits().await;
         assert!(response.is_ok());

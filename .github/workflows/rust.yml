@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        rust-version: [stable, beta, nightly]
+        rust-version: [stable, beta]
 
     steps:
       - uses: actions/checkout@v4

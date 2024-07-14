@@ -2,10 +2,6 @@
 
 The Spider Cloud Rust SDK offers a toolkit for straightforward website scraping, crawling at scale, and other utilities like extracting links and taking screenshots, enabling you to collect data formatted for compatibility with language models (LLMs). It features a user-friendly interface for seamless integration with the Spider Cloud API.
 
---
-Current WIP
---
-
 ## Installation
 
 To use the Spider Cloud Rust SDK, include the following in your `Cargo.toml`:

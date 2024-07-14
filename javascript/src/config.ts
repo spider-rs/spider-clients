@@ -304,6 +304,11 @@ export interface SpiderParams {
    * The wait for events on the page. You need to make your `request` `chrome` or `smart`.
    */
   wait_for?: WaitFor;
+
+  /**
+   * Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
+   */
+  disable_intercept?: boolean;
 }
 
 // Core actions response type.
