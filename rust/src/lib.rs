@@ -300,7 +300,7 @@ pub struct SearchRequestParams {
     pub search: String,
     /// The search limit.
     pub search_limit: Option<u32>,
-    // Fetch the page content
+    // Fetch the page content. Defaults to true.
     pub fetch_page_content: Option<bool>,
     /// The search location of the request
     pub location: Option<String>,
@@ -357,7 +357,7 @@ impl Spider {
     ///
     /// # Arguments
     ///
-    /// * `api_key` - An optional API key.
+    /// * `api_key` - An optional API key. Defaults to using the 'SPIDER_API_KEY' env variable.
     ///
     /// # Returns
     ///
@@ -369,6 +369,28 @@ impl Spider {
             Some(key) => Ok(Self {
                 api_key: key,
                 client: Client::new(),
+            }),
+            None => Err("No API key provided"),
+        }
+    }
+
+    /// Creates a new instance of Spider.
+    ///
+    /// # Arguments
+    ///
+    /// * `api_key` - An optional API key. Defaults to using the 'SPIDER_API_KEY' env variable.
+    /// * `client` - A custom client to pass in.
+    ///
+    /// # Returns
+    ///
+    /// A new instance of Spider or an error string if no API key is provided.
+    pub fn new_with_client(api_key: Option<String>, client: Client) -> Result<Self, &'static str> {
+        let api_key = api_key.or_else(|| std::env::var("SPIDER_API_KEY").ok());
+
+        match api_key {
+            Some(key) => Ok(Self {
+                api_key: key,
+                client,
             }),
             None => Err("No API key provided"),
         }
@@ -593,7 +615,7 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
+        _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -627,7 +649,7 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
+        _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -663,7 +685,7 @@ impl Spider {
         &self,
         q: &str,
         params: Option<SearchRequestParams>,
-        stream: bool,
+        _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let body = match params {
@@ -699,7 +721,7 @@ impl Spider {
         &self,
         data: Vec<HashMap<&str, serde_json::Value>>,
         params: Option<RequestParams>,
-        stream: bool,
+        _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut payload = HashMap::new();
@@ -736,7 +758,7 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
+        _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -774,7 +796,7 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
+        _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
@@ -853,7 +875,6 @@ impl Spider {
         &self,
         url: &str,
         params: Option<RequestParams>,
-        stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut payload = HashMap::new();
@@ -884,6 +905,7 @@ impl Spider {
             .await
     }
 
+    /// Send a request for a data record.
     pub async fn data_post(
         &self,
         table: &str,
@@ -955,14 +977,20 @@ impl Spider {
 
 #[cfg(test)]
 mod tests {
+    use std::time::Duration;
+
     use super::*;
     use dotenv::dotenv;
     use lazy_static::lazy_static;
+    use reqwest::ClientBuilder;
 
     lazy_static! {
         static ref SPIDER_CLIENT: Spider = {
             dotenv().ok();
-            Spider::new(None).unwrap()
+            let client = ClientBuilder::new();
+            let client = client.tcp_keepalive(Some(Duration::from_secs(5))).build().unwrap();
+
+            Spider::new_with_client(None, client).unwrap()
         };
     }
 
@@ -1018,7 +1046,7 @@ mod tests {
 
         params.search_limit = Some(1);
         params.num = Some(1);
-        params.base.limit = Some(1);
+        params.fetch_page_content = Some(false);
 
         let response = SPIDER_CLIENT
             .search("a sports website", Some(params), false, "application/json")
@@ -1027,14 +1055,14 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    // #[tokio::test]
-    // async fn test_transform() {
-    //     let data = vec![HashMap::new()];
-    //     let response = SPIDER_CLIENT
-    //         .transform(data, None, false, "application/json")
-    //         .await;
-    //     assert!(response.is_ok());
-    // }
+    #[tokio::test]
+    async fn test_transform() {
+        let data = vec![HashMap::from([("<html><body><h1>Transformation</h1></body></html>".into(), "".into())])];
+        let response = SPIDER_CLIENT
+            .transform(data, None, false, "application/json")
+            .await;
+        assert!(response.is_ok());
+    }
 
     #[tokio::test]
     async fn test_extract_contacts() {
@@ -1063,7 +1091,7 @@ mod tests {
     #[tokio::test]
     async fn test_get_crawl_state() {
         let response = SPIDER_CLIENT
-            .get_crawl_state("https://example.com", None, false, "application/json")
+            .get_crawl_state("https://example.com", None, "application/json")
             .await;
         assert!(response.is_ok());
     }
