@@ -1,3 +1,4 @@
+
 from spider import Spider
 
 # Initialize the Spider with your API key using the env key SPIDER_API_KEY
