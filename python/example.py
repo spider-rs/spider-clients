@@ -13,7 +13,7 @@ crawler_params = {
     'request': 'http'
 }
 crawl_result = app.crawl_url('https://spider.cloud', params=crawler_params)
-async_crawl_result = asyncio.run(app.crawl_url('https://spider.cloud', params=crawler_params))
+async_crawl_result = asyncio.run(async_app.crawl_url('https://spider.cloud', params=crawler_params))
 
 print(crawl_result)
 
