@@ -721,14 +721,19 @@ impl Spider {
     /// The response from the API as a JSON value.
     pub async fn transform(
         &self,
-        data: Vec<HashMap<&str, serde_json::Value>>,
+        data: Vec<HashMap<&str, &str>>,
         params: Option<RequestParams>,
         _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut payload = HashMap::new();
 
-        payload.insert("data".into(), serde_json::to_value(data).unwrap());
+        match serde_json::to_value(data) {
+            Ok(d) => {
+                payload.insert("data".into(), d);
+            }
+            _ => (),
+        }
 
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
@@ -765,7 +770,12 @@ impl Spider {
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
 
-        data.insert("url".into(), serde_json::to_value(url).unwrap());
+        match serde_json::to_value(url) {
+            Ok(u) => {
+                data.insert("url".into(), u);
+            }
+            _ => (),
+        }
 
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
@@ -937,14 +947,15 @@ impl Spider {
         let mut payload = HashMap::new();
 
         if let Some(params) = params {
-            let params = serde_json::to_value(params).unwrap();
-            payload.extend(
-                params
-                    .as_object()
-                    .unwrap()
-                    .iter()
-                    .map(|(k, v)| (k.as_str(), v.clone())),
-            );
+            match serde_json::to_value(params) {
+                Ok(p) => match p.as_object() {
+                    Some(o) => {
+                        payload.extend(o.iter().map(|(k, v)| (k.as_str(), v.clone())));
+                    }
+                    _ => (),
+                },
+                _ => (),
+            }
         }
 
         let res = self
@@ -997,7 +1008,7 @@ mod tests {
                 .build()
                 .unwrap();
 
-            Spider::new_with_client(None, client).unwrap()
+            Spider::new_with_client(None, client).expect("client to build")
         };
     }
 
