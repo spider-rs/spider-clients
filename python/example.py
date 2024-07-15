@@ -1,7 +1,9 @@
-from spider import Spider
+import asyncio
+from spider import Spider, AsyncSpider
 
 # Initialize the Spider with your API key using the env key SPIDER_API_KEY
 app = Spider()
+async_app = AsyncSpider()
 
 crawler_params = {
     'limit': 5,
@@ -11,5 +13,9 @@ crawler_params = {
     'request': 'http'
 }
 crawl_result = app.crawl_url('https://spider.cloud', params=crawler_params)
+async_crawl_result = asyncio.run(app.crawl_url('https://spider.cloud', params=crawler_params))
 
 print(crawl_result)
+
+
+
