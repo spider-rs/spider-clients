@@ -1,9 +1,6 @@
 import asyncio
 from spider import AsyncSpider
 
-# Initialize the AsyncSpider with your API key using the env key SPIDER_API_KEY
-async_app = AsyncSpider()
-
 crawler_params = {
     'limit': 1,
     'proxy_enabled': True,
@@ -11,7 +8,6 @@ crawler_params = {
     'metadata': False,
     'request': 'http'
 }
-
 
 
 # A callback
