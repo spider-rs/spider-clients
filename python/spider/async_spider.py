@@ -1,7 +1,8 @@
-import os
-import aiohttp
-from typing import Optional
-from spider.spider_types import RequestParamsDict
+import os, json, logging
+import aiohttp, asyncio
+from typing import Optional, Tuple, AsyncIterator
+from spider.spider_types import RequestParamsDict, JsonCallback
+
 
 
 class AsyncSpider:
@@ -15,52 +16,69 @@ class AsyncSpider:
         self.api_key = api_key or os.getenv("SPIDER_API_KEY")
         if self.api_key is None:
             raise ValueError("No API key provided")
-
+    
+            
     async def api_post(
         self,
         endpoint: str,
         data: dict,
         stream: bool,
         content_type: str = "application/json",
-    ):
+    ) -> AsyncIterator[Optional[dict]]:
         headers = self._prepare_headers(content_type)
-        response = await self._post_request(
+        
+        async for response in self._post_request(
             f"https://api.spider.cloud/v1/{endpoint}", data, headers, stream
-        )
-        if isinstance(response, aiohttp.ClientResponse):
-            if response.status == 200:
-                return await response.json()
+        ):
+            if stream:
+                yield response
             else:
-                await self._handle_error(response, f"post to {endpoint}")
-        return response
+                if isinstance(response, aiohttp.ClientResponse):
+                    if response.status == 200:
+                        yield await response.json(content_type=None)
+                    else:
+                        await self._handle_error(response, f"post to {endpoint}")
+                        yield None
+                else:
+                    yield response
 
     async def api_get(
         self, endpoint: str, stream: bool, content_type: str = "application/json"
-    ):
+    ) -> AsyncIterator[Optional[dict]]:
         headers = self._prepare_headers(content_type)
-        response = await self._get_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers, stream
-        )
-        if isinstance(response, aiohttp.ClientResponse):
-            if response.status == 200:
-                return await response.json()
+        async for response in self._get_request(
+            f"https://api.spider.cloud/v1/{endpoint}", headers
+        ):
+            if stream:
+                yield response
             else:
-                await self._handle_error(response, f"get from {endpoint}")
-        return response
+                if isinstance(response, aiohttp.ClientResponse):
+                    if response.status == 200:
+                        yield await response.json(content_type=None)
+                    else:
+                        await self._handle_error(response, f"get from {endpoint}")
+                        yield None
+                else:
+                    yield response
 
     async def api_delete(
         self, endpoint: str, stream: bool, content_type: str = "application/json"
-    ):
+    ) -> AsyncIterator[Optional[dict]]:
         headers = self._prepare_headers(content_type)
-        response = await self._delete_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers, stream
-        )
-        if isinstance(response, aiohttp.ClientResponse):
-            if response.status in [200, 202]:
-                return await response.json()
+        async for response in self._delete_request(
+            f"https://api.spider.cloud/v1/{endpoint}", headers
+        ):
+            if stream:
+                yield response
             else:
-                await self._handle_error(response, f"delete from {endpoint}")
-        return response
+                if isinstance(response, aiohttp.ClientResponse):
+                    if response.status in [200, 202]:
+                        yield await response.json(content_type=None)
+                    else:
+                        await self._handle_error(response, f"delete from {endpoint}")
+                        yield None
+                else:
+                    yield response
 
     async def scrape_url(
         self,
@@ -86,19 +104,22 @@ class AsyncSpider:
         params: Optional[RequestParamsDict] = None,
         stream: bool = False,
         content_type: str = "application/json",
-    ):
-        """
-        Start crawling at the specified URL.
+        callback: Optional[JsonCallback] = None,
+    ) -> AsyncIterator[Optional[dict]]:
+        jsonl = stream and callable(callback)
 
-        :param url: The URL to begin crawling.
-        :param params: Optional dictionary with additional parameters to customize the crawl.
-        :param stream: Boolean indicating if the response should be streamed. Defaults to False.
-        :return: JSON response or the raw response stream if streaming enabled.
-        """
-        return await self.api_post(
-            "crawl", {"url": url, **(params or {})}, stream, content_type
-        )
-
+        if jsonl:
+            content_type = "application/jsonl"
+            
+        async for response in self.api_post(
+                "crawl", {"url": url, **(params or {})}, stream, content_type
+            ):
+            if jsonl:
+                async for _ in self.stream_reader(response, callback):
+                    yield
+            else:
+                yield response
+        
     async def links(
         self,
         url: str,
@@ -265,6 +286,39 @@ class AsyncSpider:
         """
         return await self.api_delete(f"data/{table}", params=params)
 
+    async def stream_reader(self, response: aiohttp.ClientResponse, 
+                            callback: JsonCallback) -> AsyncIterator[None]:
+        try:
+            buffer = ""
+            async for chunk in response.content.iter_any():
+                buffer += chunk.decode('utf-8', errors='replace')
+                while '\n' in buffer:
+                    line, buffer = buffer.split('\n', 1)
+                    try:
+                        json_data = json.loads(line)
+                        callback(json_data)
+                        yield
+                    except json.JSONDecodeError as e:
+                        print(f"Error decoding JSON: {e}")
+                        print(f"Problematic line: {line}")
+            
+            if buffer:
+                try:
+                    json_data = json.loads(buffer)
+                    callback(json_data)
+                    yield
+                except json.JSONDecodeError as e:
+                    print(f"Error decoding JSON in remaining buffer: {e}")
+                    print(f"Problematic data: {buffer}")
+
+        except aiohttp.ClientConnectionError as e:
+            print(f"Connection error in stream_reader: {e}")
+        except Exception as e:
+            print(f"Unexpected error: {e}")
+        finally:
+            await response.release()
+
+
     def _prepare_headers(self, content_type: str = "application/json"):
         return {
             "Content-Type": content_type,
@@ -272,35 +326,35 @@ class AsyncSpider:
             "User-Agent": f"Spider-Client/0.0.27",
         }
 
-    async def _post_request(self, url: str, data, headers, stream=False):
+    async def _post_request(self, url: str, data, headers, stream: bool) -> AsyncIterator[aiohttp.ClientResponse]:
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, json=data) as response:
-                if stream:
-                    return response
-                if response.headers.get('Content-Type', '').startswith('application/json'):
-                    return await response.json()
+            async with session.post(url, json=data, headers=headers) as response:
+                if stream or 'Transfer-Encoding' in response.headers:
+                    yield response
                 else:
-                    return await response.text()
+                    # yield await response.json()
+                    content_type = response.headers.get('Content-Type', '').lower()
+                    if 'application/json' in content_type:
+                        yield await response.json()
+                    else:
+                        text = await response.text()
+                        yield {
+                            'status': response.status,
+                            'content_type': content_type,
+                            'text': text,
+                            'headers': dict(response.headers)
+                        }
 
-    async def _get_request(self, url: str, headers, stream=False):
+    async def _get_request(self, url: str, headers) -> AsyncIterator[aiohttp.ClientResponse]:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as response:
-                if stream:
-                    return response
-                if response.headers.get('Content-Type', '').startswith('application/json'):
-                    return await response.json()
-                else:
-                    return await response.text()
+                yield response
+                    
 
-    async def _delete_request(self, url: str, headers, stream=False):
+    async def _delete_request(self, url: str, headers, stream: bool) -> AsyncIterator[aiohttp.ClientResponse]:
         async with aiohttp.ClientSession() as session:
             async with session.delete(url, headers=headers) as response:
-                if stream:
-                    return response
-                if response.headers.get('Content-Type', '').startswith('application/json'):
-                    return await response.json()
-                else:
-                    return await response.text()
+                yield response
 
     async def _handle_error(self, response, action):
         if response.status in [402, 409, 500]:
