@@ -25,7 +25,8 @@ class AsyncSpider:
         stream: bool,
         content_type: str = "application/json",
     ) -> AsyncIterator[Optional[dict]]:
-        headers = await self._prepare_headers(content_type)
+        
+        headers = self._prepare_headers(content_type)
         
         async for response in self._post_request(
             f"https://api.spider.cloud/v1/{endpoint}", data, headers, stream
@@ -37,8 +38,8 @@ class AsyncSpider:
                     if response.status == 200:
                         yield await response.json(content_type=None)
                     else:
-                        yield await self._handle_error(response, f"post to {endpoint}")
-                        # yield None
+                        await self._handle_error(response, f"post to {endpoint}")
+                        yield None
                 else:
                     yield response
 
@@ -49,7 +50,9 @@ class AsyncSpider:
         stream: bool, 
         content_type: str = "application/json"
     ) -> AsyncIterator[Optional[dict]]:
+        
         headers = self._prepare_headers(content_type)
+        
         async for response in self._get_request(
             f"https://api.spider.cloud/v1/{endpoint}", data, headers, stream
         ):
@@ -72,7 +75,9 @@ class AsyncSpider:
         stream: bool, 
         content_type: str = "application/json"
     ) -> AsyncIterator[Optional[dict]]:
+        
         headers = self._prepare_headers(content_type)
+        
         async for response in self._delete_request(
             f"https://api.spider.cloud/v1/{endpoint}", data, headers, stream
         ):
@@ -341,7 +346,7 @@ class AsyncSpider:
             await response.release()
 
 
-    async def _prepare_headers(self, content_type: str = "application/json"):
+    def _prepare_headers(self, content_type: str = "application/json"):
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
@@ -352,9 +357,9 @@ class AsyncSpider:
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=data, headers=headers) as response:
                 if stream or 'Transfer-Encoding' in response.headers:
+                    print(response)
                     yield response
                 else:
-                    # yield await response.json()
                     content_type = response.headers.get('Content-Type', '').lower()
                     if 'application/json' in content_type:
                         yield await response.json()
@@ -366,7 +371,7 @@ class AsyncSpider:
                             'text': text,
                             'headers': dict(response.headers)
                         }
-                        
+
     async def _get_request(self, url: str, data, headers, stream: bool) -> AsyncIterator[aiohttp.ClientResponse]:
         async with aiohttp.ClientSession() as session:
             async with session.get(url, data=data, headers=headers) as response:

@@ -40,6 +40,9 @@ async def crawl_url():
         print(f"Received chunk: {chunk}")
 
 
+asyncio.run(crawl_url())
+
+
 async def scrape_url():
     # Initialize the AsyncSpider
     spider = AsyncSpider()
@@ -174,14 +177,13 @@ async def data_delete():
         print(result)
         
 if __name__ == "__main__":
-    asyncio.run(scrape_url())
     asyncio.run(crawl_url())
+    asyncio.run(scrape_url())
     asyncio.run(links())
     asyncio.run(screenshot())
     asyncio.run(search())
     asyncio.run(transform())
     asyncio.run(contacts())
-    
     asyncio.run(credits())    
     asyncio.run(data_get())    
     asyncio.run(data_delete())    
