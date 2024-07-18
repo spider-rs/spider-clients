@@ -28,7 +28,6 @@ async def crawl_url():
     print("Non-streaming crawl:")
     async for result in spider.crawl_url(url, params=crawler_params, stream=False):
         print(result)
-
     
     # For streaming usage with a callback:
     print("\nStreaming crawl with callback:")
@@ -186,3 +185,6 @@ if __name__ == "__main__":
     asyncio.run(credits())    
     asyncio.run(data_get())    
     asyncio.run(data_delete())    
+    
+    
+    
