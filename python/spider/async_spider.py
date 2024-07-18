@@ -1,6 +1,6 @@
 import os, json, logging
-import aiohttp, asyncio
-from typing import Optional, Tuple, AsyncIterator
+import aiohttp
+from typing import Optional, AsyncIterator
 from spider.spider_types import RequestParamsDict, JsonCallback
 
 
@@ -270,12 +270,10 @@ class AsyncSpider:
 
         :return: JSON response containing the number of credits left.
         """
-        async for response in self.api_get("credits", {}, stream=True):
+        async for response in self.api_get("data/credits", {}, stream=True):
             yield response
 
-    async def data_post(self, 
-                        table: str, 
-                        data: Optional[RequestParamsDict] = None):
+    async def data_post(self, table: str, data: Optional[RequestParamsDict] = None):
         """
         Send data to a specific table via POST request.
         :param table: The table name to which the data will be posted.
@@ -285,11 +283,7 @@ class AsyncSpider:
         async for response in self.api_post(f"data/{table}", data, stream=False):
             yield response
 
-    async def data_get(
-        self,
-        table: str,
-        params: Optional[RequestParamsDict] = None,
-    ):
+    async def data_get(self, table: str, params: Optional[RequestParamsDict] = None):
         """
         Retrieve data from a specific table via GET request.
         :param table: The table name from which to retrieve data.
@@ -299,11 +293,7 @@ class AsyncSpider:
         async for response in self.api_get(f"data/{table}", params, stream=False):
             yield response
 
-    async def data_delete(
-        self,
-        table: str,
-        params: Optional[RequestParamsDict] = None,
-    ):
+    async def data_delete(self, table: str, params: Optional[RequestParamsDict] = None):
         """
         Delete data from a specific table via DELETE request.
         :param table: The table name from which data will be deleted.
@@ -313,8 +303,7 @@ class AsyncSpider:
         async for response in self.api_delete(f"data/{table}", data=params, stream=False):
             yield response
 
-    async def stream_reader(self, response: aiohttp.ClientResponse, 
-                            callback: JsonCallback) -> AsyncIterator[None]:
+    async def stream_reader(self, response: aiohttp.ClientResponse, callback: JsonCallback) -> AsyncIterator[None]:
         try:
             buffer = ""
             async for chunk in response.content.iter_any():
@@ -357,7 +346,6 @@ class AsyncSpider:
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=data, headers=headers) as response:
                 if stream or 'Transfer-Encoding' in response.headers:
-                    print(response)
                     yield response
                 else:
                     content_type = response.headers.get('Content-Type', '').lower()
