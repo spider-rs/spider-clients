@@ -1,4 +1,5 @@
 pytest
+pytest-asyncio
 python-dotenv
 supabase
 aiohttp
