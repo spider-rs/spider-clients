@@ -56,6 +56,15 @@ async def test_crawl_url(api_key, url, params):
             assert 'status' in response[0]
             assert 'url' in response[0]
 
+# TODO "Credits or a valid subscription required to use the API"?
+# @pytest.mark.asyncio
+# async def test_crawl_url_streaming(url, params):
+#     async with AsyncSpider(api_key=api_key) as spider:
+#         async for response in spider.crawl_url(url, params=params, stream=True):
+#             print(response)
+#             json_obj = json.loads(response.decode('utf-8'))
+#             assert json_obj["url"] == "http://example.com"
+
 @pytest.mark.asyncio
 async def test_links(api_key, url, params):
     async with AsyncSpider(api_key=api_key) as spider:
