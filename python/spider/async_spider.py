@@ -10,6 +10,12 @@ from spider.spider_types import RequestParamsDict, JsonCallback, QueryRequest
 
 class AsyncSpider:
     def __init__(self, api_key: Optional[str] = None):
+        """
+        Initialize the Spider with an API key.
+
+        :param api_key: A string of the API key for Spider. Defaults to the SPIDER_API_KEY environment variable.
+        :raises ValueError: If no API key is provided.
+        """
         self.api_key = api_key or os.getenv("SPIDER_API_KEY")
         if self.api_key is None:
             raise ValueError("No API key provided")
@@ -67,6 +73,13 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Scrape data from the specified URL.
+
+        :param url: The URL from which to scrape data.
+        :param params: Optional dictionary of additional parameters for the scrape request.
+        :return: JSON response containing the scraping results.
+        """
         data = {"url": url, "limit": 1, **(params or {})}
         async for response in self._request("POST", "crawl", data=data, stream=stream, content_type=content_type):
             yield response
@@ -79,6 +92,14 @@ class AsyncSpider:
         content_type: str = "application/json",
         callback: Optional[JsonCallback] = None
     ) -> AsyncIterator[Any]:
+        """
+        Start crawling at the specified URL.
+
+        :param url: The URL to begin crawling.
+        :param params: Optional dictionary with additional parameters to customize the crawl.
+        :param stream: Boolean indicating if the response should be streamed. Defaults to False.
+        :return: JSON response or the raw response stream if streaming enabled.
+        """
         data = {"url": url, **(params or {})}
         if stream and callback:
             content_type = "application/jsonl"
@@ -96,6 +117,13 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Retrieve links from the specified URL.
+
+        :param url: The URL from which to extract links.
+        :param params: Optional parameters for the link retrieval request.
+        :return: JSON response containing the links.
+        """
         data = {"url": url, **(params or {})}
         async for response in self._request("POST", "links", data=data, stream=stream, content_type=content_type):
             yield response
@@ -107,6 +135,13 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Take a screenshot of the specified URL.
+
+        :param url: The URL to capture a screenshot from.
+        :param params: Optional parameters to customize the screenshot capture.
+        :return: JSON response with screenshot data.
+        """
         data = {"url": url, **(params or {})}
         async for response in self._request("POST", "screenshot", data=data, stream=stream, content_type=content_type):
             yield response
@@ -118,6 +153,13 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Perform a search and gather a list of websites to start crawling and collect resources.
+
+        :param search: The search query.
+        :param params: Optional parameters to customize the search.
+        :return: JSON response or the raw response stream if streaming enabled.
+        """
         data = {"search": q, **(params or {})}
         async for response in self._request("POST", "search", data=data, stream=stream, content_type=content_type):
             yield response
@@ -129,6 +171,13 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Transform HTML to Markdown or text. You can send up to 10MB of data at once.
+
+        :param data: The data to transform a list of objects with the 'html' key and an optional 'url' key only used readability mode.
+        :param params: Optional parameters to customize the search.
+        :return: JSON response or the raw response stream if streaming enabled.
+        """
         payload = {"data": data, **(params or {})}
         async for response in self._request("POST", "transform", data=payload, stream=stream, content_type=content_type):
             yield response
@@ -140,6 +189,13 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Extract contact information from the specified URL.
+
+        :param url: The URL from which to extract contact information.
+        :param params: Optional parameters for the contact extraction.
+        :return: JSON response containing extracted contact details.
+        """
         data = {"url": url, **(params or {})}
         async for response in self._request("POST", "pipeline/extract-contacts", data=data, stream=stream, content_type=content_type):
             yield response
@@ -151,6 +207,13 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Apply labeling to data extracted from the specified URL.
+
+        :param url: The URL to label data from.
+        :param params: Optional parameters to guide the labeling process.
+        :return: JSON response with labeled data.
+        """
         data = {"url": url, **(params or {})}
         async for response in self._request("POST", "pipeline/label", data=data, stream=stream, content_type=content_type):
             yield response
@@ -161,6 +224,12 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Query a website resource from our database. This costs 1 credit per successful retrieval.
+
+        :param params: Optional parameters to guide the labeling process.
+        :return: The website contents markup.
+        """
         async for response in self._request("GET", "data/query", params=params, stream=stream, content_type=content_type):
             yield response
 
@@ -170,6 +239,13 @@ class AsyncSpider:
         params: Optional[Dict[str, int]] = None,
         stream: bool = True
     ) -> AsyncIterator[Any]:
+        """
+        Create a signed URL to download data from a specific domain.
+
+        :param domain: The domain to create a signed URL for.
+        :param params: Optional parameters to customize the signed URL.
+        :return: JSON response with the signed URL.
+        """
         if domain:
             params = params or {}
             params["domain"] = domain
@@ -183,23 +259,54 @@ class AsyncSpider:
         stream: bool = False,
         content_type: str = "application/json"
     ) -> AsyncIterator[Any]:
+        """
+        Retrieve the website active crawl state.
+        
+        :return: JSON response of the crawl state and credits used.
+        """
         data = {"url": url, "stream": stream, "content_type": content_type, **(params or {})}
         async for response in self._request("POST", "data/crawl_state", data=data, stream=stream, content_type=content_type):
             yield response
 
     async def get_credits(self) -> AsyncIterator[Any]:
+        """
+        Retrieve the account's remaining credits.
+
+        :return: JSON response containing the number of credits left.
+        """
         async for response in self._request("GET", "data/credits"):
             yield response
 
     async def data_post(self, table: str, data: Optional[RequestParamsDict] = {}) -> AsyncIterator[Any]:
+        """
+        Send data to a specific table via POST request.
+        
+        :param table: The table name to which the data will be posted.
+        :param data: A dictionary representing the data to be posted.
+        :return: The JSON response from the server.
+        """
         async for response in self._request("POST", f"data/{table}", data=data):
             yield response
 
     async def data_get(self, table: str, params: Optional[RequestParamsDict] = None) -> AsyncIterator[Any]:
+        """
+        Retrieve data from a specific table via GET request.
+
+        :param table: The table name from which to retrieve data.
+        :param params: Optional parameters to modify the query.
+        :return: The JSON response from the server.
+        """
         async for response in self._request("GET", f"data/{table}", params=params):
             yield response
 
     async def data_delete(self, table: str, data: Optional[RequestParamsDict] = {}, params: Optional[RequestParamsDict] = None) -> AsyncIterator[Any]:
+        """
+        Delete data from a specific table via DELETE request.
+        
+        :param table: The table name from which data will be deleted.
+        :param params: Parameters to identify which data to delete.
+        :return: The JSON response from the server.
+        """
         async for response in self._request("DELETE", f"data/{table}", data=data, params=params):
             yield response
 
