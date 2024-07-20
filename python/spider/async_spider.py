@@ -43,6 +43,8 @@ class AsyncSpider:
         headers = self._prepare_headers(content_type)
         url = f"https://api.spider.cloud/v1/{endpoint}"
 
+        if params:
+            params = {k: str(v).lower() if isinstance(v, bool) else v for k, v in params.items()}
         async with self.session.request(method, url, json=data, params=params, headers=headers) as response:
             if stream:
                 async for chunk in response.content.iter_any():
@@ -52,7 +54,9 @@ class AsyncSpider:
                     if 'application/json' in response.headers.get('Content-Type', ''):
                         yield await response.json()
                     else:
-                        yield await response.text()
+                        new_text = await response.text()
+                        new_json = json.loads(new_text)
+                        yield new_json
                 else:
                     await self._handle_error(response, f"{method} to {endpoint}")
 
@@ -187,7 +191,7 @@ class AsyncSpider:
         async for response in self._request("GET", "data/credits"):
             yield response
 
-    async def data_post(self, table: str, data: Optional[RequestParamsDict] = None) -> AsyncIterator[Any]:
+    async def data_post(self, table: str, data: Optional[RequestParamsDict] = {}) -> AsyncIterator[Any]:
         async for response in self._request("POST", f"data/{table}", data=data):
             yield response
 
@@ -195,8 +199,8 @@ class AsyncSpider:
         async for response in self._request("GET", f"data/{table}", params=params):
             yield response
 
-    async def data_delete(self, table: str, params: Optional[RequestParamsDict] = None) -> AsyncIterator[Any]:
-        async for response in self._request("DELETE", f"data/{table}", params=params):
+    async def data_delete(self, table: str, data: Optional[RequestParamsDict] = {}, params: Optional[RequestParamsDict] = None) -> AsyncIterator[Any]:
+        async for response in self._request("DELETE", f"data/{table}", data=data, params=params):
             yield response
 
     async def _stream_reader(self, response: Any, callback: Callable[[Dict[str, Any]], None]) -> None:
@@ -232,4 +236,4 @@ class AsyncSpider:
             error_message = (await response.json()).get("error", "Unknown error occurred")
             raise Exception(f"Failed to {action}. Status code: {response.status}. Error: {error_message}")
         else:
-            raise Exception(f"Unexpected error occurred while trying to {action}. Status code: {response.status}")
+            raise Exception(f"Unexpected error occurred while trying to {action}. Status code: {response.status}. Here is the response: {await response.text()}")
