@@ -1,5 +1,6 @@
 import {
   ChunkCallbackFunction,
+  Collection,
   QueryRequest,
   SpiderCoreResponse,
   SpiderParams,
@@ -7,6 +8,8 @@ import {
 import { version } from "../package.json";
 import { Supabase } from "./supabase";
 import { streamReader } from "./utils/stream-reader";
+
+export const BASE_API_URL = "https://api.spider.cloud";
 
 /**
  * Generic params for core request.
@@ -64,10 +67,10 @@ export class Spider {
     endpoint: string,
     data: Record<string, any>,
     stream?: boolean,
-    jsonl?: boolean
+    jsonl?: boolean,
   ) {
     const headers = jsonl ? this.prepareHeadersJsonL : this.prepareHeaders;
-    const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
+    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify(data),
@@ -90,7 +93,7 @@ export class Spider {
    */
   private async _apiGet(endpoint: string) {
     const headers = this.prepareHeaders;
-    const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
+    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
       method: "GET",
       headers: headers,
     });
@@ -109,7 +112,7 @@ export class Spider {
    */
   private async _apiDelete(endpoint: string) {
     const headers = this.prepareHeaders;
-    const response = await fetch(`https://api.spider.cloud/v1/${endpoint}`, {
+    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
       method: "DELETE",
       headers,
     });
@@ -143,14 +146,14 @@ export class Spider {
     url: string,
     params: GenericParams = {},
     stream = false,
-    cb?: ChunkCallbackFunction
+    cb?: ChunkCallbackFunction,
   ): Promise<SpiderCoreResponse[] | void> {
     const jsonl = stream && cb;
     const res = await this._apiPost(
       "crawl",
       { url: url, ...params },
       stream,
-      !!jsonl
+      !!jsonl,
     );
 
     if (jsonl) {
@@ -239,23 +242,27 @@ export class Spider {
    * @returns {Promise<Response>} The response containing the file stream.
    */
   async createSignedUrl(
-    domain?: string,
+    url?: string,
     options?: {
       page?: number;
       limit?: number;
       expiresIn?: number;
+      // optional if you do not know the url put the domain and path.
+      domain?: string;
+      pathname?: string;
     },
-    raw?: boolean
-  ): Promise<Response> {
-    const { page, limit, expiresIn } = options ?? {};
+  ): Promise<any> {
+    const { page, limit, expiresIn, domain, pathname } = options ?? {};
 
     const params = new URLSearchParams({
+      ...(url && { url }),
       ...(domain && { domain }),
+      ...(pathname && { pathname }),
       ...(page && { page: page.toString() }),
       ...(limit && { limit: limit.toString() }),
       ...(expiresIn && { expiresIn: expiresIn.toString() }),
     });
-    const endpoint = `https://api.spider.cloud/v1/data/storage?${params.toString()}`;
+    const endpoint = `${BASE_API_URL}/data/sign-url?${params.toString()}`;
     const headers = this.prepareHeaders;
 
     const response = await fetch(endpoint, {
@@ -263,15 +270,11 @@ export class Spider {
       headers,
     });
 
-    if (!raw) {
-      if (response.ok) {
-        return response.json();
-      } else {
-        this.handleError(response, `Failed to download files`);
-      }
+    if (response.ok) {
+      return await response.json();
+    } else {
+      this.handleError(response, `Failed to download files`);
     }
-
-    return response;
   }
 
   /**
@@ -279,7 +282,7 @@ export class Spider {
    * @returns {Promise<any>} The current credit balance.
    */
   async getCredits() {
-    return this._apiGet("credits");
+    return this._apiGet("data/credits");
   }
 
   /**
@@ -290,24 +293,47 @@ export class Spider {
    */
   async postData(
     table: string,
-    data: GenericParams | Record<string, any>
+    data: GenericParams | Record<string, any>,
   ): Promise<any> {
     return this._apiPost(`data/${table}`, data);
   }
 
   /**
    * Send a GET request to retrieve data from a specified table.
-   * @param {string} table - The table name in the database.
+   * @param {Collection} table - The table name in the database.
    * @param {object} params - The query parameters for data retrieval.
    * @returns {Promise<any>} The response from the server.
    */
   async getData(
-    table: string,
-    params: GenericParams | Record<string, any>
+    collections: Collection,
+    params: GenericParams | Record<string, any>,
   ): Promise<any> {
     return this._apiGet(
-      `data/${table}?${new URLSearchParams(params as any).toString()}`
+      `data/${collections}?${new URLSearchParams(params as any).toString()}`,
     );
+  }
+
+  /**
+   * Download a record. The url is the path of the storage hash returned and not the exact website url.
+   * @param {QueryRequest} params - The query parameters for data retrieval.
+   * @returns {Promise<any>} The download response from the server.
+   */
+  async download(query: QueryRequest, output?: "text" | "blob"): Promise<any> {
+    const headers = this.prepareHeaders;
+    const endpoint = `data/download?${new URLSearchParams(query as Record<string, string>).toString()}`;
+    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
+      method: "GET",
+      headers,
+    });
+
+    if (response.ok) {
+      if (output === "text") {
+        return await response.text()
+      }
+      return await response.blob()
+    } else {
+      this.handleError(response, `get from ${endpoint}`);
+    }
   }
 
   /**
@@ -317,22 +343,22 @@ export class Spider {
    */
   async query(query: QueryRequest): Promise<any> {
     return this._apiGet(
-      `data/query?${new URLSearchParams(query as Record<string, string>).toString()}`
+      `data/query?${new URLSearchParams(query as Record<string, string>).toString()}`,
     );
   }
 
   /**
    * Send a DELETE request to remove data from a specified table.
-   * @param {string} table - The table name in the database.
+   * @param {Collection} table - The table name in the database.
    * @param {object} params - Parameters to identify records to delete.
    * @returns {Promise<any>} The response from the server.
    */
   async deleteData(
-    table: string,
-    params: GenericParams | Record<string, any>
+    collection: Collection,
+    params: GenericParams | Record<string, any>,
   ): Promise<any> {
     return this._apiDelete(
-      `data/${table}?${new URLSearchParams(params as any).toString()}`
+      `data/${collection}?${new URLSearchParams(params as any).toString()}`,
     );
   }
 

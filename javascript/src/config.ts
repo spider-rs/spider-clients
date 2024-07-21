@@ -326,3 +326,18 @@ export type SpiderCoreResponse = {
 };
 
 export type ChunkCallbackFunction = (data: SpiderCoreResponse) => void;
+
+// records that you can query
+export enum Collection {
+  Websites = "websites",
+  Pages = "pages",
+  PagesMetadata = "pages_metadata",
+  // Leads
+  Contacts = "contacts",
+  CrawlState = "crawl_state",
+  CrawlLogs = "crawl_logs",
+  Profiles = "profiles",
+  Credits = "credits",
+  Webhooks = "webhooks",
+  APIKeys = "api_keys"
+}

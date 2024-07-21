@@ -1,6 +1,6 @@
 import { describe, test } from "node:test";
 import assert from "node:assert";
-import { Spider } from "../src";
+import { Collection, Spider } from "../src";
 import "dotenv/config";
 import { GenericParams } from "../src/client";
 
@@ -67,7 +67,7 @@ describe("Spider JS SDK", () => {
     const spiderClient = new Spider();
     const searchData = await spiderClient.search(
       "example search query",
-      params
+      params,
     );
 
     assert(Array.isArray(searchData));
@@ -131,48 +131,53 @@ describe("Spider JS SDK", () => {
     assert(crawlState.content);
   });
 
-  // unkown error (400 bad request)
-  // test("should get credits", async () => {
-  //   const spiderClient = new Spider();
-  //   const credits = await spiderClient.getCredits();
-  //   console.log("THIS IS THE GET CREDITS RESPONSE", credits)
+  test("should download the file", async () => {
+    const spiderClient = new Spider();
+    const {data} = await spiderClient.getData(Collection.Pages, { domain: "example.com", limit: 1 });
 
-  //   assert(typeof credits === 'object');
-  // });
+    // the file might be deleted before hand. we need to not delete the file being used throughout test.
+    const text = data.length ? await spiderClient.download({ url: data[0].url }, "text") : "";
+
+    assert(typeof text === "string");
+
+  });
+
+  test("should get credits", async () => {
+    const spiderClient = new Spider();
+    const credits = await spiderClient.getCredits();
+
+    assert(typeof credits === 'object');
+  });
 
   test("should post data", async () => {
     const spiderClient = new Spider();
-    const table = "websites";
     const postData = { url: url };
-    const response = await spiderClient.postData(table, postData);
-    assert(response.status == 201);
+    const response = await spiderClient.postData(Collection.Websites, postData);
+    assert([200, 201].includes(response.status));
   });
 
-  // 500 error code
-  // test("should get data", async () => {
-  //   const spiderClient = new Spider();
-  //   const table = "websites";
-  //   const response = await spiderClient.getData(table, params);
+  test("should get data", async () => {
+    const spiderClient = new Spider();
+    const response = await spiderClient.getData(Collection.Websites, params);
 
-  //   assert(typeof response === 'object');
-  //   assert(Array.isArray(response.data));
-  // });
+    assert(typeof response === 'object');
+    assert(Array.isArray(response.data));
+  });
 
   test("should delete data", async () => {
     const spiderClient = new Spider();
-    const table = "websites";
-    const response = await spiderClient.deleteData(table, params);
+    const response = await spiderClient.deleteData(Collection.Websites, params);
 
     assert(response.status >= 200 && response.status <= 299);
   });
 
-  // 500 error code
-  // test("should create signed url", async () => {
-  //   const spiderClient = new Spider();
-  //   const signedUrl = await spiderClient.createSignedUrl("example.com", { page: 1, limit: 10 });
-  //
-  //   assert(typeof signedUrl === 'string');
-  // });
+  test("should create signed url", async () => {
+    const spiderClient = new Spider();
+    const { fileName, signedUrl } = await spiderClient.createSignedUrl("example.com");
+  
+    assert(typeof signedUrl === 'string');
+    assert(typeof fileName === 'string');
+  });
 
   test("should connect with supabase", async () => {
     const spiderClient = new Spider();

@@ -35,7 +35,7 @@ export class Supabase {
               persistSession: windowExists,
               autoRefreshToken: windowExists,
             },
-          }
+          },
         );
       } catch (error) {
         Promise.reject("Failed to initialize Supabase client: " + error);
@@ -51,7 +51,7 @@ export class Supabase {
   static get client(): SupabaseClient {
     if (!Supabase.instance) {
       throw new Error(
-        "Supabase client is not initialized. Call Supabase.init() first."
+        "Supabase client is not initialized. Call Supabase.init() first.",
       );
     }
     return Supabase.instance;

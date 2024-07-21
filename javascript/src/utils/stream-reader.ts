@@ -4,7 +4,7 @@ import { processChunk } from "./process-chunk";
 // stream the response via callbacks.
 export const streamReader = async (
   res: Response,
-  cb: ChunkCallbackFunction
+  cb: ChunkCallbackFunction,
 ) => {
   if (res.ok) {
     const reader = res.body?.getReader();
