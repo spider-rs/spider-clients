@@ -190,6 +190,6 @@ async def test_data_delete(api_key, url, params):
 @pytest.mark.asyncio
 async def test_create_signed_url(api_key):
     async with AsyncSpider(api_key=api_key) as spider:
-        async for response in spider.create_signed_url(domain="example.com", params={"page": 1, "limit": 10}):
+        async for response in spider.create_signed_url(params={"domain": "example.com"}):
             logger.info(f"Create signed URL response: {response}")
             assert isinstance(response, bytes)

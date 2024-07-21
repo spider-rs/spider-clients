@@ -291,29 +291,68 @@ class Spider:
         """
         return self.api_get("data/query", {**(params or {})}, stream, content_type)
 
+    def download(
+        self,
+        url: Optional[str] = None,
+        params: Optional[Dict[str, int]] = None,
+        stream: Optional[bool] = True,
+    ):
+        """
+        Download the file from storage.
+
+        :param url: Optional url of the exact path to specify the storage path.
+        :param params: Optional dictionary containing configuration parameters, such as:
+            - 'page': Optional page number for pagination.
+            - 'limit': Optional page limit for pagination.
+            - 'domain': Optional domain name to use when url is not known.
+            - 'pathname': Optional pathname to use when urls is not known.
+            - 'expiresIn': Optional expiration time for the signed URL.
+        :param stream: Boolean indicating if the response should be streamed. Defaults to True.
+        :return: The raw response stream if stream is True.
+        """
+        if url:
+            params["url"] = url
+        if params:
+            params.update(params)
+
+        endpoint = "data/download"
+        headers = self._prepare_headers("application/octet-stream")
+        response = self._get_request(
+            f"https://api.spider.cloud/v1/{endpoint}", headers, stream, params=params
+        )
+        if 200 <= response.status_code < 300:
+            if stream:
+                return response.raw
+            else:
+                return response.content
+        else:
+            self._handle_error(response, f"download from {endpoint}")
+
     def create_signed_url(
         self,
-        domain: Optional[str] = None,
+        url: Optional[str] = None,
         params: Optional[Dict[str, int]] = None,
         stream: Optional[bool] = True,
     ):
         """
         Create a signed url to download files from the storage.
 
-        :param domain: Optional domain name to specify the storage path.
+        :param url: Optional url of the exact path to specify the storage path.
         :param params: Optional dictionary containing configuration parameters, such as:
             - 'page': Optional page number for pagination.
             - 'limit': Optional page limit for pagination.
+            - 'domain': Optional domain name to use when url is not known.
+            - 'pathname': Optional pathname to use when urls is not known.
             - 'expiresIn': Optional expiration time for the signed URL.
         :param stream: Boolean indicating if the response should be streamed. Defaults to True.
         :return: The raw response stream if stream is True.
         """
-        if domain:
-            params["domain"] = domain
+        if url:
+            params["url"] = url
         if params:
             params.update(params)
 
-        endpoint = "data/storage"
+        endpoint = "data/sign-url"
         headers = self._prepare_headers("application/octet-stream")
         response = self._get_request(
             f"https://api.spider.cloud/v1/{endpoint}", headers, stream, params=params
@@ -400,7 +439,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.58",
+            "User-Agent": f"Spider-Client/0.0.59",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

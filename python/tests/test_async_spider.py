@@ -267,7 +267,7 @@ async def test_create_signed_url(async_spider):
         yield mock_response
 
     with patch.object(AsyncSpider, '_request', side_effect=mock_request):
-        async for response in async_spider.create_signed_url(domain="example.com", params={"page": 1, "limit": 10}):
+        async for response in async_spider.create_signed_url(params={"domain": "example.com"}):
             assert response == b"mocked raw data"
 
 # @pytest.mark.asyncio
