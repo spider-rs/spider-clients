@@ -827,26 +827,26 @@ impl Spider {
         res.json().await
     }
 
-    /// Creates a signed URL.
+    /// Download a record from storage.
     ///
     /// # Arguments
     ///
-    /// * `domain` - Optional domain.
+    /// * `url` - Optional exact url of the file in storage.
     /// * `options` - Optional options.
     /// * `stream` - Whether streaming is enabled.
     ///
     /// # Returns
     ///
     /// The response from the API.
-    pub async fn create_signed_url(
+    pub async fn download(
         &self,
-        domain: Option<&str>,
+        url: Option<&str>,
         options: Option<HashMap<&str, i32>>,
     ) -> Result<reqwest::Response, reqwest::Error> {
         let mut params = HashMap::new();
 
-        if let Some(domain) = domain {
-            params.insert("domain".to_string(), domain.to_string());
+        if let Some(url) = url {
+            params.insert("url".to_string(), url.to_string());
         }
 
         if let Some(options) = options {
@@ -855,7 +855,7 @@ impl Spider {
             }
         }
 
-        let url = format!("{API_URL}/v1/data/storage");
+        let url = format!("{API_URL}/v1/data/download");
         let request = self
             .client
             .get(&url)
@@ -870,6 +870,50 @@ impl Spider {
         let res = request.send().await?;
 
         Ok(res)
+    }
+
+    /// Creates a signed URL of a file from storage.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - Optional exact url of the file in storage.
+    /// * `options` - Optional options.
+    /// * `stream` - Whether streaming is enabled.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API.
+    pub async fn create_signed_url(
+        &self,
+        url: Option<&str>,
+        options: Option<HashMap<&str, i32>>,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut params = HashMap::new();
+
+        if let Some(url) = url {
+            params.insert("url".to_string(), url.to_string());
+        }
+
+        if let Some(options) = options {
+            for (key, value) in options {
+                params.insert(key.to_string(), value.to_string());
+            }
+        }
+
+        let url = format!("{API_URL}/v1/data/sign-url");
+        let request = self
+            .client
+            .get(&url)
+            .header(
+                "User-Agent",
+                format!("Spider-Client/{}", env!("CARGO_PKG_VERSION")),
+            )
+            .header("Authorization", format!("Bearer {}", self.api_key))
+            .query(&params);
+
+        let res = request.send().await?;
+
+        res.json().await
     }
 
     /// Gets the crawl state of a URL.
