@@ -4,12 +4,13 @@ import {
   QueryRequest,
   SpiderCoreResponse,
   SpiderParams,
+  APISchema,
+  APIRoutes,
+  ApiVersion,
 } from "./config";
 import { version } from "../package.json";
 import { Supabase } from "./supabase";
 import { streamReader } from "./utils/stream-reader";
-
-export const BASE_API_URL = "https://api.spider.cloud";
 
 /**
  * Generic params for core request.
@@ -67,14 +68,17 @@ export class Spider {
     endpoint: string,
     data: Record<string, any>,
     stream?: boolean,
-    jsonl?: boolean,
+    jsonl?: boolean
   ) {
     const headers = jsonl ? this.prepareHeadersJsonL : this.prepareHeaders;
-    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+      {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(data),
+      }
+    );
 
     if (!stream) {
       if (response.ok) {
@@ -93,10 +97,13 @@ export class Spider {
    */
   private async _apiGet(endpoint: string) {
     const headers = this.prepareHeaders;
-    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
-      method: "GET",
-      headers: headers,
-    });
+    const response = await fetch(
+      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+      {
+        method: "GET",
+        headers: headers,
+      }
+    );
 
     if (response.ok) {
       return response.json();
@@ -112,10 +119,13 @@ export class Spider {
    */
   private async _apiDelete(endpoint: string) {
     const headers = this.prepareHeaders;
-    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
-      method: "DELETE",
-      headers,
-    });
+    const response = await fetch(
+      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+      {
+        method: "DELETE",
+        headers,
+      }
+    );
 
     if (response.ok) {
       return response;
@@ -131,7 +141,7 @@ export class Spider {
    * @returns {Promise<any>} The scraped data from the URL.
    */
   async scrapeUrl(url: string, params: GenericParams = {}) {
-    return this._apiPost("crawl", { url: url, limit: 1, ...params });
+    return this._apiPost(APIRoutes.Crawl, { url: url, limit: 1, ...params });
   }
 
   /**
@@ -146,14 +156,14 @@ export class Spider {
     url: string,
     params: GenericParams = {},
     stream = false,
-    cb?: ChunkCallbackFunction,
+    cb?: ChunkCallbackFunction
   ): Promise<SpiderCoreResponse[] | void> {
     const jsonl = stream && cb;
     const res = await this._apiPost(
-      "crawl",
+      APIRoutes.Crawl,
       { url: url, ...params },
       stream,
-      !!jsonl,
+      !!jsonl
     );
 
     if (jsonl) {
@@ -170,7 +180,7 @@ export class Spider {
    * @returns {Promise<any>} A list of links extracted from the URL.
    */
   async links(url: string, params = {}) {
-    return this._apiPost("links", { url: url, ...params });
+    return this._apiPost(APIRoutes.Links, { url: url, ...params });
   }
 
   /**
@@ -180,7 +190,7 @@ export class Spider {
    * @returns {Promise<any>} The screenshot data.
    */
   async screenshot(url: string, params: GenericParams = {}) {
-    return this._apiPost("screenshot", { url: url, ...params });
+    return this._apiPost(APIRoutes.Screenshot, { url: url, ...params });
   }
 
   /**
@@ -190,7 +200,7 @@ export class Spider {
    * @returns {Promise<any>} The result of the crawl, either structured data or a Response object if streaming.
    */
   async search(q: string, params: GenericParams = {}) {
-    return this._apiPost("search", { search: q, ...params });
+    return this._apiPost(APIRoutes.Search, { search: q, ...params });
   }
 
   /**
@@ -200,17 +210,20 @@ export class Spider {
    * @returns {Promise<any>} The transformation result.
    */
   async transform(data: { html: string; url?: string }[], params = {}) {
-    return this._apiPost("transform", { data, ...params });
+    return this._apiPost(APIRoutes.Transform, { data, ...params });
   }
 
   /**
-   * Extracts contact information from the specified URL.
+   * Extracts leads from a website.
    * @param {string} url - The URL from which to extract contacts.
    * @param {GenericParams} [params={}] - Configuration parameters for the extraction.
    * @returns {Promise<any>} The contact information extracted.
    */
   async extractContacts(url: string, params: GenericParams = {}) {
-    return this._apiPost("pipeline/extract-contacts", { url: url, ...params });
+    return this._apiPost(APIRoutes.PiplineExtractLeads, {
+      url: url,
+      ...params,
+    });
   }
 
   /**
@@ -220,7 +233,7 @@ export class Spider {
    * @returns {Promise<any>} The labeled data.
    */
   async label(url: string, params: GenericParams = {}) {
-    return this._apiPost("pipeline/label", { url: url, ...params });
+    return this._apiPost(APIRoutes.PiplineLabel, { url: url, ...params });
   }
 
   /**
@@ -230,7 +243,7 @@ export class Spider {
    * @returns {Promise<any>} The crawl state data.
    */
   async getCrawlState(url: string, params: GenericParams = {}) {
-    return this._apiPost("data/crawl_state", { url: url, ...params });
+    return this._apiPost(APIRoutes.DataCrawlState, { url: url, ...params });
   }
 
   /**
@@ -250,7 +263,7 @@ export class Spider {
       // optional if you do not know the url put the domain and path.
       domain?: string;
       pathname?: string;
-    },
+    }
   ): Promise<any> {
     const { page, limit, expiresIn, domain, pathname } = options ?? {};
 
@@ -262,7 +275,9 @@ export class Spider {
       ...(limit && { limit: limit.toString() }),
       ...(expiresIn && { expiresIn: expiresIn.toString() }),
     });
-    const endpoint = `${BASE_API_URL}/data/sign-url?${params.toString()}`;
+    const endpoint = `${APISchema["url"]}/${
+      APIRoutes.DataSignUrl
+    }?${params.toString()}`;
     const headers = this.prepareHeaders;
 
     const response = await fetch(endpoint, {
@@ -273,7 +288,7 @@ export class Spider {
     if (response.ok) {
       return await response.json();
     } else {
-      this.handleError(response, `Failed to download files`);
+      this.handleError(response, `Failed to sign files`);
     }
   }
 
@@ -282,7 +297,7 @@ export class Spider {
    * @returns {Promise<any>} The current credit balance.
    */
   async getCredits() {
-    return this._apiGet("data/credits");
+    return this._apiGet(APIRoutes.DataCredits);
   }
 
   /**
@@ -292,10 +307,10 @@ export class Spider {
    * @returns {Promise<any>} The response from the server.
    */
   async postData(
-    table: string,
-    data: GenericParams | Record<string, any>,
+    collection: Collection,
+    data: GenericParams | Record<string, any>
   ): Promise<any> {
-    return this._apiPost(`data/${table}`, data);
+    return this._apiPost(`${APIRoutes.Data}/${collection}`, data);
   }
 
   /**
@@ -306,10 +321,12 @@ export class Spider {
    */
   async getData(
     collections: Collection,
-    params: GenericParams | Record<string, any>,
+    params: GenericParams | Record<string, any>
   ): Promise<any> {
     return this._apiGet(
-      `data/${collections}?${new URLSearchParams(params as any).toString()}`,
+      `${APIRoutes.Data}/${collections}?${new URLSearchParams(
+        params as any
+      ).toString()}`
     );
   }
 
@@ -320,17 +337,22 @@ export class Spider {
    */
   async download(query: QueryRequest, output?: "text" | "blob"): Promise<any> {
     const headers = this.prepareHeaders;
-    const endpoint = `data/download?${new URLSearchParams(query as Record<string, string>).toString()}`;
-    const response = await fetch(`${BASE_API_URL}/v1/${endpoint}`, {
-      method: "GET",
-      headers,
-    });
+    const endpoint = `${APIRoutes.DataDownload}?${new URLSearchParams(
+      query as Record<string, string>
+    ).toString()}`;
+    const response = await fetch(
+      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+      {
+        method: "GET",
+        headers,
+      }
+    );
 
     if (response.ok) {
       if (output === "text") {
-        return await response.text()
+        return await response.text();
       }
-      return await response.blob()
+      return await response.blob();
     } else {
       this.handleError(response, `get from ${endpoint}`);
     }
@@ -343,7 +365,9 @@ export class Spider {
    */
   async query(query: QueryRequest): Promise<any> {
     return this._apiGet(
-      `data/query?${new URLSearchParams(query as Record<string, string>).toString()}`,
+      `${APIRoutes.DataQuery}?${new URLSearchParams(
+        query as Record<string, string>
+      ).toString()}`
     );
   }
 
@@ -355,10 +379,12 @@ export class Spider {
    */
   async deleteData(
     collection: Collection,
-    params: GenericParams | Record<string, any>,
+    params: GenericParams | Record<string, any>
   ): Promise<any> {
     return this._apiDelete(
-      `data/${collection}?${new URLSearchParams(params as any).toString()}`,
+      `${APIRoutes.Data}/${collection}?${new URLSearchParams(
+        params as any
+      ).toString()}`
     );
   }
 

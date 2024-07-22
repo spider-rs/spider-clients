@@ -339,5 +339,63 @@ export enum Collection {
   Profiles = "profiles",
   Credits = "credits",
   Webhooks = "webhooks",
-  APIKeys = "api_keys"
+  APIKeys = "api_keys",
 }
+
+// The API version for Spider
+export enum ApiVersion {
+  V1 = "v1",
+}
+
+// The API routes paths.
+export enum APIRoutes {
+  // Crawl a website to collect the contents. Can be one page or many.
+  Crawl = "crawl",
+  // Crawl a website to collect the links. Can be one page or many.
+  Links = "links",
+  // Crawl a website to collect screenshots. Can be one page or many.
+  Screenshot = "screenshot",
+  // Search for something and optionally crawl the pages or get the results of the search.
+  Search = "search",
+  // Transform HTML to markdown or text.
+  Transform = "transform",
+  // Pipeline extract leads for a website - emails, phones, etc.
+  PiplineExtractLeads = "pipeline/extract-contacts",
+  // Pipeline label a website by category using AI and metadata.
+  PiplineLabel = "pipeline/label",
+  // Dynamic collection routes.
+  Data = "data",
+  // The last crawl state of a website.
+  DataCrawlState = "data/crawl_state",
+  // Sign a file from storage based on the exact url path of the storage or domain - pathname.
+  DataSignUrl = "data/sign-url",
+  // Download a file from storage based on the exact url path of the storage or domain - pathname.
+  DataDownload = "data/download",
+  // Perform a query on the global database to grab content without crawling if available.
+  DataQuery = "data/query",
+  // Get the credits remaining for an account.
+  DataCredits = "data/credits",
+}
+
+// The base API target info for Spider Cloud.
+export const APISchema = {
+  url: "https://api.spider.cloud",
+  versions: {
+    current: ApiVersion.V1,
+    v1: {
+      routes: APIRoutes,
+      end_date: "",
+    },
+    latest: {
+      routes: APIRoutes,
+      end_date: "",
+    },
+  },
+};
+
+// Adjust the Spider Cloud endpoint.
+export const setBaseUrl = (url: string) => {
+  if (url) {
+    APISchema["url"] = url;
+  }
+};
