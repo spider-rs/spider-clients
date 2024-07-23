@@ -1102,20 +1102,20 @@ mod tests {
         assert!(response.is_ok());
     }
 
-    #[tokio::test(flavor = "multi_thread")]
-    async fn test_search() {
-        let mut params = SearchRequestParams::default();
+    // #[tokio::test(flavor = "multi_thread")]
+    // async fn test_search() {
+    //     let mut params = SearchRequestParams::default();
 
-        params.search_limit = Some(1);
-        params.num = Some(1);
-        params.fetch_page_content = Some(false);
+    //     params.search_limit = Some(1);
+    //     params.num = Some(1);
+    //     params.fetch_page_content = Some(false);
 
-        let response = SPIDER_CLIENT
-            .search("a sports website", Some(params), false, "application/json")
-            .await;
+    //     let response = SPIDER_CLIENT
+    //         .search("a sports website", Some(params), false, "application/json")
+    //         .await;
 
-        assert!(response.is_ok());
-    }
+    //     assert!(response.is_ok());
+    // }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_transform() {

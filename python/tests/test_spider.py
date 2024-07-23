@@ -275,7 +275,7 @@ def test_supabase_get_client_not_initialized(spider):
 def test_stream_reader():
     spider = Spider(api_key="test_api_key")
     mock_response = MagicMock()
-    mock_response.iter_content.return_value = [b'{"key": "value"}\n', b'{"key2": "value2"}\n']
+    mock_response.iter_lines.return_value = [b'{"key": "value"}\n', b'{"key2": "value2"}\n']
     
     callback_data = []
     def callback(json_obj):

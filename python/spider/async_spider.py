@@ -405,7 +405,7 @@ class AsyncSpider:
         self, response: Any, callback: Callable[[Dict[str, Any]], None]
     ) -> None:
         buffer = ""
-        async for chunk in response:
+        async for chunk in response.aiter_bytes():
             buffer += chunk.decode("utf-8", errors="replace")
             while "\n" in buffer:
                 line, buffer = buffer.split("\n", 1)
@@ -416,7 +416,7 @@ class AsyncSpider:
                     logging.error(f"Error decoding JSON: {e}")
                     logging.error(f"Problematic line: {line}")
 
-        if buffer:
+        if buffer.strip():
             try:
                 json_data = json.loads(buffer)
                 callback(json_data)
@@ -430,7 +430,7 @@ class AsyncSpider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "AsyncSpider-Client/0.0.59",
+            "User-Agent": "AsyncSpider-Client/0.0.62",
         }
 
     async def _handle_error(self, response: ClientResponse, action: str) -> None:

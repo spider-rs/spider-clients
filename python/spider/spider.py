@@ -428,18 +428,18 @@ class Spider:
 
     def stream_reader(self, response, callback):
         response.raise_for_status()
-        for chunk in response.iter_content(chunk_size=None, decode_unicode=True):
+        for chunk in response.iter_lines(chunk_size=None, decode_unicode=True):
             try:
-                json_obj = json.loads(chunk.strip())
+                json_obj = json.loads(chunk)
                 callback(json_obj)
             except json.JSONDecodeError:
-                logging.warning("Failed to parse chunk: %s", chunk)
+                logging.error("Failed to parse chunk: %s", chunk)
 
     def _prepare_headers(self, content_type: str = "application/json"):
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.59",
+            "User-Agent": f"Spider-Client/0.0.62",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):
