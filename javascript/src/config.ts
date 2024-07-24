@@ -256,9 +256,9 @@ export interface SpiderParams {
   respect_robots?: boolean;
 
   /**
-   * CSS selector to be used to filter the content.
+   * CSS root selector to be used to filter the content.
    */
-  query_selector?: string;
+  root_selector?: string;
 
   /**
    * Specifies whether to load all resources of the crawl target.

@@ -118,7 +118,7 @@ class RequestParamsDict(TypedDict, total=False):
     respect_robots: Optional[bool]
 
     # CSS selector to be used to filter the content.
-    query_selector: Optional[str]
+    root_selector: Optional[str]
 
     # Specifies whether to load all resources of the crawl target.
     full_resources: Optional[bool]

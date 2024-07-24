@@ -249,7 +249,7 @@ pub struct RequestParams {
     pub respect_robots: Option<bool>,
     #[serde(default)]
     /// CSS selector to be used to filter the content.
-    pub query_selector: Option<String>,
+    pub root_selector: Option<String>,
     #[serde(default)]
     /// Specifies whether to load all resources of the crawl target.
     pub full_resources: Option<bool>,
