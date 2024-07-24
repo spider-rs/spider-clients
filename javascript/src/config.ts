@@ -110,6 +110,20 @@ export interface QueryRequest {
   pathname?: string;
 }
 
+// Define the CSSSelector type
+type CSSSelector = {
+  // The name of the selector group
+  name: string;
+  // An array of CSS selectors
+  selectors: string[];
+};
+
+// Define the CSSExtractionMap type
+type CSSExtractionMap = {
+  // The map keys are strings (paths), and the values are arrays of CSSSelector objects
+  [path: string]: CSSSelector[];
+};
+
 /**
  * Represents the options available for making a spider request.
  */
@@ -199,6 +213,11 @@ export interface SpiderParams {
    * Specifies whether to include metadata in the response.
    */
   metadata?: boolean;
+
+  /**
+   * Use CSS query selectors to scrape contents from the web page. Set the paths and the CSS extraction object map to perform extractions per path or page.
+   */
+  css_extraction_map?: CSSExtractionMap;
 
   /**
    * The dimensions of the viewport.

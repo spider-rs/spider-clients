@@ -163,6 +163,18 @@ pub struct Viewport {
 /// The API url.
 const API_URL: &'static str = "https://api.spider.cloud";
 
+// Define the CSSSelector struct
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
+pub struct CSSSelector {
+    /// The name of the selector group
+    pub name: String,
+    /// A vector of CSS selectors
+    pub selectors: Vec<String>,
+}
+
+// Define the CSSExtractionMap type
+pub type CSSExtractionMap = HashMap<String, Vec<CSSSelector>>;
+
 /// Structure representing request parameters.
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct RequestParams {
@@ -277,6 +289,9 @@ pub struct RequestParams {
     #[serde(default)]
     /// Specifies whether to skip configuration checks.
     pub skip_config_checks: Option<bool>,
+    #[serde(default)]
+    /// Use CSS query selectors to scrape contents from the web page. Set the paths and the CSS extraction object map to perform extractions per path or page.
+    pub css_extraction_map: Option<CSSExtractionMap>,
     #[serde(default)]
     /// The chunking algorithm to use.
     pub chunking_alg: Option<ChunkingAlgDict>,

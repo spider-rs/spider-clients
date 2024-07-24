@@ -1,11 +1,13 @@
 from typing import TypedDict, Optional, Dict, List, Literal, Callable
 from dataclasses import dataclass, field
 
+
 @dataclass
 class QueryRequest:
     url: Optional[str] = field(default=None)
     domain: Optional[str] = field(default=None)
     pathname: Optional[str] = field(default=None)
+
 
 class ChunkingAlgDict(TypedDict):
     # The chunking algorithm to use with the value to chunk by.
@@ -13,25 +15,43 @@ class ChunkingAlgDict(TypedDict):
     # The amount to chunk by.
     value: int
 
+
 class TimeoutDict(TypedDict):
     secs: int
     nanos: int
 
+
 class IdleNetworkDict(TypedDict):
     timeout: TimeoutDict
+
 
 class SelectorDict(TypedDict):
     timeout: TimeoutDict
     selector: str
 
+
 class DelayDict(TypedDict):
     timeout: TimeoutDict
+
 
 class WaitForDict(TypedDict, total=False):
     idle_network: Optional[IdleNetworkDict]
     selector: Optional[SelectorDict]
     delay: Optional[DelayDict]
     page_navigations: Optional[bool]
+
+
+class CSSSelector(TypedDict):
+    """
+    Represents a set of CSS selectors grouped under a common name.
+    """
+    name: str          # The name of the selector group (e.g., "headers")
+    selectors: List[str]  # A list of CSS selectors (e.g., ["h1", "h2", "h3"])
+
+# CSSExtractionMap is a dictionary where:
+# - Keys are strings representing paths (e.g., "/blog")
+# - Values are lists of CSSSelector items
+CSSExtractionMap = Dict[str, List[CSSSelector]]
 
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
@@ -105,6 +125,9 @@ class RequestParamsDict(TypedDict, total=False):
     # Specifies whether to use fingerprinting protection.
     fingerprint: Optional[bool]
 
+    # Use CSS query selectors to scrape contents from the web page. Set the paths and the CSS extraction object map to perform extractions per path or page.
+    css_extraction_map: Optional[CSSExtractionMap]
+
     # Specifies whether to perform the request without using storage.
     storageless: Optional[bool]
 
@@ -149,5 +172,6 @@ class RequestParamsDict(TypedDict, total=False):
 
     # The wait for events on the page. You need to make your `request` `chrome` or `smart`.
     wait_for: Optional[WaitForDict]
+
 
 JsonCallback = Callable[[dict], None]
