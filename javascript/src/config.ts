@@ -310,6 +310,12 @@ export interface SpiderParams {
   run_in_background?: boolean;
 
   /**
+   *  Perform an infinite scroll on the page as new content arises. The request param also needs to be set to 'chrome' or 'smart'.
+   */
+
+  scroll?: number;
+
+  /**
    * Specifies whether to skip configuration checks.
    */
   skip_config_checks?: boolean;

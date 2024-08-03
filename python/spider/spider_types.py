@@ -45,13 +45,16 @@ class CSSSelector(TypedDict):
     """
     Represents a set of CSS selectors grouped under a common name.
     """
-    name: str          # The name of the selector group (e.g., "headers")
+
+    name: str  # The name of the selector group (e.g., "headers")
     selectors: List[str]  # A list of CSS selectors (e.g., ["h1", "h2", "h3"])
+
 
 # CSSExtractionMap is a dictionary where:
 # - Keys are strings representing paths (e.g., "/blog")
 # - Values are lists of CSSSelector items
 CSSExtractionMap = Dict[str, List[CSSSelector]]
+
 
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
@@ -157,6 +160,9 @@ class RequestParamsDict(TypedDict, total=False):
 
     # The timeout for the request, in milliseconds.
     request_timeout: Optional[int]
+
+    # Perform an infinite scroll on the page as new content arises. The request param also needs to be set to 'chrome' or 'smart'.
+    scroll: Optional[int]
 
     # Specifies whether to run the request in the background.
     run_in_background: Optional[bool]

@@ -200,6 +200,9 @@ pub struct RequestParams {
     /// Specifies whether the request should be cached.
     pub cache: Option<bool>,
     #[serde(default)]
+    /// Perform an infinite scroll on the page as new content arises. The request param also needs to be set to 'chrome' or 'smart'.
+    pub scroll: Option<u32>,
+    #[serde(default)]
     /// The budget for various resources.
     pub budget: Option<HashMap<String, u32>>,
     #[serde(default)]

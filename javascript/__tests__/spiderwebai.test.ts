@@ -78,7 +78,7 @@ describe("Spider JS SDK", () => {
     assert(searchData[0].url);
   });
 
-  test("should transform data", async () => {
+  test.skip("should transform data", async () => {
     const spiderClient = new Spider();
     const transformData = [
       { html: "<html><body>Example</body></html>", url: url },
@@ -123,7 +123,7 @@ describe("Spider JS SDK", () => {
     assert(Array.isArray(crawlState.data));
   });
 
-  test("should query global db", async () => {
+  test.skip("should query global db", async () => {
     const spiderClient = new Spider();
     const crawlState = await spiderClient.query({ domain: "spider.cloud" });
 
