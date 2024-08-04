@@ -1,0 +1,10 @@
+[book]
+authors = ["Jeff Mendez <jeff@a11ywatch.com>"]
+language = "en"
+multilingual = false
+src = "src"
+title = "spider-client"
+
+[output.html]
+git-repository-url = "https://github.com/spider-rs/spider-clients/tree/main/book"
+edit-url-template  = "https://github.com/spider-rs/spider-clients/edit/main/book/{path}"
