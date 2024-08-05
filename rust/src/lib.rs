@@ -328,13 +328,30 @@ pub struct SearchRequestParams {
     pub website_limit: Option<u32>,
 }
 
-// transform params.
-// #[serde(default)]
-// /// Clean the markdown or text for AI.
-// pub clean: Option<bool>,
-// #[serde(default)]
-// /// Clean the markdown or text for AI removing footers, navigation, and more.
-// pub clean_full: Option<bool>,
+/// Structure representing request parameters for transforming files.
+#[derive(Debug, Default, Deserialize, Serialize, Clone)]
+pub struct TransformParams {
+    #[serde(default)]
+    /// The format in which the result should be returned.
+    pub return_format: Option<ReturnFormat>,
+    #[serde(default)]
+    /// Specifies whether readability optimizations should be applied.
+    pub readability: Option<bool>,
+    #[serde(default)]
+    /// Clean the markdown or text for AI.
+    pub clean: Option<bool>,
+    #[serde(default)]
+    /// Clean the markdown or text for AI removing footers, navigation, and more.
+    pub clean_full: Option<bool>,
+    /// The data being transformed.
+    pub data: Vec<DataParam>,
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct DataParam {
+    pub html: String,
+    pub url: Option<String>,
+}
 
 /// the request type to perform
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -745,18 +762,11 @@ impl Spider {
     pub async fn transform(
         &self,
         data: Vec<HashMap<&str, &str>>,
-        params: Option<RequestParams>,
+        params: Option<TransformParams>,
         _stream: bool,
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut payload = HashMap::new();
-
-        match serde_json::to_value(data) {
-            Ok(d) => {
-                payload.insert("data".into(), d);
-            }
-            _ => (),
-        }
 
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
@@ -765,6 +775,13 @@ impl Spider {
                 }
                 _ => (),
             }
+        }
+
+        match serde_json::to_value(data) {
+            Ok(d) => {
+                payload.insert("data".into(), d);
+            }
+            _ => (),
         }
 
         let res = self.api_post("transform", payload, content_type).await?;
