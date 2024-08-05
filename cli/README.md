@@ -4,7 +4,16 @@ Spider Cloud CLI is a command-line interface to interact with the [Spider Cloud]
 
 ## Installation
 
-Install the CLI from [crates.io](https://crates.io) using `cargo`:
+Install the CLI using [`homebrew`](https://brew.sh/) or [`cargo`](https://doc.rust-lang.org/cargo/) from [crates.io](https://crates.io):
+
+### Homebrew
+
+```sh
+brew tap spider-rs/spider-cloud-cli
+brew install spider-cloud-cli
+```
+
+### Cargo
 
 ```sh
 cargo install spider-cloud-cli
