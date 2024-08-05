@@ -14,6 +14,10 @@ Integrate Spider effortlessly into your Javascript projects. Visit our [Javascri
 
 Integrate Spider effortlessly into your Rust projects. Visit our [Rust client library directory](./rust/) to explore how you can utilize Spider in your applications. Enhance your web scraping capabilities, improve data collection strategies, and unlock new possibilities with our cutting-edge technology.
 
+## CLI
+
+Integrate Spider into the CLI with ease. Visit our [CLI client library directory](./cli/) to explore how you can utilize Spider in your applications. 
+
 ---
 
 ### Features

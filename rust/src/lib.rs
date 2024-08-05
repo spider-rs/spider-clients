@@ -121,11 +121,11 @@ pub struct WaitFor {
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct QueryRequest {
     /// The exact website url.
-    url: Option<String>,
+    pub url: Option<String>,
     /// The website domain.
-    domain: Option<String>,
+    pub domain: Option<String>,
     /// The path of the resource.
-    pathname: Option<String>,
+    pub pathname: Option<String>,
 }
 
 /// Enum representing different types of Chunking.
@@ -269,9 +269,6 @@ pub struct RequestParams {
     /// Specifies whether to load all resources of the crawl target.
     pub full_resources: Option<bool>,
     #[serde(default)]
-    /// The websites limit if a list is sent from text or urls comma split. This helps automatic configuration of the system.
-    pub website_limit: Option<u32>,
-    #[serde(default)]
     /// The text string to extract data from.
     pub text: Option<String>,
     #[serde(default)]
@@ -298,12 +295,6 @@ pub struct RequestParams {
     #[serde(default)]
     /// The chunking algorithm to use.
     pub chunking_alg: Option<ChunkingAlgDict>,
-    #[serde(default)]
-    /// Clean the markdown or text for AI.
-    pub clean: Option<bool>,
-    #[serde(default)]
-    /// Clean the markdown or text for AI removing footers, navigation, and more.
-    pub clean_full: Option<bool>,
     /// Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
     pub disable_intercept: Option<bool>,
     /// The wait for events on the page. You need to make your `request` `chrome` or `smart`.
@@ -332,7 +323,18 @@ pub struct SearchRequestParams {
     pub num: Option<u32>,
     /// The page of the search results.
     pub page: Option<u32>,
+    #[serde(default)]
+    /// The websites limit if a list is sent from text or urls comma split. This helps automatic configuration of the system.
+    pub website_limit: Option<u32>,
 }
+
+// transform params.
+// #[serde(default)]
+// /// Clean the markdown or text for AI.
+// pub clean: Option<bool>,
+// #[serde(default)]
+// /// Clean the markdown or text for AI removing footers, navigation, and more.
+// pub clean_full: Option<bool>,
 
 /// the request type to perform
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -579,7 +581,6 @@ impl Spider {
         callback: Option<impl Fn(serde_json::Value) + Send>,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
-        data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
@@ -589,6 +590,8 @@ impl Spider {
                 _ => (),
             }
         }
+
+        data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("crawl", data, content_type).await?;
 
@@ -639,7 +642,7 @@ impl Spider {
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
-        data.insert("url".into(), serde_json::Value::String(url.to_string()));
+
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
                 Some(ref p) => {
@@ -648,6 +651,8 @@ impl Spider {
                 _ => (),
             }
         }
+
+        data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("links", data, content_type).await?;
         res.json().await
@@ -788,13 +793,6 @@ impl Spider {
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
 
-        match serde_json::to_value(url) {
-            Ok(u) => {
-                data.insert("url".into(), u);
-            }
-            _ => (),
-        }
-
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
                 Some(ref p) => {
@@ -802,6 +800,13 @@ impl Spider {
                 }
                 _ => (),
             }
+        }
+
+        match serde_json::to_value(url) {
+            Ok(u) => {
+                data.insert("url".into(), u);
+            }
+            _ => (),
         }
 
         let res = self
@@ -830,7 +835,6 @@ impl Spider {
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
-        data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         if let Ok(params) = serde_json::to_value(params) {
             match params.as_object() {
@@ -840,6 +844,8 @@ impl Spider {
                 _ => (),
             }
         }
+
+        data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("pipeline/label", data, content_type).await?;
         res.json().await
@@ -908,14 +914,14 @@ impl Spider {
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut params = HashMap::new();
 
-        if let Some(url) = url {
-            params.insert("url".to_string(), url.to_string());
-        }
-
         if let Some(options) = options {
             for (key, value) in options {
                 params.insert(key.to_string(), value.to_string());
             }
+        }
+
+        if let Some(url) = url {
+            params.insert("url".to_string(), url.to_string());
         }
 
         let url = format!("{API_URL}/v1/data/sign-url");
