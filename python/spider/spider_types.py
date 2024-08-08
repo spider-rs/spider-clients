@@ -1,6 +1,72 @@
-from typing import TypedDict, Optional, Dict, List, Literal, Callable
+from typing import TypedDict, Optional, Dict, List, Union, Literal, Callable
 from dataclasses import dataclass, field
 
+
+@dataclass
+class Evaluate:
+    type: str = "Evaluate"
+    code: str
+
+@dataclass
+class Click:
+    type: str = "Click"
+    selector: str
+
+@dataclass
+class Wait:
+    type: str = "Wait"
+    duration: int
+
+@dataclass
+class WaitForNavigation:
+    type: str = "WaitForNavigation"
+
+@dataclass
+class WaitFor:
+    type: str = "WaitFor"
+    selector: str
+
+@dataclass
+class WaitForAndClick:
+    type: str = "WaitForAndClick"
+    selector: str
+
+@dataclass
+class ScrollX:
+    type: str = "ScrollX"
+    pixels: int
+
+@dataclass
+class ScrollY:
+    type: str = "ScrollY"
+    pixels: int
+
+@dataclass
+class Fill:
+    type: str = "Fill"
+    selector: str
+    value: str
+
+@dataclass
+class InfiniteScroll:
+    type: str = "InfiniteScroll"
+    times: int
+
+WebAutomation = Union[
+    Evaluate,
+    Click,
+    Wait,
+    WaitForNavigation,
+    WaitFor,
+    WaitForAndClick,
+    ScrollX,
+    ScrollY,
+    Fill,
+    InfiniteScroll,
+]
+
+WebAutomationMap = Dict[str, List[WebAutomation]]
+ExecutionScriptsMap = Dict[str, str]
 
 @dataclass
 class QueryRequest:
@@ -178,6 +244,12 @@ class RequestParamsDict(TypedDict, total=False):
 
     # The wait for events on the page. You need to make your `request` `chrome` or `smart`.
     wait_for: Optional[WaitForDict]
+
+    # Perform custom Javascript tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
+    exuecution_scripts: Optional[ExecutionScriptsMap]
+
+    # Perform custom web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
+    automation_scripts: Optional[WebAutomationMap]
 
 
 JsonCallback = Callable[[dict], None]

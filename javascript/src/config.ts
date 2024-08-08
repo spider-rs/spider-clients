@@ -124,6 +124,24 @@ type CSSExtractionMap = {
   [path: string]: CSSSelector[];
 };
 
+// Web automation using chrome
+export type WebAutomation =
+  | { type: "Evaluate"; code: string }
+  | { type: "Click"; selector: string }
+  | { type: "Wait"; duration: number }
+  | { type: "WaitForNavigation" }
+  | { type: "WaitFor"; selector: string }
+  | { type: "WaitForAndClick"; selector: string }
+  | { type: "ScrollX"; pixels: number }
+  | { type: "ScrollY"; pixels: number }
+  | { type: "Fill"; selector: string; value: string }
+  | { type: "InfiniteScroll"; times: number };
+
+// Map automation scripts for paths or urls.
+export type WebAutomationMap = Record<string, WebAutomation[]>;
+// Map execution scripts for paths or urls.
+export type ExecutionScriptsMap = Record<string, string>;
+
 /**
  * Represents the options available for making a spider request.
  */
@@ -334,6 +352,16 @@ export interface SpiderParams {
    * Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
    */
   disable_intercept?: boolean;
+
+  /**
+   * Perform custom web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
+   */
+  automation_scripts?: WebAutomationMap;
+
+  /**
+   * Perform custom Javascript tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
+   */
+  execution_scripts?: ExecutionScriptsMap;
 }
 
 // Core actions response type.

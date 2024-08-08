@@ -92,6 +92,24 @@ pub struct IdleNetwork {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
+#[serde(tag = "type", rename_all = "PascalCase")]
+pub enum WebAutomation {
+    Evaluate { code: String },
+    Click { selector: String },
+    Wait { duration: u64 },
+    WaitForNavigation,
+    WaitFor { selector: String },
+    WaitForAndClick { selector: String },
+    ScrollX { pixels: i32 },
+    ScrollY { pixels: i32 },
+    Fill { selector: String, value: String },
+    InfiniteScroll { times: u32 }
+}
+
+pub type WebAutomationMap = std::collections::HashMap<String, Vec<WebAutomation>>;
+pub type ExecutionScriptsMap = std::collections::HashMap<String, String>;
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Selector {
     /// The timeout to wait until.
     pub timeout: Timeout,
@@ -299,6 +317,10 @@ pub struct RequestParams {
     pub disable_intercept: Option<bool>,
     /// The wait for events on the page. You need to make your `request` `chrome` or `smart`.
     pub wait_for: Option<WaitFor>,
+    /// Perform custom Javascript tasks on a url or url path. You need to make your `request` `chrome` or `smart`
+    pub execution_scripts: Option<ExecutionScriptsMap>,
+    /// Perform web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`
+    pub automation_scripts: Option<WebAutomationMap>,
 }
 
 /// The structure representing request parameters for a search request.
