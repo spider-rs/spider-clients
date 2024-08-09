@@ -1,21 +1,20 @@
 from typing import TypedDict, Optional, Dict, List, Union, Literal, Callable
 from dataclasses import dataclass, field
 
-
 @dataclass
 class Evaluate:
-    type: str = "Evaluate"
     code: str
+    type: str = "Evaluate"
 
 @dataclass
 class Click:
-    type: str = "Click"
     selector: str
+    type: str = "Click"
 
 @dataclass
 class Wait:
-    type: str = "Wait"
     duration: int
+    type: str = "Wait"
 
 @dataclass
 class WaitForNavigation:
@@ -23,34 +22,34 @@ class WaitForNavigation:
 
 @dataclass
 class WaitFor:
-    type: str = "WaitFor"
     selector: str
+    type: str = "WaitFor"
 
 @dataclass
 class WaitForAndClick:
-    type: str = "WaitForAndClick"
     selector: str
+    type: str = "WaitForAndClick"
 
 @dataclass
 class ScrollX:
-    type: str = "ScrollX"
     pixels: int
+    type: str = "ScrollX"
 
 @dataclass
 class ScrollY:
-    type: str = "ScrollY"
     pixels: int
+    type: str = "ScrollY"
 
 @dataclass
 class Fill:
-    type: str = "Fill"
     selector: str
     value: str
+    type: str = "Fill"
 
 @dataclass
 class InfiniteScroll:
-    type: str = "InfiniteScroll"
     times: int
+    type: str = "InfiniteScroll"
 
 WebAutomation = Union[
     Evaluate,
