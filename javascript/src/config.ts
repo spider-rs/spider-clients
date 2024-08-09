@@ -126,16 +126,16 @@ type CSSExtractionMap = {
 
 // Web automation using chrome
 export type WebAutomation =
-  | { type: "Evaluate"; code: string }
-  | { type: "Click"; selector: string }
-  | { type: "Wait"; duration: number }
-  | { type: "WaitForNavigation" }
-  | { type: "WaitFor"; selector: string }
-  | { type: "WaitForAndClick"; selector: string }
-  | { type: "ScrollX"; pixels: number }
-  | { type: "ScrollY"; pixels: number }
-  | { type: "Fill"; selector: string; value: string }
-  | { type: "InfiniteScroll"; times: number };
+  | { Evaluate: string }
+  | { Click: string }
+  | { Wait: number }
+  | { WaitForNavigation: boolean }
+  | { WaitFor: string }
+  | { WaitForAndClick: string }
+  | { ScrollX: number }
+  | { ScrollY: number }
+  | { Fill: { selector: string; value?: string } }
+  | { InfiniteScroll: number };
 
 // Map automation scripts for paths or urls.
 export type WebAutomationMap = Record<string, WebAutomation[]>;
