@@ -265,7 +265,7 @@ export interface SpiderParams {
   /**
    * Configuration settings for GPT (general purpose texture mappings).
    */
-  gpt_config?: string[];
+  gpt_config?: Record<string, any>;
 
   /**
    * Specifies whether to use fingerprinting protection.
@@ -313,9 +313,25 @@ export interface SpiderParams {
   page_insights?: boolean;
 
   /**
+   * External domains to include the crawl.
+   */
+
+  external_domains?: string[];
+
+  /**
    * Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
    */
   return_embeddings?: boolean;
+
+  /**
+   * Returns the HTTP response headers used.
+   */
+  return_headers?: boolean;
+
+  /**
+   * Returns the HTTP response cookies used.
+   */
+  return_cookies?: boolean;
 
   /**
    * The timeout for the request, in milliseconds.

@@ -296,8 +296,17 @@ pub struct RequestParams {
     /// Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
     pub page_insights: Option<bool>,
     #[serde(default)]
+    /// External domains to include the crawl.
+    pub external_domains: Option<Vec<String>>,
+    #[serde(default)]
     /// Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
     pub return_embeddings: Option<bool>,
+    #[serde(default)]
+    /// Returns the HTTP response headers.
+    pub return_headers: Option<bool>,
+    #[serde(default)]
+    /// Returns the HTTP response cookies.
+    pub return_cookies: Option<bool>,
     #[serde(default)]
     /// The timeout for the request, in milliseconds.
     pub request_timeout: Option<u8>,

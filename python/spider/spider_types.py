@@ -188,7 +188,7 @@ class RequestParamsDict(TypedDict, total=False):
     store_data: Optional[bool]
 
     # Configuration settings for GPT (general purpose texture mappings).
-    gpt_config: Optional[List[str]]
+    gpt_config: Optional[Dict]
 
     # Specifies whether to use fingerprinting protection.
     fingerprint: Optional[bool]
@@ -222,6 +222,15 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
     return_embeddings: Optional[bool]
+
+    # External domains to include in the crawl.
+    external_domains: Optional[List[str]]
+
+    # Returns the HTTP response headers used.
+    return_headers: Optional[bool]
+
+    # Returns the HTTP response cookies used.
+    return_cookies: Optional[bool]
 
     # The timeout for the request, in milliseconds.
     request_timeout: Optional[int]

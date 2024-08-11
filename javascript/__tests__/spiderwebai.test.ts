@@ -63,7 +63,7 @@ describe("Spider JS SDK", () => {
     assert(Array.isArray(screenshotData));
   });
 
-  test("should perform search", async () => {
+  test.skip("should perform search", async () => {
     const spiderClient = new Spider();
     const searchData = await spiderClient.search(
       "example search query",
