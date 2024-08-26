@@ -1,43 +1,39 @@
-# spider-clients
+# Spider Clients
 
-Welcome to the **spider-clients** repository, the ultimate destination for integrating the fastest and most efficient web crawler, **Spider**, into your projects. Here, you can find client libraries that facilitate the use of [Spider Cloud](https://spider.cloud) services from various programming environments. Jumpstart your web crawling and data indexing tasks with our seamless, high-performance solutions.
+Discover the ultimate toolkit for integrating the fastest and most efficient web crawler **Spider** into your projects. This repository provides client libraries designed to streamline your use of [Spider Cloud](https://spider.cloud) services from various programming environments. Whether you're tackling web crawling or data indexing, our high-performance solutions have you covered.
 
 ## Python
 
-Leverage the power of Spider in your Python applications. Navigate to our [Python client library directory](./python/) for installation instructions, usage guides, and examples. Get ready to supercharge your data extraction tasks with the efficiency and speed of Spider, all from within your Python environment.
+Leverage the power of Spider in your Python applications. Navigate to our [Python client library directory](./python/) for installation instructions, usage guides, and examples. Get ready to supercharge your data extraction tasks with the efficiency and speed of Spider within your Python environment.
 
-## Javascript
+## JavaScript
 
-Integrate Spider effortlessly into your Javascript projects. Visit our [Javascript client library directory](./javascript/) to explore how you can utilize Spider in Node.js or browser environments. Enhance your web scraping capabilities, improve data collection strategies, and unlock new possibilities with our cutting-edge technology.
+Integrate Spider effortlessly into your JavaScript projects. Visit our [JavaScript client library directory](./javascript/) to explore how you can utilize Spider in Node.js or browser environments. Enhance your web scraping capabilities and improve data collection strategies with our cutting-edge technology.
 
 ## Rust
 
-Integrate Spider effortlessly into your Rust projects. Visit our [Rust client library directory](./rust/) to explore how you can utilize Spider in your applications. Enhance your web scraping capabilities, improve data collection strategies, and unlock new possibilities with our cutting-edge technology.
+Incorporate Spider smoothly into your Rust projects. Visit our [Rust client library directory](./rust/) to learn how to use Spider in your applications. Enhance your web scraping capabilities and unlock new possibilities with our advanced technology.
 
 ## CLI
 
-Integrate Spider into the CLI with ease. Visit our [CLI client library directory](./cli/) to explore how you can utilize Spider in your applications. 
+Integrate Spider into your CLI with ease. Visit our [CLI client library directory](./cli/) to explore how you can utilize Spider in your command-line applications.
 
 ---
 
 ### Features
 
 - **Concurrent Crawling:** Maximize your data extraction efficiency with Spider's advanced concurrency models.
-- **Streaming:** Stream crawled data in real-time, ensuring timely processing and analysis.
+- **Streaming:** Stream crawled data in real-time to ensure timely processing and analysis.
 - **Headless Chrome Rendering:** Capture JavaScript-rendered page contents with ease.
-- **HTTP Proxies Support:** Navigate through the web anonymously and bypass content restrictions.
+- **HTTP Proxies Support:** Navigate anonymously and bypass content restrictions.
 - **Cron Jobs:** Schedule your crawling tasks to run automatically, saving time and resources.
 - **Smart Mode:** Automate crawling tasks with AI-driven strategies for smarter data collection.
 - **Blacklisting, Whitelisting, and Budgeting Depth:** Fine-tune your crawls to focus on relevant data and manage resource utilization.
-- **Dynamic AI Prompt Scripting Headless:** Leverage AI to script dynamic interactions with web pages, simulating real user behavior.
+- **Dynamic AI Prompt Scripting Headless:** Use AI to script dynamic interactions with web pages, simulating real user behavior.
 
 ### Getting Started
 
 Dive into the world of high-speed web crawling with Spider. Whether you're looking to deploy Spider locally or utilize our hosted services, we've got you covered. Start by exploring our client libraries above, or visit the main [Spider repository](https://github.com/spider-rs/spider) for comprehensive documentation, installation guides, and more.
-
-#### Supabase
-
-Both clients allow you to optionally install [Supabase](https://supabase.com/docs/reference) and use the client underneath to utilize custom queries and more. You can log in and perform all actions on your account with the client. Some features may be limited or rate-limited.
 
 ### Support & Contribution
 
