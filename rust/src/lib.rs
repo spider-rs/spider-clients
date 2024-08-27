@@ -305,6 +305,9 @@ pub struct RequestParams {
     /// Returns the HTTP response headers.
     pub return_headers: Option<bool>,
     #[serde(default)]
+    /// Returns the link(s) found on the page that match the crawler query.
+    pub return_page_links: Option<bool>,
+    #[serde(default)]
     /// Returns the HTTP response cookies.
     pub return_cookies: Option<bool>,
     #[serde(default)]

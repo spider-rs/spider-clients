@@ -220,11 +220,14 @@ class RequestParamsDict(TypedDict, total=False):
     # Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
     page_insights: Optional[bool]
 
+    # External domains to include in the crawl.
+    external_domains: Optional[List[str]]
+
     # Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
     return_embeddings: Optional[bool]
 
-    # External domains to include in the crawl.
-    external_domains: Optional[List[str]]
+    # Returns the link(s) found on the page that match the crawler query.
+    return_page_links: Optional[bool]
 
     # Returns the HTTP response headers used.
     return_headers: Optional[bool]

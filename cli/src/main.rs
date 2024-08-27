@@ -31,19 +31,33 @@ async fn main() {
                         .expect("Failed to initialize Spider client.");
 
                     match args.command {
-                        Commands::Scrape { url } => {
+                        Commands::Scrape {
+                            url,
+                            return_page_links,
+                        } => {
                             println!("Scraping URL: {}", url);
-                            match spider.scrape_url(&url, None, "application/json").await {
+                            let mut params = RequestParams::default();
+                            params.return_page_links = return_page_links;
+                            match spider
+                                .scrape_url(&url, Some(params), "application/json")
+                                .await
+                            {
                                 Ok(data) => println!("{}", json!(data)),
                                 Err(e) => eprintln!("Error scraping URL: {:?}", e),
                             }
                         }
-                        Commands::Crawl { url, limit } => {
+                        Commands::Crawl {
+                            url,
+                            limit,
+                            return_page_links,
+                        } => {
                             println!("Crawling URL: {}", url);
                             let mut params = RequestParams::default();
                             if let Some(limit) = limit {
                                 params.limit = Some(limit);
                             }
+                            params.return_page_links = return_page_links;
+
                             match spider
                                 .crawl_url(
                                     &url,
@@ -58,15 +72,36 @@ async fn main() {
                                 Err(e) => eprintln!("Error crawling URL: {:?}", e),
                             }
                         }
-                        Commands::Links { url } => {
+                        Commands::Links {
+                            url,
+                            return_page_links,
+                            limit,
+                        } => {
                             println!("Fetching links from URL: {}", url);
-                            match spider.links(&url, None, false, "application/json").await {
+                            let mut params = RequestParams::default();
+                            if let Some(limit) = limit {
+                                params.limit = Some(limit);
+                            }
+                            params.return_page_links = return_page_links;
+
+                            match spider
+                                .links(&url, Some(params), false, "application/json")
+                                .await
+                            {
                                 Ok(data) => println!("{}", json!(data)),
                                 Err(e) => eprintln!("Error fetching links: {:?}", e),
                             }
                         }
-                        Commands::Screenshot { url } => {
-                            let params = RequestParams::default();
+                        Commands::Screenshot {
+                            url,
+                            limit,
+                            return_page_links,
+                        } => {
+                            let mut params = RequestParams::default();
+                            if let Some(limit) = limit {
+                                params.limit = Some(limit);
+                            }
+                            params.return_page_links = return_page_links;
                             println!("Taking screenshot of URL: {}", url);
                             match spider
                                 .screenshot(&url, Some(params), false, "application/json")
@@ -76,8 +111,16 @@ async fn main() {
                                 Err(e) => eprintln!("Error taking screenshot: {:?}", e),
                             }
                         }
-                        Commands::Search { query } => {
-                            let params = SearchRequestParams::default();
+                        Commands::Search {
+                            query,
+                            limit,
+                            return_page_links,
+                        } => {
+                            let mut params = SearchRequestParams::default();
+                            if let Some(limit) = limit {
+                                params.base.limit = Some(limit);
+                            }
+                            params.base.return_page_links = return_page_links;
                             println!("Searching for query: {}", query);
                             match spider
                                 .search(&query, Some(params), false, "application/json")
@@ -98,19 +141,27 @@ async fn main() {
                                 Err(e) => eprintln!("Error transforming data: {:?}", e),
                             }
                         }
-                        Commands::ExtractLeads { url } => {
+                        Commands::ExtractLeads { url, limit } => {
+                            let mut params = RequestParams::default();
+                            if let Some(limit) = limit {
+                                params.limit = Some(limit);
+                            }
                             println!("Extracting leads from URL: {}", url);
                             match spider
-                                .extract_contacts(&url, None, false, "application/json")
+                                .extract_contacts(&url, Some(params), false, "application/json")
                                 .await
                             {
                                 Ok(data) => println!("{}", json!(data)),
                                 Err(e) => eprintln!("Error extracting leads: {:?}", e),
                             }
                         }
-                        Commands::Label { url } => {
+                        Commands::Label { url, limit } => {
+                            let mut params = RequestParams::default();
+                            if let Some(limit) = limit {
+                                params.limit = Some(limit);
+                            }
                             println!("Labeling data from URL: {}", url);
-                            match spider.label(&url, None, false, "application/json").await {
+                            match spider.label(&url, Some(params), false, "application/json").await {
                                 Ok(data) => println!("{}", json!(data)),
                                 Err(e) => eprintln!("Error labeling data: {:?}", e),
                             }

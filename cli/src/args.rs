@@ -15,6 +15,13 @@ pub enum Commands {
     Scrape {
         #[arg(short, long, help = "The URL to scrape")]
         url: String,
+        #[arg(
+            short,
+            long,
+            help = "Returns the link(s) found on the page that match the crawler query.",
+            required = false
+        )]
+        return_page_links: Option<bool>,
     },
     /// Crawl a given URL with an optional page limit
     Crawl {
@@ -27,21 +34,70 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
+        #[arg(
+            short,
+            long,
+            help = "Returns the link(s) found on the page that match the crawler query.",
+            required = false
+        )]
+        return_page_links: Option<bool>,
     },
     /// Fetch all links from a given URL
     Links {
         #[arg(short, long, help = "The URL to fetch links from")]
         url: String,
+        #[arg(
+            short,
+            long,
+            help = "Limit the number of pages to crawl",
+            required = false
+        )]
+        limit: Option<u32>,
+        #[arg(
+            short,
+            long,
+            help = "Returns the link(s) found on the page that match the crawler query.",
+            required = false
+        )]
+        return_page_links: Option<bool>,
     },
     /// Take a screenshot of a given URL
     Screenshot {
         #[arg(short, long, help = "The URL to take a screenshot of")]
         url: String,
+        #[arg(
+            short,
+            long,
+            help = "Limit the number of pages to crawl",
+            required = false
+        )]
+        limit: Option<u32>,
+        #[arg(
+            short,
+            long,
+            help = "Returns the link(s) found on the page that match the crawler query.",
+            required = false
+        )]
+        return_page_links: Option<bool>,
     },
     /// Search using a given query
     Search {
         #[arg(short, long, help = "The query to search for")]
         query: String,
+        #[arg(
+            short,
+            long,
+            help = "Limit the number of pages to crawl",
+            required = false
+        )]
+        limit: Option<u32>,
+        #[arg(
+            short,
+            long,
+            help = "Returns the link(s) found on the page that match the crawler query.",
+            required = false
+        )]
+        return_page_links: Option<bool>,
     },
     /// Transform the provided data
     Transform {
@@ -52,11 +108,25 @@ pub enum Commands {
     ExtractLeads {
         #[arg(short, long, help = "The URL to extract leads from")]
         url: String,
+        #[arg(
+            short,
+            long,
+            help = "Limit the number of pages to crawl",
+            required = false
+        )]
+        limit: Option<u32>,
     },
     /// Label data from a given URL
     Label {
         #[arg(short, long, help = "The URL to label data from")]
         url: String,
+        #[arg(
+            short,
+            long,
+            help = "Limit the number of pages to crawl",
+            required = false
+        )]
+        limit: Option<u32>,
     },
     /// Get the crawl state of a given URL
     GetCrawlState {

@@ -329,6 +329,11 @@ export interface SpiderParams {
   return_headers?: boolean;
 
   /**
+   * Returns the link(s) found on the page that match the crawler query.
+   */
+  return_page_links?: boolean;
+
+  /**
    * Returns the HTTP response cookies used.
    */
   return_cookies?: boolean;
