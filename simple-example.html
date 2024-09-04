@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - spider-client</title>
-        <base href="/">
+        <title>A Simple Example - spider-client</title>
 
 
         <!-- Custom HTML head -->
@@ -89,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="simple-example.html"><strong aria-hidden="true">1.</strong> A Simple Example</a></li><li class="chapter-item expanded affix "><li class="part-title">Python</li><li class="chapter-item expanded "><a href="python/getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="python/crawl.html"><strong aria-hidden="true">3.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="python/scrape.html"><strong aria-hidden="true">4.</strong> Scrape</a></li><li class="chapter-item expanded "><a href="python/async-crawl.html"><strong aria-hidden="true">5.</strong> Async Crawl</a></li><li class="chapter-item expanded affix "><li class="part-title">Javascript</li><li class="chapter-item expanded "><a href="javascript/getting-started.html"><strong aria-hidden="true">6.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="javascript/crawl.html"><strong aria-hidden="true">7.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="javascript/scrape.html"><strong aria-hidden="true">8.</strong> Scrape</a></li><li class="chapter-item expanded affix "><li class="part-title">Rust</li><li class="chapter-item expanded affix "><li class="part-title">CLI</li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="simple-example.html" class="active"><strong aria-hidden="true">1.</strong> A Simple Example</a></li><li class="chapter-item expanded affix "><li class="part-title">Python</li><li class="chapter-item expanded "><a href="python/getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="python/crawl.html"><strong aria-hidden="true">3.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="python/scrape.html"><strong aria-hidden="true">4.</strong> Scrape</a></li><li class="chapter-item expanded "><a href="python/async-crawl.html"><strong aria-hidden="true">5.</strong> Async Crawl</a></li><li class="chapter-item expanded affix "><li class="part-title">Javascript</li><li class="chapter-item expanded "><a href="javascript/getting-started.html"><strong aria-hidden="true">6.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="javascript/crawl.html"><strong aria-hidden="true">7.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="javascript/scrape.html"><strong aria-hidden="true">8.</strong> Scrape</a></li><li class="chapter-item expanded affix "><li class="part-title">Rust</li><li class="chapter-item expanded affix "><li class="part-title">CLI</li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -151,6 +150,9 @@
                         <a href="https://github.com/spider-rs/spider-clients/tree/main/book" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
                         </a>
+                        <a href="https://github.com/spider-rs/spider-clients/edit/main/book/src/simple-example.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
 
                     </div>
                 </div>
@@ -177,14 +179,43 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="simple-example"><a class="header" href="#simple-example">Simple Example</a></h1>
+<p>This is a simple example of what you can do with the <code>spider-client</code> library.</p>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>To install the library, you can use <code>pip</code> for Python or <code>npm</code> (make sure to have <a href="https://nodejs.org/en">node</a> installed) for JavaScript.:</p>
+<pre><code class="language-bash"># for python
+pip install spider-client
+</code></pre>
+<pre><code class="language-bash"># for javascript
+npm install @spider-cloud/spider-client
+</code></pre>
+<h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
+<p>Here is an example of how you can use the library, make sure to replace <code>your_api_key</code> with your actual API key which you can get from the <a href="https://spider.cloud">spider.cloud</a> website.</p>
+<pre><code class="language-python">from spider import Spider
+
+app = Spider(api_key='your_api_key')
+url = 'https://spider.cloud'
+scraped_data = app.scrape_url(url)
+</code></pre>
+<pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
+
+const app = new Spider({ apiKey: "your-api-key" });
+const url = "https://spider.cloud";
+const scrapedData = await app.scrapeUrl(url);
+console.log(scrapedData);
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="python/getting-started.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -192,7 +223,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="python/getting-started.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>

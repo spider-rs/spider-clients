@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded affix "><li class="part-title">Python</li><li class="chapter-item expanded affix "><li class="part-title">Javascript</li><li class="chapter-item expanded affix "><li class="part-title">Rust</li><li class="chapter-item expanded affix "><li class="part-title">CLI</li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="simple-example.html"><strong aria-hidden="true">1.</strong> A Simple Example</a></li><li class="chapter-item expanded affix "><li class="part-title">Python</li><li class="chapter-item expanded "><a href="python/getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="python/crawl.html"><strong aria-hidden="true">3.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="python/scrape.html"><strong aria-hidden="true">4.</strong> Scrape</a></li><li class="chapter-item expanded "><a href="python/async-crawl.html"><strong aria-hidden="true">5.</strong> Async Crawl</a></li><li class="chapter-item expanded affix "><li class="part-title">Javascript</li><li class="chapter-item expanded "><a href="javascript/getting-started.html"><strong aria-hidden="true">6.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="javascript/crawl.html"><strong aria-hidden="true">7.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="javascript/scrape.html"><strong aria-hidden="true">8.</strong> Scrape</a></li><li class="chapter-item expanded affix "><li class="part-title">Rust</li><li class="chapter-item expanded affix "><li class="part-title">CLI</li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -191,6 +191,340 @@
 <li>Blacklisting and Budgeting Depth</li>
 <li>Written in <a href="https://www.rust-lang.org/">Rust</a> for speed, safety, and simplicity</li>
 </ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="simple-example"><a class="header" href="#simple-example">Simple Example</a></h1>
+<p>This is a simple example of what you can do with the <code>spider-client</code> library.</p>
+<h2 id="installation"><a class="header" href="#installation">Installation</a></h2>
+<p>To install the library, you can use <code>pip</code> for Python or <code>npm</code> (make sure to have <a href="https://nodejs.org/en">node</a> installed) for JavaScript.:</p>
+<pre><code class="language-bash"># for python
+pip install spider-client
+</code></pre>
+<pre><code class="language-bash"># for javascript
+npm install @spider-cloud/spider-client
+</code></pre>
+<h2 id="usage"><a class="header" href="#usage">Usage</a></h2>
+<p>Here is an example of how you can use the library, make sure to replace <code>your_api_key</code> with your actual API key which you can get from the <a href="https://spider.cloud">spider.cloud</a> website.</p>
+<pre><code class="language-python">from spider import Spider
+
+app = Spider(api_key='your_api_key')
+url = 'https://spider.cloud'
+scraped_data = app.scrape_url(url)
+</code></pre>
+<pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
+
+const app = new Spider({ apiKey: "your-api-key" });
+const url = "https://spider.cloud";
+const scrapedData = await app.scrapeUrl(url);
+console.log(scrapedData);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting started</a></h1>
+<p>To use the python SDK you will (of course) have to install it :)</p>
+<pre><code class="language-bash">pip install spider-client
+</code></pre>
+<p><a href="https://pypi.org/project/spider-client/">Here</a> is the link to the package on PyPi.</p>
+<h2 id="setting--getting-api-key"><a class="header" href="#setting--getting-api-key">Setting &amp; Getting Api Key</a></h2>
+<p>To use the SDK you will need an API key. You can get one by signing up on <a href="https://spider.cloud?ref=python-sdk-book">spider.cloud</a>.</p>
+<p>Then you need to set the API key in your environment variables.</p>
+<pre><code class="language-bash">export SPIDER_API_KEY=your_api_key
+</code></pre>
+<p>if you don't want to set the API key in your environment variables you can pass it as an argument to the <code>Spider</code> class.</p>
+<pre><code class="language-python">from spider import Spider
+app = Spider(api_key='your_api_key')
+</code></pre>
+<p>We recommend setting the API key in your environment variables.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="crawl"><a class="header" href="#crawl">Crawl</a></h1>
+<p>We will assume that you have installed the Spider package and exported your API key as an environment variable. If you haven't, please refer to the <a href="python/./getting-started.html">Getting Started</a> guide.</p>
+<p>Crawl a website and return the content.</p>
+<pre><code class="language-python">from spider import Spider
+
+app = Spider()
+url = "https://spider.cloud"
+crawled_data = app.crawl_url(url, params={"limit": 10})
+print(crawled_data)
+</code></pre>
+<p>The <code>crawl_url</code> method returns the content of the website in markdown format as default. We set the <code>limit</code> parameter to 10 to limit the number of pages to crawl. The maximum amount of pages allowed to crawl per website. Remove the value or set it to <code>0</code> to crawl all pages.</p>
+<p>Next we will see how to crawl with with different parameters.</p>
+<h2 id="crawl-with-different-parameters"><a class="header" href="#crawl-with-different-parameters">Crawl with different parameters</a></h2>
+<p>The <code>crawl_url</code> method has the following parameters:</p>
+<ul>
+<li><code>url</code> (str): The URL of the website to crawl.</li>
+</ul>
+<p>the following are recommended parameters and can be set in the <code>params</code> dictionary:</p>
+<ul>
+<li><code>limit</code> (int): The maximum amount of pages allowed to crawl per website. Remove the value or set it to <code>0</code> to crawl all pages.</li>
+<li><code>request_timeout</code> (int): The maximum amount of time to wait for a response from the website.</li>
+<li><code>stealth</code> (bool): Whether to use stealth mode. Default is <code>False</code> on chrome.</li>
+<li>visit the <a href="https://spider.cloud/docs/api?ref=python-sdk-book">documentation</a> for more parameters.</li>
+</ul>
+<pre><code class="language-python">from spider import Spider
+
+app = Spider()
+url = "https://spider.cloud"
+crawled_data = app.crawl_url(
+    url, params={"limit": 10, "request_timeout": 10, "stealth": True}
+)
+
+print(crawled_data)
+</code></pre>
+<p>If you have a lot of params, setting them inside the <code>crawl_url</code> method can be cumbersome. You can set them in a seperate <code>params</code> variable that has the <code>RequestParams</code> type which is also available in the <code>spider</code> package.</p>
+<pre><code class="language-python">from spider import Spider, spider_types
+
+params: spider_types.RequestParamsDict = {
+    "limit": 10,
+    "request_timeout": 10,
+    "stealth": True,
+    # Easier to read and intellisense will help you with the available options
+}
+
+app = Spider()
+url = "https://spider.cloud"
+crawled_data = app.crawl_url(url, params)
+
+print(crawled_data)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="scrape"><a class="header" href="#scrape">Scrape</a></h1>
+<p>We will assume that you have installed the Spider package and exported your API key as an environment variable. If you haven't, please refer to the <a href="python/./getting-started.html">Getting Started</a> guide.</p>
+<p>Scrape a website and return the content.</p>
+<pre><code class="language-python">from spider import Spider
+
+app = Spider()
+url = 'https://spider.cloud'
+scraped_data = app.scrape_url(url)
+
+print(scraped_data)
+</code></pre>
+<p>The <code>scrape_url</code> method returns the content of the website in markdown format as default. Next we will see how to scrape with with different parameters.</p>
+<h2 id="scrape-with-different-parameters"><a class="header" href="#scrape-with-different-parameters">Scrape with different parameters</a></h2>
+<p>The <code>scrape_url</code> method has the following parameters:</p>
+<ul>
+<li><code>url</code> (str): The URL of the website to scrape.</li>
+</ul>
+<p>the following are optional parameters and can be set in the <code>params</code> dictionary:</p>
+<ul>
+<li><code>request</code> ("http", "chrome", "smart") : The type of request to make. Default is "http".</li>
+<li><code>return_format</code> ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".</li>
+<li><code>stealth</code>, <code>anti_bot</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=python-sdk-book">documentation</a>.</li>
+</ul>
+<pre><code class="language-python">from spider import Spider
+
+app = Spider()
+url = "https://spider.cloud"
+scraped_data = app.scrape_url(url, params={"request_timeout": 10, "stealth": True})
+
+print(scraped_data)
+</code></pre>
+<p>If you have a lot of params, setting them inside the <code>scrape_url</code> method can be cumbersome. You can set them in a seperate <code>params</code> variable that has the <code>RequestParams</code> type which is also available in the <code>spider</code> package.</p>
+<pre><code class="language-python">from spider import Spider, spider_types
+
+params: spider_types.RequestParamsDict = {
+    "request_timeout": 10,
+    "stealth": True,
+    # Easier to read and intellisense will help you with the available options
+}
+
+app = Spider()
+url = "https://spider.cloud"
+scraped_data = app.scrape_url(url, params)
+
+print(scraped_data)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="async-crawl"><a class="header" href="#async-crawl">Async Crawl</a></h1>
+<p>We will assume that you have installed the Spider package and exported your API key as an environment variable. If you haven't, please refer to the <a href="python/./getting-started.html">Getting Started</a> guide.</p>
+<p>Crawl a website asynchronously and return the content.</p>
+<pre><code class="language-python">import asyncio
+
+from spider import AsyncSpider
+
+url = "https://spider.cloud"
+
+
+async def async_crawl_url(url, params):
+    async with AsyncSpider() as app:
+        crawled_data = []
+        async for data in app.crawl_url(url, params=params):
+            crawled_data.append(data)
+    return crawled_data
+
+
+result = asyncio.run(async_crawl_url(url, params={"limit": 10}))
+print(result)
+</code></pre>
+<p>We use the <code>AsyncSpider</code> class to create an asynchronous instance of the Spider class. We then use the <code>async for</code> loop to iterate over the results of the <code>crawl_url</code> method. The <code>crawl_url</code> method returns a generator that yields the crawled data. We append the data to a list and return it. Simsalabim, we have crawled a website asynchronously.</p>
+<p>Next we will see how to crawl asynchronously with different parameters.</p>
+<h2 id="async-crawl-with-different-parameters"><a class="header" href="#async-crawl-with-different-parameters">Async Crawl with different parameters</a></h2>
+<p>The <code>crawl_url</code> method has the following parameters:</p>
+<ul>
+<li><code>url</code> (str): The URL of the website to crawl.</li>
+</ul>
+<p>the following are recommended parameters and can be set in the <code>params</code> dictionary:</p>
+<ul>
+<li><code>limit</code> (int): The maximum amount of pages allowed to crawl per website. Remove the value or set it to <code>0</code> to crawl all pages.</li>
+<li><code>request_timeout</code> (int): The maximum amount of time to wait for a response from the website.</li>
+<li><code>stealth</code> (bool): Whether to use stealth mode. Default is <code>False</code> on chrome.</li>
+<li>a ton more, visit the <a href="https://spider.cloud/docs/api?ref=python-sdk-book">documentation</a> for more parameters.</li>
+</ul>
+<pre><code class="language-python">import asyncio
+
+from spider import AsyncSpider
+
+url = "https://spider.cloud"
+
+
+async def async_crawl_url(url, params):
+    async with AsyncSpider() as app:
+        crawled_data = []
+        async for data in app.crawl_url(url, params=params):
+            crawled_data.append(data)
+    return crawled_data
+
+
+result = asyncio.run(
+    async_crawl_url(
+        url,
+        params={
+            "limit": 10,
+            "request_timeout": 10,
+            "stealth": True,
+            "return_format": "html",
+        },
+    )
+)
+print(result)
+</code></pre>
+<p>If you have a lot of params, setting them inside the <code>crawl_url</code> method can be cumbersome. You can set them in a seperate <code>params</code> variable that has the <code>RequestParams</code> type which is also available in the <code>spider</code> package.</p>
+<pre><code class="language-python">import asyncio
+
+from spider import AsyncSpider, spider_types
+
+url = "https://spider.cloud"
+
+
+async def async_crawl_url(url, params):
+    async with AsyncSpider() as app:
+        crawled_data = []
+        async for data in app.crawl_url(url, params=params):
+            crawled_data.append(data)
+    return crawled_data
+
+
+params: spider_types.RequestParamsDict = {
+    "limit": 10,
+    "request_timeout": 10,
+    "stealth": True,
+    # Easier to read and intellisense will help you with the available options
+}
+
+result = asyncio.run(async_crawl_url(url, params=params))
+print(result)
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started-1"><a class="header" href="#getting-started-1">Getting started</a></h1>
+<p>To be able to use the javascript SDK you will (of course) have to install it. You can do so with your package manager of choice.</p>
+<pre><code class="language-bash">npm install @spider-cloud/spider-client
+</code></pre>
+<pre><code class="language-bash">yarn add @spider-cloud/spider-client
+</code></pre>
+<p><a href="https://www.npmjs.com/package/@spider-cloud/spider-client">Here</a> is the link to the package on npm.</p>
+<h2 id="setting--getting-api-key-1"><a class="header" href="#setting--getting-api-key-1">Setting &amp; Getting Api Key</a></h2>
+<p>To use the SDK you will need an API key. You can get one by signing up on <a href="https://spider.cloud?ref=javascript-sdk-book">spider.cloud</a>.</p>
+<p>Then you need to set the API key in your environment variables.</p>
+<pre><code class="language-bash">export SPIDER_API_KEY=your_api_key
+</code></pre>
+<p>if you don't want to set the API key in your environment variables you can pass it as an argument to the <code>Spider</code> class.</p>
+<pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
+</code></pre>
+<p>We recommend setting the API key in your environment variables.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="crawl-1"><a class="header" href="#crawl-1">Crawl</a></h1>
+<p>We will assume that you have installed the Spider package and exported your API key as an environment variable. If you haven't, please refer to the <a href="javascript/./getting-started.html">Getting Started</a> guide.</p>
+<p>Crawl a website and return the content.</p>
+<pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
+
+const app = new Spider();
+const url = "https://spider.cloud";
+const scrapedData = await app.crawlUrl(url, { limit: 10 });
+console.log(scrapedData);
+</code></pre>
+<p>The <code>crawlUrl</code> method returns the content of the website in markdown format as default. We set the <code>limit</code> parameter to 10 to limit the number of pages to crawl. The maximum amount of pages allowed to crawl per website. Remove the value or set it to <code>0</code> to crawl all pages.</p>
+<p>Next we will see how to crawl with with different parameters.</p>
+<h2 id="crawl-with-different-parameters-1"><a class="header" href="#crawl-with-different-parameters-1">Crawl with different parameters</a></h2>
+<p>The <code>crawlUrl</code> method has the following parameters:</p>
+<ul>
+<li><code>url</code> (str): The URL of the website to crawl.</li>
+</ul>
+<p>the following are recommended parameters and can be set in the <code>params</code> dictionary:</p>
+<ul>
+<li><code>limit</code> (int): The maximum amount of pages allowed to crawl per website. Remove the value or set it to <code>0</code> to crawl all pages.</li>
+<li><code>request_timeout</code> (int): The maximum amount of time to wait for a response from the website.</li>
+<li><code>stealth</code> (bool): Whether to use stealth mode. Default is <code>False</code> on chrome.</li>
+<li>visit the <a href="https://spider.cloud/docs/api?ref=javascript-sdk-book">documentation</a> for more parameters.</li>
+</ul>
+<pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
+
+const app = new Spider();
+const url = "https://spider.cloud";
+const scrapedData = await app.crawlUrl(url, {
+  limit: 10,
+  anti_bot: true,
+  return_format: "raw",
+});
+console.log(scrapedData);
+</code></pre>
+<p>If you have a lot of params, setting them inside the <code>crawlUrl</code> method can be cumbersome. You can set them in a seperate <code>params</code> variable that has the <code>SpiderParams</code> type which is also available in the <code>spider</code> package. You will have to use Typescript if you want type annotations.</p>
+<pre><code class="language-ts">import { Spider } from "@spider-cloud/spider-client";
+import type { SpiderParams } from "@spider-cloud/spider-client/dist/config";
+
+const app = new Spider();
+const url = "https://spider.cloud";
+const params: SpiderParams = {
+  return_format: "raw",
+  anti_bot: true,
+};
+const scrapedData = await app.crawlUrl(url, params);
+console.log(scrapedData);
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="scrape-1"><a class="header" href="#scrape-1">Scrape</a></h1>
+<p>We will assume that you have installed the Spider package and exported your API key as an environment variable. If you haven't, please refer to the <a href="javascript/./getting-started.html">Getting Started</a> guide.</p>
+<p>Scrape a website and return the content.</p>
+<pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
+
+const app = new Spider();
+const url = "https://spider.cloud";
+const scrapedData = await app.scrapeUrl(url);
+console.log(scrapedData);
+</code></pre>
+<p>The <code>scrapeUrl</code> method returns the content of the website in markdown format as default. Next we will see how to scrape with with different parameters.</p>
+<h2 id="scrape-with-different-parameters-1"><a class="header" href="#scrape-with-different-parameters-1">Scrape with different parameters</a></h2>
+<p>The <code>scrapeUrl</code> method has the following parameters:</p>
+<ul>
+<li><code>url</code> (str): The URL of the website to scrape.</li>
+</ul>
+<p>the following are optional parameters and can be set in the <code>params</code> dictionary:</p>
+<ul>
+<li><code>request</code> ("http", "chrome", "smart") : The type of request to make. Default is "http".</li>
+<li><code>return_format</code> ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".</li>
+<li><code>stealth</code>, <code>anti_bot</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=javascript-sdk-book">documentation</a>.</li>
+</ul>
+<pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
+
+const app = new Spider();
+const url = "https://spider.cloud";
+const scrapedData = await app.scrapeUrl(url, {
+  return_format: "raw",
+  anti_bot: true,
+});
+console.log(scrapedData);
+</code></pre>
+<p>If you have a lot of params, setting them inside the <code>scrapeUrl</code> method can be cumbersome. You can set them in a seperate <code>params</code> variable that has the <code>SpiderParams</code> type which is also available in the <code>spider</code> package. You will have to use Typescript if you want type annotations.</p>
+<pre><code class="language-ts">import { Spider } from "@spider-cloud/spider-client";
+import type { SpiderParams } from "@spider-cloud/spider-client/dist/config";
+
+const app = new Spider();
+const url = "https://spider.cloud";
+const params: SpiderParams = {
+  return_format: "raw",
+  anti_bot: true,
+};
+const scrapedData = await app.scrapeUrl(url, params);
+console.log(scrapedData);
+</code></pre>
 
                     </main>
 

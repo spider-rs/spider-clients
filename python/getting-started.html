@@ -3,8 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Page not found - spider-client</title>
-        <base href="/">
+        <title>Getting Started - spider-client</title>
 
 
         <!-- Custom HTML head -->
@@ -13,21 +12,21 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
 
-        <link rel="icon" href="favicon.svg">
-        <link rel="shortcut icon" href="favicon.png">
-        <link rel="stylesheet" href="css/variables.css">
-        <link rel="stylesheet" href="css/general.css">
-        <link rel="stylesheet" href="css/chrome.css">
-        <link rel="stylesheet" href="css/print.css" media="print">
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
-        <link rel="stylesheet" href="fonts/fonts.css">
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
 
         <!-- Highlight.js Stylesheets -->
-        <link rel="stylesheet" href="highlight.css">
-        <link rel="stylesheet" href="tomorrow-night.css">
-        <link rel="stylesheet" href="ayu-highlight.css">
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
 
@@ -36,7 +35,7 @@
     <div id="body-container">
         <!-- Provide site root to javascript -->
         <script>
-            var path_to_root = "";
+            var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
 
@@ -89,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="simple-example.html"><strong aria-hidden="true">1.</strong> A Simple Example</a></li><li class="chapter-item expanded affix "><li class="part-title">Python</li><li class="chapter-item expanded "><a href="python/getting-started.html"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="python/crawl.html"><strong aria-hidden="true">3.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="python/scrape.html"><strong aria-hidden="true">4.</strong> Scrape</a></li><li class="chapter-item expanded "><a href="python/async-crawl.html"><strong aria-hidden="true">5.</strong> Async Crawl</a></li><li class="chapter-item expanded affix "><li class="part-title">Javascript</li><li class="chapter-item expanded "><a href="javascript/getting-started.html"><strong aria-hidden="true">6.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="javascript/crawl.html"><strong aria-hidden="true">7.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="javascript/scrape.html"><strong aria-hidden="true">8.</strong> Scrape</a></li><li class="chapter-item expanded affix "><li class="part-title">Rust</li><li class="chapter-item expanded affix "><li class="part-title">CLI</li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../simple-example.html"><strong aria-hidden="true">1.</strong> A Simple Example</a></li><li class="chapter-item expanded affix "><li class="part-title">Python</li><li class="chapter-item expanded "><a href="../python/getting-started.html" class="active"><strong aria-hidden="true">2.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="../python/crawl.html"><strong aria-hidden="true">3.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="../python/scrape.html"><strong aria-hidden="true">4.</strong> Scrape</a></li><li class="chapter-item expanded "><a href="../python/async-crawl.html"><strong aria-hidden="true">5.</strong> Async Crawl</a></li><li class="chapter-item expanded affix "><li class="part-title">Javascript</li><li class="chapter-item expanded "><a href="../javascript/getting-started.html"><strong aria-hidden="true">6.</strong> Getting Started</a></li><li class="chapter-item expanded "><a href="../javascript/crawl.html"><strong aria-hidden="true">7.</strong> Crawl</a></li><li class="chapter-item expanded "><a href="../javascript/scrape.html"><strong aria-hidden="true">8.</strong> Scrape</a></li><li class="chapter-item expanded affix "><li class="part-title">Rust</li><li class="chapter-item expanded affix "><li class="part-title">CLI</li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -145,11 +144,14 @@
                     <h1 class="menu-title">spider-client</h1>
 
                     <div class="right-buttons">
-                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
                         <a href="https://github.com/spider-rs/spider-clients/tree/main/book" title="Git repository" aria-label="Git repository">
                             <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/spider-rs/spider-clients/edit/main/book/src/python/getting-started.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
                         </a>
 
                     </div>
@@ -177,14 +179,33 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="document-not-found-404"><a class="header" href="#document-not-found-404">Document not found (404)</a></h1>
-<p>This URL is invalid, sorry. Please use the navigation bar or search to continue.</p>
+                        <h1 id="getting-started"><a class="header" href="#getting-started">Getting started</a></h1>
+<p>To use the python SDK you will (of course) have to install it :)</p>
+<pre><code class="language-bash">pip install spider-client
+</code></pre>
+<p><a href="https://pypi.org/project/spider-client/">Here</a> is the link to the package on PyPi.</p>
+<h2 id="setting--getting-api-key"><a class="header" href="#setting--getting-api-key">Setting &amp; Getting Api Key</a></h2>
+<p>To use the SDK you will need an API key. You can get one by signing up on <a href="https://spider.cloud?ref=python-sdk-book">spider.cloud</a>.</p>
+<p>Then you need to set the API key in your environment variables.</p>
+<pre><code class="language-bash">export SPIDER_API_KEY=your_api_key
+</code></pre>
+<p>if you don't want to set the API key in your environment variables you can pass it as an argument to the <code>Spider</code> class.</p>
+<pre><code class="language-python">from spider import Spider
+app = Spider(api_key='your_api_key')
+</code></pre>
+<p>We recommend setting the API key in your environment variables.</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../simple-example.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
 
+                            <a rel="next prefetch" href="../python/crawl.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
 
                         <div style="clear: both"></div>
                     </nav>
@@ -192,7 +213,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../simple-example.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
 
+                    <a rel="next prefetch" href="../python/crawl.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
             </nav>
 
         </div>
@@ -205,13 +232,13 @@
         </script>
 
 
-        <script src="elasticlunr.min.js"></script>
-        <script src="mark.min.js"></script>
-        <script src="searcher.js"></script>
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
 
-        <script src="clipboard.min.js"></script>
-        <script src="highlight.js"></script>
-        <script src="book.js"></script>
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
 
         <!-- Custom JS scripts -->
 
