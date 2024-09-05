@@ -21,4 +21,8 @@
 
 # Rust
 
+- [Getting Started](./rust/getting-started.md)
+
 # CLI
+
+- [Getting Started](./cli/getting-started.md)
