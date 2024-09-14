@@ -142,6 +142,12 @@ export type WebAutomationMap = Record<string, WebAutomation[]>;
 // Map execution scripts for paths or urls.
 export type ExecutionScriptsMap = Record<string, string>;
 
+// The HTTP redirect policy to use. Loose allows all domains and Strict only allows relative requests to the domain.
+export enum RedirectPolicy {
+  Loose = "Loose",
+  Strict = "Strict",
+}
+
 /**
  * Represents the options available for making a spider request.
  */
@@ -383,6 +389,11 @@ export interface SpiderParams {
    * Perform custom Javascript tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
    */
   execution_scripts?: ExecutionScriptsMap;
+
+  /**
+   * The redirect policy for HTTP request. Set the value to Loose to allow all.
+   */
+  redirect_policy?: RedirectPolicy;
 }
 
 // Core actions response type.

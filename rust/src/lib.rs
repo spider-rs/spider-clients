@@ -106,6 +106,14 @@ pub enum WebAutomation {
     InfiniteScroll { times: u32 }
 }
 
+#[derive(Default, Serialize, Deserialize, Debug, Clone)]
+#[serde(tag = "type", rename_all = "PascalCase")]
+pub enum RedirectPolicy {
+    Loose,
+    #[default]
+    Strict
+}
+
 pub type WebAutomationMap = std::collections::HashMap<String, Vec<WebAutomation>>;
 pub type ExecutionScriptsMap = std::collections::HashMap<String, String>;
 
@@ -333,6 +341,8 @@ pub struct RequestParams {
     pub execution_scripts: Option<ExecutionScriptsMap>,
     /// Perform web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`
     pub automation_scripts: Option<WebAutomationMap>,
+    /// The redirect policy for HTTP request. Set the value to Loose to allow all.
+    pub redirect_policy: Option<RedirectPolicy>
 }
 
 /// The structure representing request parameters for a search request.

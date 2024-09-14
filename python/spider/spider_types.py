@@ -67,6 +67,11 @@ WebAutomation = Union[
 WebAutomationMap = Dict[str, List[WebAutomation]]
 ExecutionScriptsMap = Dict[str, str]
 
+RedirectPolicy = Literal[
+    "Loose",
+    "Strict"
+]
+
 @dataclass
 class QueryRequest:
     url: Optional[str] = field(default=None)
@@ -261,6 +266,7 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Perform custom web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
     automation_scripts: Optional[WebAutomationMap]
-
+    # The redirect policy for HTTP request. Set the value to Loose to allow all.
+    redirect_policy: Optional[RedirectPolicy]
 
 JsonCallback = Callable[[dict], None]
