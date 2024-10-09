@@ -221,7 +221,7 @@ import type { SpiderParams } from "@spider-cloud/spider-client/dist/config";
 const app = new Spider();
 const url = "https://spider.cloud";
 const params: SpiderParams = {
-  return_format: "raw",
+  return_format: ["raw", "markdown"],
   anti_bot: true,
 };
 const scrapedData = await app.crawlUrl(url, params);
