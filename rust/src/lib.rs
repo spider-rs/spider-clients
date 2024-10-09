@@ -65,6 +65,7 @@ use reqwest::Client;
 use reqwest::{Error, Response};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::default;
 use tokio_stream::StreamExt;
 
 /// Structure representing the Chunking algorithm dictionary.
@@ -201,6 +202,39 @@ pub struct CSSSelector {
 // Define the CSSExtractionMap type
 pub type CSSExtractionMap = HashMap<String, Vec<CSSSelector>>;
 
+/// Represents the settings for a webhook configuration
+#[derive(Debug, Default, Deserialize, Serialize, Clone)]
+pub struct WebhookSettings {
+    /// The destination where the webhook information will be sent
+    destination: String,
+    /// Trigger an action when all credits are depleted
+    on_credits_depleted: bool,
+    /// Trigger an action when half of the credits are depleted
+    on_credits_half_depleted: bool,
+    /// Trigger an action on a website status update event
+    on_website_status: bool,
+    /// Send information about a new page find (such as links and bytes)
+    on_find: bool,
+    /// Handle the metadata of a found page
+    on_find_metadata: bool,
+}
+
+/// Send multiple return formats.
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(untagged)]
+pub enum ReturnFormatHandling {
+    /// A single return item.
+    Single(ReturnFormat),
+    /// Multiple return formats.
+    Multi(std::collections::HashSet<ReturnFormat>),
+}
+
+impl Default for ReturnFormatHandling {
+    fn default() -> ReturnFormatHandling {
+        ReturnFormatHandling::Single(ReturnFormat::Raw)
+    }
+}
+
 /// Structure representing request parameters.
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct RequestParams {
@@ -215,7 +249,7 @@ pub struct RequestParams {
     pub limit: Option<u32>,
     #[serde(default)]
     /// The format in which the result should be returned.
-    pub return_format: Option<ReturnFormat>,
+    pub return_format: Option<ReturnFormatHandling>,
     #[serde(default)]
     /// Specifies whether to only visit the top-level domain.
     pub tld: Option<bool>,
@@ -252,6 +286,9 @@ pub struct RequestParams {
     #[serde(default)]
     /// Specifies whether anti-bot measures should be used.
     pub anti_bot: Option<bool>,
+    #[serde(default)]
+    /// Specifies whether to send data via webhooks.
+    pub webhooks: Option<WebhookSettings>,
     #[serde(default)]
     /// Specifies whether to include metadata in the response.
     pub metadata: Option<bool>,
@@ -408,7 +445,7 @@ pub enum RequestType {
 }
 
 /// Enum representing different return formats.
-#[derive(Default, Debug, Deserialize, Serialize, Clone)]
+#[derive(Default, Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Hash)]
 #[serde(rename_all = "lowercase")]
 pub enum ReturnFormat {
     #[default]

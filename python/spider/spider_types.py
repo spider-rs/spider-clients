@@ -111,6 +111,21 @@ class WaitForDict(TypedDict, total=False):
     page_navigations: Optional[bool]
 
 
+@dataclass
+class WebhookSettings:
+    # The destination where the webhook data is sent via HTTP POST.
+    destination: str
+    # Flag to trigger an action when all credits are depleted
+    on_credits_depleted: bool
+    # Flag to trigger when half of the credits are depleted
+    on_credits_half_depleted: bool
+    # Flag to notify on website status update events
+    on_website_status: bool
+    # Flag to send information (links, bytes) about a new page find
+    on_find: bool
+    # Flag to handle the metadata of a found page
+    on_find_metadata: bool
+
 class CSSSelector(TypedDict):
     """
     Represents a set of CSS selectors grouped under a common name.
@@ -125,6 +140,7 @@ class CSSSelector(TypedDict):
 # - Values are lists of CSSSelector items
 CSSExtractionMap = Dict[str, List[CSSSelector]]
 
+ReturnFormat = Literal["raw", "markdown", "commonmark", "html2text", "text", "bytes"];
 
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
@@ -138,7 +154,7 @@ class RequestParamsDict(TypedDict, total=False):
 
     # The format in which the result should be returned.
     return_format: Optional[
-        Literal["raw", "markdown", "commonmark", "html2text", "text", "bytes"]
+       ReturnFormat | List[ReturnFormat]
     ]
 
     # Specifies whether to only visit the top-level domain.
@@ -230,6 +246,9 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Returns the OpenAI embeddings for the title and description. Other values, such as keywords, may also be included. Requires the `metadata` parameter to be set to `true`.
     return_embeddings: Optional[bool]
+
+    # Use webhooks to send data to another location via POST.
+    webhooks: Optional[WebhookSettings]
 
     # Returns the link(s) found on the page that match the crawler query.
     return_page_links: Optional[bool]

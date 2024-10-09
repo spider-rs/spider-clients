@@ -49,6 +49,38 @@ interface Timeout {
 }
 
 /**
+ * Represents the webhook configuration.
+ * @typedef {Object} WebhookSettings
+ * @property {Object} object - The webhook configuration.
+ */
+interface WebhookSettings {
+  /**
+   * The URL or endpoint where the webhook information will be sent.
+   */
+  destination: string;
+  /**
+   * Flag to indicate an action should be taken when all credits are depleted.
+   */
+  on_credits_depleted: boolean;
+  /**
+   * Flag to indicate an action should be taken when half of the credits are depleted.
+   */
+  on_credits_half_depleted: boolean;
+  /**
+   * Flag to trigger a notification on a website status update event.
+   */
+  on_website_status: boolean;
+  /**
+   * Flag to send information about a new page find, such as links and data size.
+   */
+  on_find: boolean;
+  /**
+   * Flag to handle the metadata of a new page that has been found.
+   */
+  on_find_metadata: boolean;
+}
+
+/**
  * Represents the idle network configuration.
  * @typedef {Object} IdleNetwork
  * @property {Timeout} timeout - The timeout configuration.
@@ -137,6 +169,15 @@ export type WebAutomation =
   | { Fill: { selector: string; value?: string } }
   | { InfiniteScroll: number };
 
+export type ReturnFormat =
+  | "markdown"
+  | "commonmark"
+  | "raw"
+  | "text"
+  | "html2text"
+  | "bytes"
+  | "empty";
+
 // Map automation scripts for paths or urls.
 export type WebAutomationMap = Record<string, WebAutomation[]>;
 // Map execution scripts for paths or urls.
@@ -168,15 +209,9 @@ export interface SpiderParams {
   limit?: number;
 
   /**
-   * The format in which the result should be returned.
+   * The format in which the result should be returned. When setting the return format as an array a object is returned mapping by the name.
    */
-  return_format?:
-    | "markdown"
-    | "commonmark"
-    | "raw"
-    | "text"
-    | "html2text"
-    | "bytes";
+  return_format?: ReturnFormat | ReturnFormat[];
 
   /**
    * Specifies whether to only visit the top-level domain.
@@ -268,6 +303,10 @@ export interface SpiderParams {
    */
   store_data?: boolean;
 
+  /**
+   * Use webhooks to send data.
+   */
+  webhooks?: WebhookSettings;
   /**
    * Configuration settings for GPT (general purpose texture mappings).
    */

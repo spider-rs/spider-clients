@@ -9,7 +9,6 @@ import {
   ApiVersion,
 } from "./config";
 import { version } from "../package.json";
-import { Supabase } from "./supabase";
 import { streamReader } from "./utils/stream-reader";
 
 /**
@@ -41,20 +40,6 @@ export class Spider {
     if (!this.apiKey) {
       throw new Error("No API key provided");
     }
-  }
-
-  /**
-   * Init a supabase client.
-   */
-  async init_supabase() {
-    return await Supabase.init();
-  }
-
-  /**
-   *  The supabase client to manage data.
-   */
-  get supabase() {
-    return Supabase.client;
   }
 
   /**

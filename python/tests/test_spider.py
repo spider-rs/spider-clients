@@ -263,15 +263,6 @@ def test_create_signed_url(mock_get, spider):
     assert response == b"mocked raw data"
     mock_get.assert_called_once()
 
-def test_supabase_init(spider):
-    with patch('spider.supabase_client.Supabase._initialize_client') as mock_init:
-        spider.init_supabase()
-        mock_init.assert_called_once()
-
-def test_supabase_get_client_not_initialized(spider):
-    with pytest.raises(Exception, match="Supabase client is not initialized"):
-        spider.supabase
-
 def test_stream_reader():
     spider = Spider(api_key="test_api_key")
     mock_response = MagicMock()

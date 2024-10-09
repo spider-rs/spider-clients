@@ -178,16 +178,4 @@ describe("Spider JS SDK", () => {
     assert(typeof signedUrl === 'string');
     assert(typeof fileName === 'string');
   });
-
-  test("should connect with supabase", async () => {
-    const spiderClient = new Spider();
-    await spiderClient.init_supabase();
-
-    const auth = await spiderClient.supabase?.auth.signInWithPassword({
-      email: process.env.SPIDER_EMAIL || "",
-      password: process.env.SPIDER_PASSWORD || "",
-    });
-
-    assert(auth);
-  });
 });

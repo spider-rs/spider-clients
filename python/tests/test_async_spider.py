@@ -270,31 +270,6 @@ async def test_create_signed_url(async_spider):
         async for response in async_spider.create_signed_url(params={"domain": "example.com"}):
             assert response == b"mocked raw data"
 
-# @pytest.mark.asyncio
-# async def test_supabase_init(async_spider):
-#     with patch('spider.supabase_client.Supabase._initialize_client') as mock_init:
-#         await async_spider.init_supabase()
-#         mock_init.assert_called_once()
-
-# def test_supabase_get_client_not_initialized(async_spider):
-#     with pytest.raises(Exception, match="Supabase client is not initialized"):
-#         _ = async_spider.supabase
-
-# @pytest.mark.asyncio
-# async def test_stream_reader():
-#     async_spider = AsyncSpider(api_key="test_api_key")
-#     mock_response = AsyncMock(spec=aiohttp.ClientResponse)
-#     mock_response.__aiter__.return_value = [b'{"key": "value"}\n', b'{"key2": "value2"}\n'].__aiter__()
-    
-#     callback_data = []
-#     def callback(json_obj):
-#         callback_data.append(json_obj)
-    
-#     await async_spider._stream_reader(mock_response, callback)
-#     assert len(callback_data) == 2
-#     assert callback_data[0] == {"key": "value"}
-#     assert callback_data[1] == {"key2": "value2"}
-
 @pytest.mark.asyncio
 async def test_handle_error():
     async_spider = AsyncSpider(api_key="test_api_key")

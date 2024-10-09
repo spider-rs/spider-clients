@@ -148,24 +148,6 @@ spider
 - **`deleteData(table, params)`**: Delete records from the DB.
 - **`createSignedUrl(domain, params)`**: Download the records from the DB.
 
-## Supabase
-
-You can use [Supabase](https://supabase.com/docs/reference/javascript) to directly connect to instances and write your own logic. First, you need to install `@supabase/supabase-js` since this package does not include the dependency by default. This keeps the bundle size small and allows for lazy imports of the client.
-
-```ts
-const spiderClient = new Spider({ apiKey: process.env.SPIDER_API_KEY });
-
-// first init the supabase client to get the anon_key from the server.
-await spiderClient.init_supabase();
-
-const auth = await spiderClient.supabase?.auth.signInWithPassword({
-  email: process.env.SPIDER_EMAIL || "",
-  password: process.env.SPIDER_PASSWORD || "",
-});
-
-// now you can do anything with spiderClient.supabase
-```
-
 ## Error Handling
 
 The SDK provides robust error handling and will throw exceptions when it encounters critical issues. Always use `.catch()` on promises to handle these errors gracefully.
