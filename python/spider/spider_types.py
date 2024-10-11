@@ -140,7 +140,7 @@ class CSSSelector(TypedDict):
 # - Values are lists of CSSSelector items
 CSSExtractionMap = Dict[str, List[CSSSelector]]
 
-ReturnFormat = Literal["raw", "markdown", "commonmark", "html2text", "text", "bytes"];
+ReturnFormat = Literal["raw", "markdown", "commonmark", "html2text", "text", "xml", "bytes"];
 
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.

@@ -176,6 +176,7 @@ export type ReturnFormat =
   | "text"
   | "html2text"
   | "bytes"
+  | "xml"
   | "empty";
 
 // Map automation scripts for paths or urls.

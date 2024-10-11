@@ -1094,7 +1094,7 @@ dependencies = [
 
 [[package]]
 name = "spider-client"
-version = "0.1.20"
+version = "0.1.21"
 dependencies = [
  "reqwest",
  "serde",
@@ -1105,7 +1105,7 @@ dependencies = [
 
 [[package]]
 name = "spider-cloud-cli"
-version = "0.1.4"
+version = "0.1.5"
 dependencies = [
  "clap",
  "keyring",

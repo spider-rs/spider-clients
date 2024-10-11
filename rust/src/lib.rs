@@ -459,6 +459,8 @@ pub enum ReturnFormat {
     Html2text,
     /// Return the response as Text.
     Text,
+    /// Return the response as XML.
+    Xml,
     /// Return the response as Bytes.
     Bytes,
 }
