@@ -3,3 +3,4 @@ pytest-asyncio
 python-dotenv
 aiohttp
 python-dotenv
+ijson

@@ -1,6 +1,7 @@
-import os, requests, json, logging
+import os, requests, logging, ijson
 from typing import Optional, Dict
 from spider.spider_types import RequestParamsDict, JsonCallback, QueryRequest
+
 
 class Spider:
     def __init__(self, api_key: Optional[str] = None):
@@ -402,18 +403,19 @@ class Spider:
 
     def stream_reader(self, response, callback):
         response.raise_for_status()
-        for chunk in response.iter_lines(chunk_size=None, decode_unicode=True):
-            try:
-                json_obj = json.loads(chunk)
+
+        try:
+            for json_obj in ijson.items(response.raw, "", multiple_values=True):
                 callback(json_obj)
-            except json.JSONDecodeError:
-                logging.error("Failed to parse chunk: %s", chunk)
+
+        except Exception as e:
+            logging.error(f"An error occurred while parsing JSON: {e}")
 
     def _prepare_headers(self, content_type: str = "application/json"):
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.0.72",
+            "User-Agent": f"Spider-Client/0.1.22",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

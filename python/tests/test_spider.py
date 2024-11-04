@@ -1,5 +1,6 @@
 import pytest
 import os
+from io import BytesIO
 from unittest.mock import patch, MagicMock
 from spider.spider import Spider
 from spider.spider_types import RequestParamsDict
@@ -266,13 +267,16 @@ def test_create_signed_url(mock_get, spider):
 def test_stream_reader():
     spider = Spider(api_key="test_api_key")
     mock_response = MagicMock()
-    mock_response.iter_lines.return_value = [b'{"key": "value"}\n', b'{"key2": "value2"}\n']
+    raw_data = b'{"key": "value"}\n{"key2": "value2"}\n'
+    mock_response = MagicMock()
+    mock_response.raw = BytesIO(raw_data)
     
     callback_data = []
     def callback(json_obj):
         callback_data.append(json_obj)
     
     spider.stream_reader(mock_response, callback)
+    
     assert len(callback_data) == 2
     assert callback_data[0] == {"key": "value"}
     assert callback_data[1] == {"key2": "value2"}
