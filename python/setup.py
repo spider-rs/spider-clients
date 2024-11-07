@@ -14,7 +14,7 @@ setup(
     author_email="jeff@spider.cloud",
     description="Python SDK for Spider Cloud API",
     packages=find_packages(),
-    install_requires=["requests"],
+    install_requires=["requests", "ijson"],
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
     classifiers=[
