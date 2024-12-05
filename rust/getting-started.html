@@ -30,15 +30,17 @@
 
         <!-- Custom theme stylesheets -->
 
-    </head>
-    <body>
-    <div id="body-container">
+
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "../";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
-
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -85,7 +87,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <!-- populated by js -->
-            <div class="sidebar-scrollbox"></div>
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
             <noscript>
                 <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
             </noscript>
@@ -93,8 +95,6 @@
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
-
-        <script async src="../toc.js"></script>
 
         <div id="page-wrapper" class="page-wrapper">
 
@@ -401,7 +401,7 @@ let crawler_params = RequestParams {
 spider.crawl_url(url, Some(crawler_params), true, "application/jsonl", None::&lt;fn(serde_json::Value)&gt;).await.expect("Failed to crawl the URL");
 <span class="boring">}</span></code></pre></pre>
 <h2 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h2>
-<p>The SDK handles errors returned by the Spider Cloud API and raises appropriate exceptions. If an error occurs during a request, it will be propagated to the caller with a descriptive error message.</p>
+<p>The SDK handles errors returned by the Spider Cloud API and raises appropriate exceptions. If an error occurs during a request, it will be propagated to the caller with a descriptive error message. By default request use a Exponential Backoff to retry as needed.</p>
 
                     </main>
 
