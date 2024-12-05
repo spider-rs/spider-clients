@@ -1,8 +1,5 @@
-import os
-import json
-import logging
+import os, tenacity, json, aiohttp, logging
 from typing import Optional, Dict, Any, AsyncIterator, Callable
-import aiohttp
 from aiohttp import ClientSession, ClientResponse
 from types import TracebackType
 from typing import Type
@@ -35,6 +32,10 @@ class AsyncSpider:
         if self.session:
             await self.session.close()
 
+    @tenacity.retry(
+        wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
+        stop=tenacity.stop_after_attempt(5)
+    )
     async def _request(
         self,
         method: str,
@@ -430,7 +431,7 @@ class AsyncSpider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "AsyncSpider-Client/0.1.23",
+            "User-Agent": "AsyncSpider-Client/0.1.24",
         }
 
     async def _handle_error(self, response: ClientResponse, action: str) -> None:

@@ -10,3 +10,4 @@
 - Subscriptions
 - AI Scraping and Event Driven Actions
 - Blacklisting and Budgeting Depth
+- Exponential Backoff

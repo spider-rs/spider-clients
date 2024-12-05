@@ -8,13 +8,13 @@ def read_file(fname):
 
 setup(
     name="spider-client",
-    version="0.1.23",
+    version="0.1.24",
     url="https://github.com/spider-rs/spider-clients/tree/main/python",
     author="Spider",
     author_email="jeff@spider.cloud",
     description="Python SDK for Spider Cloud API",
     packages=find_packages(),
-    install_requires=["requests", "ijson"],
+    install_requires=["requests", "ijson", "tenacity", "aiohttp"],
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
     classifiers=[

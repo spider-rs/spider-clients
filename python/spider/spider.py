@@ -1,4 +1,4 @@
-import os, requests, logging, ijson
+import os, requests, logging, ijson, tenacity
 from typing import Optional, Dict
 from spider.spider_types import RequestParamsDict, JsonCallback, QueryRequest
 
@@ -15,6 +15,10 @@ class Spider:
         if self.api_key is None:
             raise ValueError("No API key provided")
 
+    @tenacity.retry(
+        wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
+        stop=tenacity.stop_after_attempt(5)
+    )
     def api_post(
         self,
         endpoint: str,
@@ -41,6 +45,10 @@ class Spider:
         else:
             self._handle_error(response, f"post to {endpoint}")
 
+    @tenacity.retry(
+        wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
+        stop=tenacity.stop_after_attempt(5)
+    )
     def api_get(
         self,
         endpoint: str,
@@ -67,6 +75,10 @@ class Spider:
         else:
             self._handle_error(response, f"get from {endpoint}")
 
+    @tenacity.retry(
+        wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
+        stop=tenacity.stop_after_attempt(5)
+    )
     def api_delete(
         self,
         endpoint: str,
@@ -415,7 +427,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.23",
+            "User-Agent": f"Spider-Client/0.1.24",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

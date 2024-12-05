@@ -161,7 +161,10 @@ async fn main() {
                                 params.limit = Some(limit);
                             }
                             println!("Labeling data from URL: {}", url);
-                            match spider.label(&url, Some(params), false, "application/json").await {
+                            match spider
+                                .label(&url, Some(params), false, "application/json")
+                                .await
+                            {
                                 Ok(data) => println!("{}", json!(data)),
                                 Err(e) => eprintln!("Error labeling data: {:?}", e),
                             }

@@ -285,4 +285,4 @@ spider.crawl_url(url, Some(crawler_params), true, "application/jsonl", None::<fn
 
 ## Error Handling
 
-The SDK handles errors returned by the Spider Cloud API and raises appropriate exceptions. If an error occurs during a request, it will be propagated to the caller with a descriptive error message.
+The SDK handles errors returned by the Spider Cloud API and raises appropriate exceptions. If an error occurs during a request, it will be propagated to the caller with a descriptive error message. By default request use a Exponential Backoff to retry as needed.

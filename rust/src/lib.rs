@@ -61,6 +61,8 @@
 //! - `utils`: Utility functions used by the Spider client.
 //!
 
+use backon::ExponentialBuilder;
+use backon::Retryable;
 use reqwest::Client;
 use reqwest::{Error, Response};
 use serde::{Deserialize, Serialize};
@@ -429,7 +431,9 @@ pub struct TransformParams {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct DataParam {
+    /// The HTML resource.
     pub html: String,
+    /// The website url.
     pub url: Option<String>,
 }
 
@@ -437,9 +441,12 @@ pub struct DataParam {
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "lowercase")]
 pub enum RequestType {
-    #[default]
+    /// Default HTTP request
     Http,
+    /// Chrome browser rendering
     Chrome,
+    #[default]
+    /// Smart mode defaulting to HTTP and using Chrome when needed.
     SmartMode,
 }
 
@@ -529,10 +536,10 @@ impl Spider {
     /// # Returns
     ///
     /// The response from the API.
-    async fn api_post(
+    async fn api_post_base(
         &self,
         endpoint: &str,
-        data: impl Serialize + std::fmt::Debug,
+        data: impl Serialize + Sized + std::fmt::Debug,
         content_type: &str,
     ) -> Result<Response, Error> {
         let url: String = format!("{API_URL}/{}", endpoint);
@@ -550,6 +557,41 @@ impl Spider {
             .await
     }
 
+    /// Sends a POST request to the API.
+    ///
+    /// # Arguments
+    ///
+    /// * `endpoint` - The API endpoint.
+    /// * `data` - The request data as a HashMap.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API.
+    async fn api_post(
+        &self,
+        endpoint: &str,
+        data: impl Serialize + std::fmt::Debug + Clone + Send + Sync,
+        content_type: &str,
+    ) -> Result<Response, Error> {
+        let fetch = || async {
+            self.api_post_base(endpoint, data.clone(), content_type)
+                .await
+        };
+
+        fetch
+            .retry(ExponentialBuilder::default().with_max_times(5))
+            .when(|err: &reqwest::Error| {
+                if let Some(status) = err.status() {
+                    status.is_server_error()
+                } else {
+                    err.is_timeout()
+                }
+            })
+            .await
+    }
+
     /// Sends a GET request to the API.
     ///
     /// # Arguments
@@ -559,7 +601,7 @@ impl Spider {
     /// # Returns
     ///
     /// The response from the API as a JSON value.
-    async fn api_get<T: Serialize>(
+    async fn api_get_base<T: Serialize>(
         &self,
         endpoint: &str,
         query_params: Option<&T>,
@@ -578,6 +620,102 @@ impl Spider {
             .send()
             .await?;
         res.json().await
+    }
+
+    /// Sends a GET request to the API.
+    ///
+    /// # Arguments
+    ///
+    /// * `endpoint` - The API endpoint.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    async fn api_get<T: Serialize>(
+        &self,
+        endpoint: &str,
+        query_params: Option<&T>,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let fetch = || async { self.api_get_base(endpoint, query_params.clone()).await };
+
+        fetch
+            .retry(ExponentialBuilder::default().with_max_times(5))
+            .when(|err: &reqwest::Error| {
+                if let Some(status) = err.status() {
+                    status.is_server_error()
+                } else {
+                    err.is_timeout()
+                }
+            })
+            .await
+    }
+
+    /// Sends a DELETE request to the API.
+    ///
+    /// # Arguments
+    ///
+    /// * `endpoint` - The API endpoint.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API.
+    async fn api_delete_base(
+        &self,
+        endpoint: &str,
+        params: Option<HashMap<String, serde_json::Value>>,
+    ) -> Result<Response, Error> {
+        let url = format!("{API_URL}/v1/{}", endpoint);
+        let request_builder = self
+            .client
+            .delete(&url)
+            .header(
+                "User-Agent",
+                format!("Spider-Client/{}", env!("CARGO_PKG_VERSION")),
+            )
+            .header("Content-Type", "application/json")
+            .header("Authorization", format!("Bearer {}", self.api_key));
+
+        let request_builder = if let Some(params) = params {
+            request_builder.json(&params)
+        } else {
+            request_builder
+        };
+
+        request_builder.send().await
+    }
+
+    /// Sends a DELETE request to the API.
+    ///
+    /// # Arguments
+    ///
+    /// * `endpoint` - The API endpoint.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API.
+    async fn api_delete(
+        &self,
+        endpoint: &str,
+        params: Option<HashMap<String, serde_json::Value>>,
+    ) -> Result<Response, Error> {
+        let fetch = || async { self.api_delete_base(endpoint, params.clone()).await };
+
+        fetch
+            .retry(ExponentialBuilder::default().with_max_times(5))
+            .when(|err: &reqwest::Error| {
+                if let Some(status) = err.status() {
+                    status.is_server_error()
+                } else {
+                    err.is_timeout()
+                }
+            })
+            .await
     }
 
     /// Scrapes a URL.
@@ -619,43 +757,6 @@ impl Spider {
 
         let res = self.api_post("crawl", data, content_type).await?;
         res.json().await
-    }
-
-    /// Sends a DELETE request to the API.
-    ///
-    /// # Arguments
-    ///
-    /// * `endpoint` - The API endpoint.
-    /// * `params` - Optional request parameters.
-    /// * `stream` - Whether streaming is enabled.
-    /// * `content_type` - The content type of the request.
-    ///
-    /// # Returns
-    ///
-    /// The response from the API.
-    async fn api_delete(
-        &self,
-        endpoint: &str,
-        params: Option<HashMap<String, serde_json::Value>>,
-    ) -> Result<Response, Error> {
-        let url = format!("{API_URL}/v1/{}", endpoint);
-        let request_builder = self
-            .client
-            .delete(&url)
-            .header(
-                "User-Agent",
-                format!("Spider-Client/{}", env!("CARGO_PKG_VERSION")),
-            )
-            .header("Content-Type", "application/json")
-            .header("Authorization", format!("Bearer {}", self.api_key));
-
-        let request_builder = if let Some(params) = params {
-            request_builder.json(&params)
-        } else {
-            request_builder
-        };
-
-        request_builder.send().await
     }
 
     /// Crawls a URL.

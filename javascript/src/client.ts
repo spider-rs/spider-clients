@@ -10,6 +10,7 @@ import {
 } from "./config";
 import { version } from "../package.json";
 import { streamReader } from "./utils/stream-reader";
+import { backOff } from "exponential-backoff";
 
 /**
  * Generic params for core request.
@@ -56,12 +57,15 @@ export class Spider {
     jsonl?: boolean
   ) {
     const headers = jsonl ? this.prepareHeadersJsonL : this.prepareHeaders;
-    const response = await fetch(
-      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+    const response = await backOff(
+      () =>
+        fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(data),
+        }),
       {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(data),
+        numOfAttempts: 5,
       }
     );
 
@@ -82,11 +86,14 @@ export class Spider {
    */
   private async _apiGet(endpoint: string) {
     const headers = this.prepareHeaders;
-    const response = await fetch(
-      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+    const response = await backOff(
+      () =>
+        fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
+          method: "GET",
+          headers: headers,
+        }),
       {
-        method: "GET",
-        headers: headers,
+        numOfAttempts: 5,
       }
     );
 
@@ -104,11 +111,14 @@ export class Spider {
    */
   private async _apiDelete(endpoint: string) {
     const headers = this.prepareHeaders;
-    const response = await fetch(
-      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+    const response = await backOff(
+      () =>
+        fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
+          method: "DELETE",
+          headers,
+        }),
       {
-        method: "DELETE",
-        headers,
+        numOfAttempts: 5,
       }
     );
 
