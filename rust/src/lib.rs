@@ -576,7 +576,7 @@ impl Spider {
         content_type: &str,
     ) -> Result<Response, Error> {
         let fetch = || async {
-            self.api_post_base(endpoint, data.clone(), content_type)
+            self.api_post_base(endpoint, data.to_owned(), content_type)
                 .await
         };
 
@@ -636,7 +636,7 @@ impl Spider {
         endpoint: &str,
         query_params: Option<&T>,
     ) -> Result<serde_json::Value, reqwest::Error> {
-        let fetch = || async { self.api_get_base(endpoint, query_params.clone()).await };
+        let fetch = || async { self.api_get_base(endpoint, query_params.to_owned()).await };
 
         fetch
             .retry(ExponentialBuilder::default().with_max_times(5))
@@ -704,7 +704,7 @@ impl Spider {
         endpoint: &str,
         params: Option<HashMap<String, serde_json::Value>>,
     ) -> Result<Response, Error> {
-        let fetch = || async { self.api_delete_base(endpoint, params.clone()).await };
+        let fetch = || async { self.api_delete_base(endpoint, params.to_owned()).await };
 
         fetch
             .retry(ExponentialBuilder::default().with_max_times(5))
@@ -745,13 +745,8 @@ impl Spider {
         data.insert("limit".to_string(), serde_json::Value::Number(1.into()));
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
-                    let params_collect = p.iter().map(|(k, v)| (k.to_string(), v.clone()));
-
-                    data.extend(params_collect);
-                }
-                _ => (),
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
             }
         }
 
@@ -783,11 +778,8 @@ impl Spider {
         let mut data = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
-                    data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-                _ => (),
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
             }
         }
 
@@ -844,11 +836,8 @@ impl Spider {
         let mut data = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
-                    data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-                _ => (),
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
             }
         }
 
@@ -880,11 +869,8 @@ impl Spider {
         let mut data = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
-                    data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-                _ => (),
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
             }
         }
 
@@ -952,19 +938,13 @@ impl Spider {
         let mut payload = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
-                    payload.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-                _ => (),
+            if let Some(ref p) = params.as_object() {
+                payload.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
             }
         }
 
-        match serde_json::to_value(data) {
-            Ok(d) => {
-                payload.insert("data".into(), d);
-            }
-            _ => (),
+        if let Ok(d) = serde_json::to_value(data) {
+            payload.insert("data".into(), d);
         }
 
         let res = self.api_post("transform", payload, content_type).await?;
@@ -994,11 +974,10 @@ impl Spider {
         let mut data = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
+            if let Ok(params) = serde_json::to_value(params) {
+                if let Some(ref p) = params.as_object() {
                     data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
                 }
-                _ => (),
             }
         }
 
@@ -1037,11 +1016,10 @@ impl Spider {
         let mut data = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
+            if let Ok(params) = serde_json::to_value(params) {
+                if let Some(ref p) = params.as_object() {
                     data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
                 }
-                _ => (),
             }
         }
 
@@ -1165,11 +1143,10 @@ impl Spider {
         );
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
+            if let Ok(params) = serde_json::to_value(params) {
+                if let Some(ref p) = params.as_object() {
                     payload.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
                 }
-                _ => (),
             }
         }
 
@@ -1215,14 +1192,10 @@ impl Spider {
         let mut payload = HashMap::new();
 
         if let Some(params) = params {
-            match serde_json::to_value(params) {
-                Ok(p) => match p.as_object() {
-                    Some(o) => {
-                        payload.extend(o.iter().map(|(k, v)| (k.as_str(), v.clone())));
-                    }
-                    _ => (),
-                },
-                _ => (),
+            if let Ok(p) = serde_json::to_value(params) {
+                if let Some(o) = p.as_object() {
+                    payload.extend(o.iter().map(|(k, v)| (k.as_str(), v.clone())));
+                }
             }
         }
 
@@ -1241,13 +1214,10 @@ impl Spider {
         let mut payload = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
-            match params.as_object() {
-                Some(ref p) => {
-                    let params_collect = p.iter().map(|(k, v)| (k.to_string(), v.clone()));
-
-                    payload.extend(params_collect);
+            if let Ok(params) = serde_json::to_value(params) {
+                if let Some(ref p) = params.as_object() {
+                    payload.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
                 }
-                _ => (),
             }
         }
 
