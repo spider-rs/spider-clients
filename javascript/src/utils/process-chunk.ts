@@ -1,14 +1,23 @@
 import type { SpiderCoreResponse } from "../config";
 
-export const processChunk = (
-  chunk: string,
-  cb: (r: SpiderCoreResponse) => void,
+export const createJsonLineProcessor = (
+  cb: (r: SpiderCoreResponse) => void
 ) => {
-  try {
-    cb(chunk ? JSON.parse(chunk.trim()) : null);
+  let buffer = "";
 
-    return true;
-  } catch (_error) {
-    return false;
-  }
+  return (chunk: Buffer | string) => {
+    buffer += chunk.toString();
+    let boundary: number;
+
+    while ((boundary = buffer.indexOf("\n")) !== -1) {
+      const line = buffer.slice(0, boundary);
+      buffer = buffer.slice(boundary + 1);
+
+      if (line.trim()) {
+        try {
+          cb(JSON.parse(line));
+        } catch (_error) {}
+      }
+    }
+  };
 };

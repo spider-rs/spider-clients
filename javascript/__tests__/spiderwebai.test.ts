@@ -45,6 +45,18 @@ describe("Spider JS SDK", () => {
     assert(spiderData[0].url);
   });
 
+  test("should crawl url with data streaming", async () => {
+    const spiderClient = new Spider();
+
+    const cb = (spiderData: any) => {
+      assert(spiderData.content);
+      assert(spiderData.status);
+      assert(spiderData.url);
+    };
+
+    await spiderClient.crawlUrl(url, params, true, cb);
+  });
+
   test("should get links", async () => {
     const spiderClient = new Spider();
     const linksData = await spiderClient.links(url, params);
@@ -67,7 +79,7 @@ describe("Spider JS SDK", () => {
     const spiderClient = new Spider();
     const searchData = await spiderClient.search(
       "example search query",
-      params,
+      params
     );
 
     assert(Array.isArray(searchData));
@@ -133,20 +145,24 @@ describe("Spider JS SDK", () => {
 
   test("should download the file", async () => {
     const spiderClient = new Spider();
-    const {data} = await spiderClient.getData(Collection.Pages, { domain: "example.com", limit: 1 });
+    const { data } = await spiderClient.getData(Collection.Pages, {
+      domain: "example.com",
+      limit: 1,
+    });
 
     // the file might be deleted before hand. we need to not delete the file being used throughout test.
-    const text = data.length ? await spiderClient.download({ url: data[0].url }, "text") : "";
+    const text = data.length
+      ? await spiderClient.download({ url: data[0].url }, "text")
+      : "";
 
     assert(typeof text === "string");
-
   });
 
   test("should get credits", async () => {
     const spiderClient = new Spider();
     const credits = await spiderClient.getCredits();
 
-    assert(typeof credits === 'object');
+    assert(typeof credits === "object");
   });
 
   test("should post data", async () => {
@@ -160,7 +176,7 @@ describe("Spider JS SDK", () => {
     const spiderClient = new Spider();
     const response = await spiderClient.getData(Collection.Websites, params);
 
-    assert(typeof response === 'object');
+    assert(typeof response === "object");
     assert(Array.isArray(response.data));
   });
 
@@ -173,9 +189,11 @@ describe("Spider JS SDK", () => {
 
   test("should create signed url", async () => {
     const spiderClient = new Spider();
-    const { fileName, signedUrl } = await spiderClient.createSignedUrl("example.com");
-  
-    assert(typeof signedUrl === 'string');
-    assert(typeof fileName === 'string');
+    const { fileName, signedUrl } = await spiderClient.createSignedUrl(
+      "example.com"
+    );
+
+    assert(typeof signedUrl === "string");
+    assert(typeof fileName === "string");
   });
 });
