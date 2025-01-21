@@ -8,7 +8,7 @@ def read_file(fname):
 
 setup(
     name="spider-client",
-    version="0.1.25",
+    version="0.1.26",
     url="https://github.com/spider-rs/spider-clients/tree/main/python",
     author="Spider",
     author_email="jeff@spider.cloud",

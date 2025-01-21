@@ -238,8 +238,8 @@ class RequestParamsDict(TypedDict, total=False):
     # Specifies whether to use the sitemap links.
     sitemap: Optional[bool]
 
-    # Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
-    page_insights: Optional[bool]
+    # Specifies whether to only use the sitemap links.
+    sitemap_only: Optional[bool]
 
     # External domains to include in the crawl.
     external_domains: Optional[List[str]]

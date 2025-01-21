@@ -339,9 +339,6 @@ pub struct RequestParams {
     /// Specifies whether to use the sitemap links.
     pub sitemap: Option<bool>,
     #[serde(default)]
-    /// Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
-    pub page_insights: Option<bool>,
-    #[serde(default)]
     /// External domains to include the crawl.
     pub external_domains: Option<Vec<String>>,
     #[serde(default)]

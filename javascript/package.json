@@ -1,6 +1,6 @@
 {
   "name": "@spider-cloud/spider-client",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "description": "Isomorphic Javascript SDK for Spider Cloud services",
   "scripts": {
     "test": "node --import tsx  --test __tests__/*test.ts",
@@ -20,13 +20,13 @@
     "api",
     "llm scraping"
   ],
-  "author": "Jeff Mendez<jeff@a11ywatch.com>",
+  "author": "Jeff Mendez<jeff@spider.cloud>",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "22.10.1",
+    "@types/node": "22.10.7",
     "dotenv": "^16.4.7",
     "tsx": "^4.19.2",
-    "typescript": "5.7.2"
+    "typescript": "5.7.3"
   },
   "dependencies": {
     "exponential-backoff": "^3.1.1"

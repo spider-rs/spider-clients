@@ -354,9 +354,9 @@ export interface SpiderParams {
   sitemap?: boolean;
 
   /**
-   * Get page insights to determine information like request duration, accessibility, and other web vitals. Requires the `metadata` parameter to be set to `true`.
+   * Specifies whether to only use the sitemap links.
    */
-  page_insights?: boolean;
+  sitemap_only?: boolean;
 
   /**
    * External domains to include the crawl.
