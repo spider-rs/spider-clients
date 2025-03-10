@@ -772,6 +772,8 @@ impl Spider {
         content_type: &str,
         callback: Option<impl Fn(serde_json::Value) + Send>,
     ) -> Result<serde_json::Value, reqwest::Error> {
+        use tokio_util::codec::{FramedRead, LinesCodec};
+
         let mut data = HashMap::new();
 
         if let Ok(params) = serde_json::to_value(params) {
@@ -787,21 +789,31 @@ impl Spider {
         if stream {
             if let Some(callback) = callback {
                 let stream = res.bytes_stream();
-                tokio::pin!(stream);
 
-                while let Some(item) = stream.next().await {
-                    match item {
-                        Ok(chunk) => match serde_json::from_slice(&chunk) {
-                            Ok(json_obj) => {
-                                callback(json_obj);
+                let stream_reader = tokio_util::io::StreamReader::new(
+                    stream.map(|r| r.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))),
+                );
+
+                let mut lines = FramedRead::new(stream_reader, LinesCodec::new());
+
+                while let Some(line_result) = lines.next().await {
+                    match line_result {
+                        Ok(line) => {
+                            match serde_json::from_str::<serde_json::Value>(&line) {
+                                Ok(value) => {
+                                    callback(value);
+                                }
+                                Err(_e) => {
+                                    continue;
+                                }
                             }
-                            _ => (),
-                        },
-                        Err(e) => {
-                            eprintln!("Error in streaming response: {}", e);
+                        }
+                        Err(_e) => {
+                            return Ok(serde_json::Value::Null)
                         }
                     }
                 }
+
                 Ok(serde_json::Value::Null)
             } else {
                 Ok(serde_json::Value::Null)

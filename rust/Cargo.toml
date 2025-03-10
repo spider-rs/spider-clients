@@ -1,6 +1,6 @@
 [package]
 name = "spider-client"
-version = "0.1.26"
+version = "0.1.28"
 edition = "2021"
 authors = [ "j-mendez <jeff@spider.cloud>"]
 description = "Spider Cloud client"
@@ -13,11 +13,13 @@ include = ["src/*", "../../LICENSE", "README.md"]
 
 [dependencies]
 reqwest = { version = "0.12", features = ["json", "stream"] }
+bytes = "1"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 tokio-stream = "0.1"
 backon = { version = "1", features = ["tokio-sleep"] }
+tokio-util = "0.7"
 
 [dev-dependencies]
 dotenv = "0.15.0"

@@ -999,9 +999,10 @@ dependencies = [
 
 [[package]]
 name = "spider-client"
-version = "0.1.26"
+version = "0.1.28"
 dependencies = [
  "backon",
+ "bytes",
  "dotenv",
  "lazy_static",
  "reqwest",
@@ -1009,6 +1010,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tokio-stream",
+ "tokio-util",
 ]
 
 [[package]]

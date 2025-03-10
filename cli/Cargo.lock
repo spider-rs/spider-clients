@@ -1288,19 +1288,21 @@ dependencies = [
 
 [[package]]
 name = "spider-client"
-version = "0.1.26"
+version = "0.1.28"
 dependencies = [
  "backon",
+ "bytes",
  "reqwest",
  "serde",
  "serde_json",
  "tokio",
  "tokio-stream",
+ "tokio-util",
 ]
 
 [[package]]
 name = "spider-cloud-cli"
-version = "0.1.26"
+version = "0.1.28"
 dependencies = [
  "clap",
  "keyring",
