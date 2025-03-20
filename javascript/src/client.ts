@@ -156,7 +156,7 @@ export class Spider {
     const jsonl = stream && cb;
     const res = await this._apiPost(
       APIRoutes.Crawl,
-      { url: url, ...params },
+      { url, ...params },
       stream,
       !!jsonl
     );
@@ -171,11 +171,30 @@ export class Spider {
   /**
    * Retrieves all links from the specified URL.
    * @param {string} url - The URL from which to gather links.
-   * @param {object} [params={}] - Additional parameters for the request.
-   * @returns {Promise<any>} A list of links extracted from the URL.
+   * @param {GenericParams} [params={}] - Additional parameters for the crawl.
+   * @param {boolean} [stream=false] - Whether to receive the response as a stream.
+   * @param {function} [callback=function] - The callback function when streaming per chunk. If this is set with stream you will not get a end response.
+   * @returns {Promise<any | Response>} The result of the crawl, either structured data or a Response object if streaming.
    */
-  async links(url: string, params = {}) {
-    return this._apiPost(APIRoutes.Links, { url: url, ...params });
+  async links(
+    url: string,
+    params: GenericParams = {},
+    stream = false,
+    cb?: ChunkCallbackFunction
+  ): Promise<SpiderCoreResponse[] | void> {
+    const jsonl = stream && cb;
+    const res = await this._apiPost(
+      APIRoutes.Links,
+      { url, ...params },
+      stream,
+      !!jsonl
+    );
+
+    if (jsonl) {
+      return await streamReader(res, cb);
+    }
+
+    return res;
   }
 
   /**
