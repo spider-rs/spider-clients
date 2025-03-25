@@ -90,6 +90,9 @@ class TimeoutDict(TypedDict):
     secs: int
     nanos: int
 
+class EventTracker(TypedDict):
+    responses: bool
+    requests: bool
 
 class IdleNetworkDict(TypedDict):
     timeout: TimeoutDict
@@ -285,7 +288,11 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Perform custom web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
     automation_scripts: Optional[WebAutomationMap]
+
     # The redirect policy for HTTP request. Set the value to Loose to allow all.
     redirect_policy: Optional[RedirectPolicy]
+
+    # Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
+    event_tracker: Optional[EventTracker]
 
 JsonCallback = Callable[[dict], None]

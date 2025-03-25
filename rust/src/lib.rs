@@ -236,6 +236,14 @@ impl Default for ReturnFormatHandling {
     }
 }
 
+#[derive(Debug, Default, Deserialize, Serialize, Clone)]
+pub struct EventTracker {
+    /// The responses received.
+    responses: Option<bool>,
+    ///The request sent.
+    requests: Option<bool>
+}
+
 /// Structure representing request parameters.
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct RequestParams {
@@ -368,16 +376,24 @@ pub struct RequestParams {
     #[serde(default)]
     /// The chunking algorithm to use.
     pub chunking_alg: Option<ChunkingAlgDict>,
+    #[serde(default)]
     /// Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
     pub disable_intercept: Option<bool>,
+    #[serde(default)]
     /// The wait for events on the page. You need to make your `request` `chrome` or `smart`.
     pub wait_for: Option<WaitFor>,
+    #[serde(default)]
     /// Perform custom Javascript tasks on a url or url path. You need to make your `request` `chrome` or `smart`
     pub execution_scripts: Option<ExecutionScriptsMap>,
+    #[serde(default)]
     /// Perform web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`
     pub automation_scripts: Option<WebAutomationMap>,
+    #[serde(default)]
     /// The redirect policy for HTTP request. Set the value to Loose to allow all.
     pub redirect_policy: Option<RedirectPolicy>,
+    #[serde(default)]
+    /// Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
+    pub event_tracker: Option<EventTracker>
 }
 
 /// The structure representing request parameters for a search request.

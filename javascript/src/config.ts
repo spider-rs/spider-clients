@@ -434,6 +434,14 @@ export interface SpiderParams {
    * The redirect policy for HTTP request. Set the value to Loose to allow all.
    */
   redirect_policy?: RedirectPolicy;
+
+  /**
+   * Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
+   */
+  event_tracker?: {
+    responses?: true,
+    requests?: true
+  }
 }
 
 // Core actions response type.
