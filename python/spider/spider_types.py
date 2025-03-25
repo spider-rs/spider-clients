@@ -157,7 +157,10 @@ class RequestParamsDict(TypedDict, total=False):
 
     # The format in which the result should be returned.
     return_format: Optional[
-       ReturnFormat | List[ReturnFormat]
+       Union[
+           ReturnFormat,
+           List[ReturnFormat],
+       ]
     ]
 
     # Specifies whether to only visit the top-level domain.
