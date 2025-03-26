@@ -298,4 +298,7 @@ class RequestParamsDict(TypedDict, total=False):
     # Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
     event_tracker: Optional[EventTracker]
 
+    # The timeout to stop the crawl.
+    event_tracker: Optional[TimeoutDict]
+
 JsonCallback = Callable[[dict], None]

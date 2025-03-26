@@ -393,7 +393,10 @@ pub struct RequestParams {
     pub redirect_policy: Option<RedirectPolicy>,
     #[serde(default)]
     /// Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
-    pub event_tracker: Option<EventTracker>
+    pub event_tracker: Option<EventTracker>,
+    #[serde(default)]
+    /// The timeout to stop the crawl.
+    pub crawl_timeout: Option<Timeout>,
 }
 
 /// The structure representing request parameters for a search request.
