@@ -349,7 +349,7 @@ from spider_rs import Website
 
 async def main():
     website = Website("https://choosealicense.com", True)
-    website.scrape()
+    website.scrape_url()
 
 asyncio.run(main())
 ```
