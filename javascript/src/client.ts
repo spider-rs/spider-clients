@@ -116,6 +116,7 @@ export class Spider {
         fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
           method: "DELETE",
           headers,
+          body: JSON.stringify({})
         }),
       {
         numOfAttempts: 5,
@@ -125,7 +126,7 @@ export class Spider {
     if (response.ok) {
       return response;
     } else {
-      this.handleError(response, `get from ${endpoint}`);
+      return this.handleError(response, `delete from ${endpoint}`);
     }
   }
 

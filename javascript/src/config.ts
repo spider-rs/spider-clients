@@ -441,12 +441,12 @@ export interface SpiderParams {
   event_tracker?: {
     responses?: true,
     requests?: true
-  }
+  };
 
     /**
    * The timeout to stop the crawl.
    */
-    crawl_timeout?: Timeout
+    crawl_timeout?: Timeout;
 }
 
 // Core actions response type.

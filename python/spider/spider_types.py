@@ -299,6 +299,6 @@ class RequestParamsDict(TypedDict, total=False):
     event_tracker: Optional[EventTracker]
 
     # The timeout to stop the crawl.
-    event_tracker: Optional[TimeoutDict]
+    crawl_timeout: Optional[TimeoutDict]
 
 JsonCallback = Callable[[dict], None]
