@@ -7,7 +7,7 @@ The Spider Cloud Python SDK offers a toolkit for straightforward website scrapin
 To install the Spider Cloud Python SDK, you can use pip:
 
 ```bash
-pip install spider-client
+pip install spider_client
 ```
 
 ## Usage
