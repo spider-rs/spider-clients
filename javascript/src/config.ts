@@ -439,14 +439,19 @@ export interface SpiderParams {
    * Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
    */
   event_tracker?: {
-    responses?: true,
-    requests?: true
+    responses?: true;
+    requests?: true;
   };
 
-    /**
+  /**
    * The timeout to stop the crawl.
    */
-    crawl_timeout?: Timeout;
+  crawl_timeout?: Timeout;
+
+  /**
+   * Evaluates given script in every frame upon creation (before loading frame's scripts).
+   */
+  evaluate_on_new_document?: string;
 }
 
 // Core actions response type.

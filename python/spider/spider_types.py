@@ -301,4 +301,7 @@ class RequestParamsDict(TypedDict, total=False):
     # The timeout to stop the crawl.
     crawl_timeout: Optional[TimeoutDict]
 
+    # Evaluates given script in every frame upon creation (before loading frame's scripts).
+    evaluate_on_new_document: Optional[str]
+
 JsonCallback = Callable[[dict], None]

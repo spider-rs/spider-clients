@@ -427,7 +427,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.34",
+            "User-Agent": f"Spider-Client/0.1.35",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

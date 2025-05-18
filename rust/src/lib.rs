@@ -397,6 +397,9 @@ pub struct RequestParams {
     #[serde(default)]
     /// The timeout to stop the crawl.
     pub crawl_timeout: Option<Timeout>,
+    #[serde(default)]
+    /// Evaluates given script in every frame upon creation (before loading frame's scripts).
+    pub evaluate_on_new_document: Option<Box<String>>
 }
 
 /// The structure representing request parameters for a search request.
