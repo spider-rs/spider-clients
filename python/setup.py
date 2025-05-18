@@ -8,8 +8,9 @@ def read_file(fname):
 
 setup(
     name="spider_client",
-    version="0.1.35",
+    version="0.1.36",
     url="https://github.com/spider-rs/spider-clients/tree/main/python",
+    license="MIT",
     author="Spider",
     author_email="jeff@spider.cloud",
     description="Python SDK for Spider Cloud API",
@@ -25,7 +26,6 @@ setup(
         "Topic :: Internet",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
 )

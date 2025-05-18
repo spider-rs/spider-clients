@@ -431,7 +431,7 @@ class AsyncSpider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "AsyncSpider-Client/0.1.35",
+            "User-Agent": "AsyncSpider-Client/0.1.36",
         }
 
     async def _handle_error(self, response: ClientResponse, action: str) -> None:
