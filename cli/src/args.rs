@@ -22,6 +22,13 @@ pub enum Commands {
             required = false
         )]
         return_page_links: Option<bool>,
+        #[arg(
+            short,
+            long,
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            required = false
+        )]
+        lite_mode: Option<bool>,
     },
     /// Crawl a given URL with an optional page limit
     Crawl {
@@ -41,6 +48,13 @@ pub enum Commands {
             required = false
         )]
         return_page_links: Option<bool>,
+        #[arg(
+            short,
+            long,
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            required = false
+        )]
+        lite_mode: Option<bool>,
     },
     /// Fetch all links from a given URL
     Links {
@@ -60,6 +74,13 @@ pub enum Commands {
             required = false
         )]
         return_page_links: Option<bool>,
+        #[arg(
+            short,
+            long,
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            required = false
+        )]
+        lite_mode: Option<bool>,
     },
     /// Take a screenshot of a given URL
     Screenshot {
@@ -79,6 +100,13 @@ pub enum Commands {
             required = false
         )]
         return_page_links: Option<bool>,
+        #[arg(
+            short,
+            long,
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            required = false
+        )]
+        lite_mode: Option<bool>,
     },
     /// Search using a given query
     Search {

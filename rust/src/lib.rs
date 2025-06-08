@@ -399,7 +399,12 @@ pub struct RequestParams {
     pub crawl_timeout: Option<Timeout>,
     #[serde(default)]
     /// Evaluates given script in every frame upon creation (before loading frame's scripts).
-    pub evaluate_on_new_document: Option<Box<String>>
+    pub evaluate_on_new_document: Option<Box<String>>,
+    #[serde(default)]
+    /// Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
+    /// geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
+    /// targeting websites with minimal anti-bot protections.
+    pub lite_mode: Option<bool>,
 }
 
 /// The structure representing request parameters for a search request.

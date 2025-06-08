@@ -387,7 +387,7 @@ export interface SpiderParams {
   /**
    * The timeout for the request, in milliseconds.
    */
-  request_timeout?: number;
+  request_timeout?: Timeout;
 
   /**
    * Specifies whether to run the request in the background.
@@ -452,6 +452,12 @@ export interface SpiderParams {
    * Evaluates given script in every frame upon creation (before loading frame's scripts).
    */
   evaluate_on_new_document?: string;
+  /**
+   * Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
+   * geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
+   * targeting websites with minimal anti-bot protections.
+   */
+  lite_mode?: boolean;
 }
 
 // Core actions response type.

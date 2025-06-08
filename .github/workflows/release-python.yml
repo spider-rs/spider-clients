@@ -1,0 +1,70 @@
+name: Build & Release Wheels
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install test dependencies
+        run: |
+          pip install .
+          pip install -r requirements.txt
+          pip install pytest
+        working-directory: python
+
+      - name: Run tests
+        run: pytest tests
+        working-directory: python
+
+      - name: Build universal wheel
+        run: |
+          cp ../LICENSE LICENSE
+          pip install wheel==0.41.2 setuptools build
+          python setup.py sdist bdist_wheel
+        working-directory: python
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: python/dist/*.whl
+
+  publish:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: tmp_artifacts
+
+      - name: Flatten downloaded artifacts
+        run: |
+            mkdir -p dist
+            find . -type f \( -name "*.whl" -o -name "*.tar.gz" \) -exec cp -n {} dist/ \;
+
+      - name: Publish to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          pip install twine==5.0.0
+          twine upload dist/* --skip-existing

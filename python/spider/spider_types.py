@@ -303,5 +303,9 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Evaluates given script in every frame upon creation (before loading frame's scripts).
     evaluate_on_new_document: Optional[str]
+    # Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
+    # geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
+    # targeting websites with minimal anti-bot protections.
+    lite_mode: Optional[bool]
 
 JsonCallback = Callable[[dict], None]

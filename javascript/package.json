@@ -1,6 +1,6 @@
 {
   "name": "@spider-cloud/spider-client",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "description": "Isomorphic Javascript SDK for Spider Cloud services",
   "scripts": {
     "test": "node --import tsx  --test __tests__/*test.ts",
@@ -29,6 +29,6 @@
     "typescript": "5.7.3"
   },
   "dependencies": {
-    "exponential-backoff": "^3.1.1"
+    "exponential-backoff": "^3.1.2"
   }
 }

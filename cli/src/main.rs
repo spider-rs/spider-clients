@@ -34,10 +34,12 @@ async fn main() {
                         Commands::Scrape {
                             url,
                             return_page_links,
+                            lite_mode
                         } => {
                             println!("Scraping URL: {}", url);
                             let mut params = RequestParams::default();
                             params.return_page_links = return_page_links;
+                            params.lite_mode = lite_mode;
                             match spider
                                 .scrape_url(&url, Some(params), "application/json")
                                 .await
@@ -50,6 +52,7 @@ async fn main() {
                             url,
                             limit,
                             return_page_links,
+                            lite_mode
                         } => {
                             println!("Crawling URL: {}", url);
                             let mut params = RequestParams::default();
@@ -57,6 +60,7 @@ async fn main() {
                                 params.limit = Some(limit);
                             }
                             params.return_page_links = return_page_links;
+                            params.lite_mode = lite_mode;
 
                             match spider
                                 .crawl_url(
@@ -76,6 +80,7 @@ async fn main() {
                             url,
                             return_page_links,
                             limit,
+                            lite_mode
                         } => {
                             println!("Fetching links from URL: {}", url);
                             let mut params = RequestParams::default();
@@ -83,6 +88,7 @@ async fn main() {
                                 params.limit = Some(limit);
                             }
                             params.return_page_links = return_page_links;
+                            params.lite_mode = lite_mode;
 
                             match spider
                                 .links(&url, Some(params), false, "application/json")
@@ -96,12 +102,14 @@ async fn main() {
                             url,
                             limit,
                             return_page_links,
+                            lite_mode
                         } => {
                             let mut params = RequestParams::default();
                             if let Some(limit) = limit {
                                 params.limit = Some(limit);
                             }
                             params.return_page_links = return_page_links;
+                            params.lite_mode = lite_mode;
                             println!("Taking screenshot of URL: {}", url);
                             match spider
                                 .screenshot(&url, Some(params), false, "application/json")
