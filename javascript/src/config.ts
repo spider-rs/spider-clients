@@ -191,6 +191,29 @@ export enum RedirectPolicy {
 }
 
 /**
+ * Proxy pool selection for outbound request routing.
+ * Choose a pool based on your use case (e.g., stealth, speed, or stability).
+ *
+ * - 'residential'         → cost-effective entry-level residential pool
+ * - 'residential_fast'    → faster residential pool for higher throughput
+ * - 'residential_static'  → static residential IPs, rotated daily
+ * - 'mobile'              → 4G/5G mobile proxies for maximum evasion
+ * - 'isp'                 → ISP-grade residential (alias: 'datacenter')
+ * - 'residential_premium' → low-latency premium IPs
+ * - 'residential_core'    → balanced plan (quality vs. cost)
+ * - 'residential_plus'    → largest and highest quality core pool
+ */
+export type Proxy =
+  | "residential"
+  | "residential_fast"
+  | "residential_static"
+  | "mobile"
+  | "isp"
+  | "residential_premium"
+  | "residential_core"
+  | "residential_plus";
+
+/**
  * Represents the options available for making a spider request.
  */
 export interface SpiderParams {
@@ -329,7 +352,7 @@ export interface SpiderParams {
   readability?: boolean;
 
   /**
-   * Specifies whether to use a proxy for the request.
+   * Specifies whether to use a proxy for the request. [Deprecated]: use the 'proxy' param instead.
    */
   proxy_enabled?: boolean;
 
@@ -458,6 +481,26 @@ export interface SpiderParams {
    * targeting websites with minimal anti-bot protections.
    */
   lite_mode?: boolean;
+  /**
+   * Proxy pool selection for outbound request routing.
+   * Choose a pool based on your use case (e.g., stealth, speed, or stability).
+   *
+   * - 'residential'         → cost-effective entry-level residential pool
+   * - 'residential_fast'    → faster residential pool for higher throughput
+   * - 'residential_static'  → static residential IPs, rotated daily
+   * - 'mobile'              → 4G/5G mobile proxies for maximum evasion
+   * - 'isp'                 → ISP-grade residential (alias: 'datacenter')
+   * - 'residential_premium' → low-latency premium IPs
+   * - 'residential_core'    → balanced plan (quality vs. cost)
+   * - 'residential_plus'    → largest and highest quality core pool
+   */
+  proxy?: Proxy;
+
+  /**
+   * Use a remote proxy at ~70% reduced cost for file downloads.
+   * This requires bringing your own proxy (e.g., static IP tunnel).
+   */
+  remote_proxy?: string;
 }
 
 // Core actions response type.

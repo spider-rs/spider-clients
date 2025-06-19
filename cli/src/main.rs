@@ -34,12 +34,17 @@ async fn main() {
                         Commands::Scrape {
                             url,
                             return_page_links,
-                            lite_mode
+                            lite_mode,
+                            proxy,
+                            remote_proxy
                         } => {
                             println!("Scraping URL: {}", url);
                             let mut params = RequestParams::default();
                             params.return_page_links = return_page_links;
                             params.lite_mode = lite_mode;
+                            params.proxy = proxy.map(Into::into);
+                            params.remote_proxy = remote_proxy.map(Into::into);
+
                             match spider
                                 .scrape_url(&url, Some(params), "application/json")
                                 .await
@@ -52,7 +57,9 @@ async fn main() {
                             url,
                             limit,
                             return_page_links,
-                            lite_mode
+                            lite_mode,
+                            proxy,
+                            remote_proxy
                         } => {
                             println!("Crawling URL: {}", url);
                             let mut params = RequestParams::default();
@@ -61,7 +68,8 @@ async fn main() {
                             }
                             params.return_page_links = return_page_links;
                             params.lite_mode = lite_mode;
-
+                            params.proxy = proxy.map(Into::into);
+                            params.remote_proxy = remote_proxy.map(Into::into);
                             match spider
                                 .crawl_url(
                                     &url,
@@ -80,7 +88,9 @@ async fn main() {
                             url,
                             return_page_links,
                             limit,
-                            lite_mode
+                            lite_mode,
+                            proxy,
+                            remote_proxy
                         } => {
                             println!("Fetching links from URL: {}", url);
                             let mut params = RequestParams::default();
@@ -89,7 +99,8 @@ async fn main() {
                             }
                             params.return_page_links = return_page_links;
                             params.lite_mode = lite_mode;
-
+                            params.proxy = proxy.map(Into::into);
+                            params.remote_proxy = remote_proxy.map(Into::into);
                             match spider
                                 .links(&url, Some(params), false, "application/json")
                                 .await
@@ -102,7 +113,9 @@ async fn main() {
                             url,
                             limit,
                             return_page_links,
-                            lite_mode
+                            lite_mode,
+                            proxy,
+                            remote_proxy
                         } => {
                             let mut params = RequestParams::default();
                             if let Some(limit) = limit {
@@ -110,6 +123,8 @@ async fn main() {
                             }
                             params.return_page_links = return_page_links;
                             params.lite_mode = lite_mode;
+                            params.proxy = proxy.map(Into::into);
+                            params.remote_proxy = remote_proxy.map(Into::into);
                             println!("Taking screenshot of URL: {}", url);
                             match spider
                                 .screenshot(&url, Some(params), false, "application/json")
@@ -163,11 +178,13 @@ async fn main() {
                                 Err(e) => eprintln!("Error extracting leads: {:?}", e),
                             }
                         }
-                        Commands::Label { url, limit } => {
+                        Commands::Label { url, limit, proxy, remote_proxy } => {
                             let mut params = RequestParams::default();
                             if let Some(limit) = limit {
                                 params.limit = Some(limit);
                             }
+                            params.proxy = proxy.map(Into::into);
+                            params.remote_proxy = remote_proxy.map(Into::into);
                             println!("Labeling data from URL: {}", url);
                             match spider
                                 .label(&url, Some(params), false, "application/json")

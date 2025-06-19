@@ -1,4 +1,28 @@
-use clap::{Parser, Subcommand};
+use clap::{Parser, Subcommand, ValueEnum};
+use serde::{Serialize, Deserialize};
+
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ValueEnum
+)]
+#[serde(rename_all = "snake_case")]
+pub enum ProxyType {
+    /// Cost-effective entry-level residential pool.
+    Residential,
+    /// Higher-throughput residential pool.
+    ResidentialFast,
+    /// Static residential IPs, rotated daily.
+    ResidentialStatic,
+    /// 4G / 5G mobile proxies for stealth.
+    Mobile,
+    /// ISP-grade / datacenter-like routing.
+    Isp,
+    /// Premium low-latency residential pool.
+    ResidentialPremium,
+    /// Balanced plan (cost vs. quality).
+    ResidentialCore,
+    /// Largest, highest-quality IP pool.
+    ResidentialPlus,
+}
 
 #[derive(Parser, Debug)]
 #[command(name = "Spider CLI")]
@@ -22,6 +46,10 @@ pub enum Commands {
             required = false
         )]
         return_page_links: Option<bool>,
+        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        proxy: Option<ProxyType>,
+        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        remote_proxy: Option<String>,
         #[arg(
             short,
             long,
@@ -41,6 +69,10 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
+        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        proxy: Option<ProxyType>,
+        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        remote_proxy: Option<String>,
         #[arg(
             short,
             long,
@@ -67,6 +99,10 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
+        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        proxy: Option<ProxyType>,
+        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        remote_proxy: Option<String>,
         #[arg(
             short,
             long,
@@ -93,6 +129,10 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
+        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        proxy: Option<ProxyType>,
+        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        remote_proxy: Option<String>,
         #[arg(
             short,
             long,
@@ -155,6 +195,10 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
+        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        proxy: Option<ProxyType>,
+        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        remote_proxy: Option<String>,
     },
     /// Get the crawl state of a given URL
     GetCrawlState {
@@ -173,4 +217,19 @@ pub enum Commands {
         #[arg(short, long, help = "The API key to authenticate")]
         api_key: String,
     },
+}
+
+impl From<ProxyType> for spider_client::ProxyType {
+    fn from(p: ProxyType) -> Self {
+        match p {
+           ProxyType::Residential => Self::Residential,
+           ProxyType::ResidentialFast => Self::ResidentialFast,
+           ProxyType::ResidentialStatic => Self::ResidentialStatic,
+           ProxyType::Mobile => Self::Mobile,
+           ProxyType::Isp => Self::Isp,
+           ProxyType::ResidentialPremium => Self::ResidentialPremium,
+           ProxyType::ResidentialCore => Self::ResidentialCore,
+            ProxyType::ResidentialPlus => Self::ResidentialPlus,
+        }
+    }
 }

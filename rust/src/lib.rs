@@ -220,6 +220,48 @@ pub struct WebhookSettings {
     on_find_metadata: bool,
 }
 
+/// Proxy pool selection for outbound request routing.
+/// Choose a pool based on your use case (e.g., stealth, speed, or stability).
+///
+/// - 'residential'         → cost-effective entry-level residential pool
+/// - 'residential_fast'    → faster residential pool for higher throughput
+/// - 'residential_static'  → static residential IPs, rotated daily
+/// - 'residential_premium' → low-latency premium IPs
+/// - 'residential_core'    → balanced plan (quality vs. cost)
+/// - 'residential_plus'    → largest and highest quality core pool
+/// - 'mobile'              → 4G/5G mobile proxies for maximum evasion
+/// - 'isp'                 → ISP-grade datacenters
+#[derive(
+    Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize,
+)]
+pub enum ProxyType {
+    /// Cost-effective entry-level residential pool.
+    #[serde(rename = "residential")]
+    Residential,
+    /// Higher-throughput residential pool for better performance.
+    #[serde(rename = "residential_fast")]
+    ResidentialFast,
+    /// Static residential IPs, rotated daily for session persistence.
+    #[serde(rename = "residential_static")]
+    ResidentialStatic,
+    /// 4G / 5G mobile proxies for maximum stealth and evasion.
+    #[serde(rename = "mobile")]
+    Mobile,
+    /// ISP-grade residential routing (alias: `datacenter`).
+    #[serde(rename = "isp", alias = "datacenter")]
+    #[default]
+    Isp,
+    /// Premium low-latency residential proxy pool.
+    #[serde(rename = "residential_premium")]
+    ResidentialPremium,
+    /// Core residential plan optimized for balance between cost and quality.
+    #[serde(rename = "residential_core")]
+    ResidentialCore,
+    /// Extended core residential pool with the largest, highest-quality IPs.
+    #[serde(rename = "residential_plus")]
+    ResidentialPlus,
+}
+
 /// Send multiple return formats.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(untagged)]
@@ -329,7 +371,7 @@ pub struct RequestParams {
     /// Specifies whether readability optimizations should be applied.
     pub readability: Option<bool>,
     #[serde(default)]
-    /// Specifies whether to use a proxy for the request.
+    /// Specifies whether to use a proxy for the request. [Deprecated]: use the 'proxy' param instead.
     pub proxy_enabled: Option<bool>,
     #[serde(default)]
     /// Specifies whether to respect the site's robots.txt file.
@@ -405,6 +447,11 @@ pub struct RequestParams {
     /// geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
     /// targeting websites with minimal anti-bot protections.
     pub lite_mode: Option<bool>,
+    /// The proxy to use for request.
+    pub proxy: Option<ProxyType>,
+    /// Use a remote proxy at ~70% reduced cost for file downloads.
+    /// This requires a user-supplied static IP proxy endpoint.
+    pub remote_proxy: Option<String>,
 }
 
 /// The structure representing request parameters for a search request.

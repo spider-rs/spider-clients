@@ -1,5 +1,6 @@
 from typing import TypedDict, Optional, Dict, List, Union, Literal, Callable
 from dataclasses import dataclass, field
+from enum import Enum
 
 @dataclass
 class Evaluate:
@@ -145,6 +146,16 @@ CSSExtractionMap = Dict[str, List[CSSSelector]]
 
 ReturnFormat = Literal["raw", "markdown", "commonmark", "html2text", "text", "xml", "bytes"];
 
+class Proxy(str, Enum):
+    residential = "residential"                      # Residential basic pool
+    residential_fast = "residential_fast"            # High-throughput residential pool
+    residential_static = "residential_static"        # Static residential IPs (daily rotation)
+    mobile = "mobile"                                # 4G/5G mobile proxies
+    isp = "isp"                                       # ISP-level residential (alias: datacenter)
+    residential_premium = "residential_premium"      # Low-latency premium pool
+    residential_core = "residential_core"            # Balanced core plan
+    residential_plus = "residential_plus"            # Extended core pool
+
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
     url: Optional[str]
@@ -229,7 +240,7 @@ class RequestParamsDict(TypedDict, total=False):
     # Specifies whether readability optimizations should be applied.
     readability: Optional[bool]
 
-    # Specifies whether to use a proxy for the request.
+    # Specifies whether to use a proxy for the request. [Deprecated]: use the 'proxy' param instead.
     proxy_enabled: Optional[bool]
 
     # Specifies whether to respect the site's robots.txt file.
@@ -303,9 +314,20 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Evaluates given script in every frame upon creation (before loading frame's scripts).
     evaluate_on_new_document: Optional[str]
-    # Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
-    # geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
-    # targeting websites with minimal anti-bot protections.
-    lite_mode: Optional[bool]
+
+    # Proxy pool selection for outbound request routing.
+    # Choose a pool based on your use case (e.g., stealth, speed, or stability).
+    # - 'residential'           → cost-effective entry-level residential pool
+    # - 'residential_fast'      → faster residential pool for higher throughput
+    # - 'residential_static'    → static residential IPs, rotated daily
+    # - 'mobile'                → 4G/5G mobile proxies for maximum evasion
+    # - 'isp'                   → ISP-grade residential (alias: 'datacenter')
+    # - 'residential_premium'   → low-latency premium IPs
+    # - 'residential_core'      → balanced plan (quality vs. cost)
+    # - 'residential_plus'      → largest and highest quality core pool
+    proxy: Optional[Proxy] = None
+
+    # Use a remote proxy at ~70% reduced cost for file downloads - bring your own proxy.
+    remote_proxy: Optional[str]
 
 JsonCallback = Callable[[dict], None]
