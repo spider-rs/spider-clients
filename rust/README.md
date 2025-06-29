@@ -287,6 +287,11 @@ spider.crawl_url(url, Some(crawler_params), true, "application/jsonl", None::<fn
 
 The SDK handles errors returned by the Spider Cloud API and raises appropriate exceptions. If an error occurs during a request, it will be propagated to the caller with a descriptive error message.
 
+## Features
+
+1. `csv` handling content-type responses.
+1. `xml` handling content-type responses.
+
 ## Contributing
 
 Contributions to the Spider Cloud Rust SDK are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request on the GitHub repository.

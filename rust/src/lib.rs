@@ -231,9 +231,7 @@ pub struct WebhookSettings {
 /// - 'residential_plus'    → largest and highest quality core pool
 /// - 'mobile'              → 4G/5G mobile proxies for maximum evasion
 /// - 'isp'                 → ISP-grade datacenters
-#[derive(
-    Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize,
-)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ProxyType {
     /// Cost-effective entry-level residential pool.
     #[serde(rename = "residential")]
@@ -283,7 +281,7 @@ pub struct EventTracker {
     /// The responses received.
     responses: Option<bool>,
     ///The request sent.
-    requests: Option<bool>
+    requests: Option<bool>,
 }
 
 /// Structure representing request parameters.
@@ -447,11 +445,18 @@ pub struct RequestParams {
     /// geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
     /// targeting websites with minimal anti-bot protections.
     pub lite_mode: Option<bool>,
+    #[serde(default)]
     /// The proxy to use for request.
     pub proxy: Option<ProxyType>,
+    #[serde(default)]
     /// Use a remote proxy at ~70% reduced cost for file downloads.
     /// This requires a user-supplied static IP proxy endpoint.
     pub remote_proxy: Option<String>,
+    #[serde(default)]
+    /// Set the maximum number of credits to use per page.
+    /// Credits are measured in decimal units, where 10,000 credits equal one dollar (100 credits per penny).
+    /// Credit limiting only applies to request that are Javascript rendered using smart_mode or chrome for the 'request' type.
+    pub max_credits_per_page: Option<f64>,
 }
 
 /// The structure representing request parameters for a search request.
@@ -549,6 +554,85 @@ pub struct Spider {
     pub api_key: String,
     /// The Spider Client to re-use.
     pub client: Client,
+}
+
+/// Handle the json response.
+pub async fn handle_json(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    res.json().await
+}
+
+/// Handle the jsonl response.
+pub async fn handle_jsonl(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    let text = res.text().await?;
+    let lines = text
+        .lines()
+        .filter_map(|line| serde_json::from_str::<serde_json::Value>(line).ok())
+        .collect::<Vec<_>>();
+    Ok(serde_json::Value::Array(lines))
+}
+
+/// Handle the CSV response.
+#[cfg(feature = "csv")]
+pub async fn handle_csv(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    use std::collections::HashMap;
+    let text = res.text().await?;
+    let mut rdr = csv::Reader::from_reader(text.as_bytes());
+    let records: Vec<HashMap<String, String>> = rdr.deserialize().filter_map(Result::ok).collect();
+
+    if let Ok(record) = serde_json::to_value(records) {
+        Ok(record)
+    } else {
+        Ok(serde_json::Value::String(text))
+    }
+}
+
+#[cfg(not(feature = "csv"))]
+pub async fn handle_csv(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    handle_text(res).await
+}
+
+/// Basic handle response to text
+pub async fn handle_text(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    Ok(serde_json::Value::String(
+        res.text().await.unwrap_or_default(),
+    ))
+}
+
+/// Handle the XML response.
+#[cfg(feature = "csv")]
+pub async fn handle_xml(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    let text = res.text().await?;
+    match quick_xml::de::from_str::<serde_json::Value>(&text) {
+        Ok(val) => Ok(val),
+        Err(_) => Ok(serde_json::Value::String(text)),
+    }
+}
+
+#[cfg(not(feature = "csv"))]
+/// Handle the XML response.
+pub async fn handle_xml(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    handle_text(res).await
+}
+
+pub async fn parse_response(res: reqwest::Response) -> Result<serde_json::Value, reqwest::Error> {
+    let content_type = res
+        .headers()
+        .get(reqwest::header::CONTENT_TYPE)
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+
+    if content_type.contains("json") && !content_type.contains("jsonl") {
+        handle_json(res).await
+    } else if content_type.contains("jsonl") || content_type.contains("ndjson") {
+        handle_jsonl(res).await
+    } else if content_type.contains("csv") {
+        handle_csv(res).await
+    } else if content_type.contains("xml") {
+        handle_xml(res).await
+    } else {
+        handle_text(res).await
+    }
 }
 
 impl Spider {
@@ -690,7 +774,7 @@ impl Spider {
             .header("Authorization", format!("Bearer {}", self.api_key))
             .send()
             .await?;
-        res.json().await
+        parse_response(res).await
     }
 
     /// Sends a GET request to the API.
@@ -822,7 +906,7 @@ impl Spider {
         }
 
         let res = self.api_post("crawl", data, content_type).await?;
-        res.json().await
+        parse_response(res).await
     }
 
     /// Crawls a URL.
@@ -865,26 +949,23 @@ impl Spider {
                 let stream = res.bytes_stream();
 
                 let stream_reader = tokio_util::io::StreamReader::new(
-                    stream.map(|r| r.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))),
+                    stream
+                        .map(|r| r.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))),
                 );
 
                 let mut lines = FramedRead::new(stream_reader, LinesCodec::new());
 
                 while let Some(line_result) = lines.next().await {
                     match line_result {
-                        Ok(line) => {
-                            match serde_json::from_str::<serde_json::Value>(&line) {
-                                Ok(value) => {
-                                    callback(value);
-                                }
-                                Err(_e) => {
-                                    continue;
-                                }
+                        Ok(line) => match serde_json::from_str::<serde_json::Value>(&line) {
+                            Ok(value) => {
+                                callback(value);
                             }
-                        }
-                        Err(_e) => {
-                            return Ok(serde_json::Value::Null)
-                        }
+                            Err(_e) => {
+                                continue;
+                            }
+                        },
+                        Err(_e) => return Ok(serde_json::Value::Null),
                     }
                 }
 
@@ -893,7 +974,7 @@ impl Spider {
                 Ok(serde_json::Value::Null)
             }
         } else {
-            res.json().await
+            parse_response(res).await
         }
     }
 
@@ -927,7 +1008,7 @@ impl Spider {
         data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("links", data, content_type).await?;
-        res.json().await
+        parse_response(res).await
     }
 
     /// Takes a screenshot of a URL.
@@ -960,7 +1041,7 @@ impl Spider {
         data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("screenshot", data, content_type).await?;
-        res.json().await
+        parse_response(res).await
     }
 
     /// Searches for a query.
@@ -996,7 +1077,7 @@ impl Spider {
 
         let res = self.api_post("search", body, content_type).await?;
 
-        res.json().await
+        parse_response(res).await
     }
 
     /// Transforms data.
@@ -1032,7 +1113,7 @@ impl Spider {
 
         let res = self.api_post("transform", payload, content_type).await?;
 
-        res.json().await
+        parse_response(res).await
     }
 
     /// Extracts contacts from a URL.
@@ -1074,7 +1155,8 @@ impl Spider {
         let res = self
             .api_post("pipeline/extract-contacts", data, content_type)
             .await?;
-        res.json().await
+
+        parse_response(res).await
     }
 
     /// Labels data from a URL.
@@ -1109,7 +1191,7 @@ impl Spider {
         data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("pipeline/label", data, content_type).await?;
-        res.json().await
+        parse_response(res).await
     }
 
     /// Download a record from storage.
@@ -1198,7 +1280,7 @@ impl Spider {
 
         let res = request.send().await?;
 
-        res.json().await
+        parse_response(res).await
     }
 
     /// Gets the crawl state of a URL.
@@ -1236,7 +1318,7 @@ impl Spider {
         let res = self
             .api_post("data/crawl_state", payload, content_type)
             .await?;
-        res.json().await
+        parse_response(res).await
     }
 
     /// Get the account credits left.
@@ -1254,7 +1336,7 @@ impl Spider {
         let res = self
             .api_post(&format!("data/{}", table), data, "application/json")
             .await?;
-        res.json().await
+        parse_response(res).await
     }
 
     /// Query a record from the global DB.
@@ -1307,7 +1389,7 @@ impl Spider {
         let res = self
             .api_delete(&format!("data/{}", table), Some(payload))
             .await?;
-        res.json().await
+        parse_response(res).await
     }
 }
 

@@ -315,6 +315,16 @@ class RequestParamsDict(TypedDict, total=False):
     # Evaluates given script in every frame upon creation (before loading frame's scripts).
     evaluate_on_new_document: Optional[str]
 
+    # Set the maximum number of credits to use per page. 
+    # Credits are measured in decimal units, where 10,000 credits equal one dollar (100 credits per penny).
+    # Credit limiting only applies to request that are Javascript rendered using smart_mode or chrome for the 'request' type.
+    max_credits_per_page: Optional[float]
+
+    #  Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
+    #  geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
+    #  targeting websites with minimal anti-bot protections.
+    lite_mode: Optional[bool]
+
     # Proxy pool selection for outbound request routing.
     # Choose a pool based on your use case (e.g., stealth, speed, or stability).
     # - 'residential'           → cost-effective entry-level residential pool

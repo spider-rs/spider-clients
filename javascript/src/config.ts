@@ -481,6 +481,14 @@ export interface SpiderParams {
    * targeting websites with minimal anti-bot protections.
    */
   lite_mode?: boolean;
+
+  /**
+   * Set the maximum number of credits to use per page.
+   * Credits are measured in decimal units, where 10,000 credits equal one dollar (100 credits per penny).
+   * Credit limiting only applies to request that are Javascript rendered using smart_mode or chrome for the 'request' type.
+   */
+  max_credits_per_page?: number;
+
   /**
    * Proxy pool selection for outbound request routing.
    * Choose a pool based on your use case (e.g., stealth, speed, or stability).

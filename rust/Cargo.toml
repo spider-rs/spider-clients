@@ -1,6 +1,6 @@
 [package]
 name = "spider-client"
-version = "0.1.38"
+version = "0.1.41"
 edition = "2021"
 authors = [ "j-mendez <jeff@spider.cloud>"]
 description = "Spider Cloud client"
@@ -20,6 +20,12 @@ serde_json = { version = "1" }
 tokio-stream = "0.1"
 backon = { version = "1", features = ["tokio-sleep"] }
 tokio-util = "0.7"
+csv = {version = "1", optional = true }
+quick-xml = { version = "0.38", features = ["serialize"], optional = true }
+
+[features]
+csv=["dep:csv"]
+xml=["dep:quick-xml"]
 
 [dev-dependencies]
 dotenv = "0.15.0"
