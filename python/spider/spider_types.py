@@ -111,6 +111,7 @@ class DelayDict(TypedDict):
 class WaitForDict(TypedDict, total=False):
     idle_network: Optional[IdleNetworkDict]
     selector: Optional[SelectorDict]
+    dom: Optional[SelectorDict]
     delay: Optional[DelayDict]
     page_navigations: Optional[bool]
 
@@ -144,7 +145,7 @@ class CSSSelector(TypedDict):
 # - Values are lists of CSSSelector items
 CSSExtractionMap = Dict[str, List[CSSSelector]]
 
-ReturnFormat = Literal["raw", "markdown", "commonmark", "html2text", "text", "xml", "bytes"];
+ReturnFormat = Literal["raw", "markdown", "commonmark", "screenshot", "html2text", "text", "xml", "bytes"];
 
 class Proxy(str, Enum):
     residential = "residential"                      # Residential basic pool

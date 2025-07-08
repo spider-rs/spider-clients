@@ -120,6 +120,7 @@ interface Delay {
 interface WaitFor {
   idle_network?: IdleNetwork;
   selector?: Selector;
+  dom?: Selector;
   delay?: Delay;
   page_navigations?: boolean;
 }
@@ -173,6 +174,7 @@ export type ReturnFormat =
   | "markdown"
   | "commonmark"
   | "raw"
+  | "screenshot"
   | "text"
   | "html2text"
   | "bytes"

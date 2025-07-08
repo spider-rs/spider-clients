@@ -133,6 +133,9 @@ name = "bytes"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ac0150caa2ae65ca5bd83f25c7de183dea78d4d366469f148435e2acfbad0da"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "cc"
@@ -1288,7 +1291,7 @@ dependencies = [
 
 [[package]]
 name = "spider-client"
-version = "0.1.41"
+version = "0.1.45"
 dependencies = [
  "backon",
  "bytes",
@@ -1302,7 +1305,7 @@ dependencies = [
 
 [[package]]
 name = "spider-cloud-cli"
-version = "0.1.41"
+version = "0.1.45"
 dependencies = [
  "clap",
  "keyring",
