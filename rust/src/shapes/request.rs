@@ -65,6 +65,11 @@ pub struct Delay {
     pub timeout: Timeout,
 }
 
+/// Default as true.
+fn default_some_true() -> Option<bool> {
+    Some(true)
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
 pub struct WaitFor {
     /// Wait until idle networks with a timeout of idleness.
@@ -76,6 +81,7 @@ pub struct WaitFor {
     /// Wait until a hard delay.
     pub delay: Option<Delay>,
     /// Wait until page navigation happen. Default is true.
+    #[serde(default = "default_some_true")]
     pub page_navigations: Option<bool>,
 }
 

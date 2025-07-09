@@ -422,17 +422,20 @@ impl Spider {
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
 
-        data.insert(
-            "url".to_string(),
-            serde_json::Value::String(url.to_string()),
-        );
-        data.insert("limit".to_string(), serde_json::Value::Number(1.into()));
-
         if let Ok(params) = serde_json::to_value(params) {
             if let Some(ref p) = params.as_object() {
                 data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
             }
         }
+
+        if !url.is_empty() {
+            data.insert(
+                "url".to_string(),
+                serde_json::Value::String(url.to_string()),
+            );
+        }
+
+        data.insert("limit".to_string(), serde_json::Value::Number(1.into()));
 
         let res = self.api_post("crawl", data, content_type).await?;
         parse_response(res).await

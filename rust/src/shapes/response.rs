@@ -228,10 +228,13 @@ pub struct SearchList {
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct SearchEntry {
+    #[serde(default)]
     /// The search description.
-    pub description: String,
+    pub description: Option<String>,
+    #[serde(default)]
     /// The search title.
-    pub title: String,
+    pub title: Option<String>,
+    #[serde(default)]
     /// The search url.
     pub url: String,
 }
