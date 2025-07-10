@@ -415,9 +415,9 @@ export interface SpiderParams {
   return_cookies?: boolean;
 
   /**
-   * The timeout for the request, in milliseconds.
+   * The timeout for the request, in seconds.
    */
-  request_timeout?: Timeout;
+  request_timeout?: number;
 
   /**
    * Specifies whether to run the request in the background.

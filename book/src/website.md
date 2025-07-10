@@ -215,7 +215,7 @@ import asyncio
 from spider_rs import Website
 
 async def main():
-    website = Website("https://choosealicense.com").with_request_timeout(30000)
+    website = Website("https://choosealicense.com").with_request_timeout(30)
 
 asyncio.run(main())
 ```

@@ -341,7 +341,7 @@ pub struct RequestParams {
     /// Returns the HTTP response cookies.
     pub return_cookies: Option<bool>,
     #[serde(default)]
-    /// The timeout for the request, in milliseconds.
+    /// The timeout for the request, in seconds.
     pub request_timeout: Option<u8>,
     #[serde(default)]
     /// Specifies whether to run the request in the background.
