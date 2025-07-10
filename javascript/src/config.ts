@@ -310,6 +310,11 @@ export interface SpiderParams {
   viewport?: Viewport;
 
   /**
+   * The two letter country code for the request geo-location.
+   */
+  country_code?: string;
+
+  /**
    * The encoding to be used for the request.
    */
   encoding?: "UTF-8" | "SHIFT_JIS" | string;

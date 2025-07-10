@@ -226,6 +226,9 @@ class RequestParamsDict(TypedDict, total=False):
     # Specifies whether the response data should be stored.
     store_data: Optional[bool]
 
+    # The two letter country code for the request geo-location.
+    country_code: Optional[str]
+
     # Configuration settings for GPT (general purpose texture mappings).
     gpt_config: Optional[Dict]
 

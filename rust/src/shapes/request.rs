@@ -236,6 +236,8 @@ pub struct RequestParams {
     #[serde(default)]
     /// The format in which the result should be returned.
     pub return_format: Option<ReturnFormatHandling>,
+    /// The country code for request
+    pub country_code: Option<String>,
     #[serde(default)]
     /// Specifies whether to only visit the top-level domain.
     pub tld: Option<bool>,
