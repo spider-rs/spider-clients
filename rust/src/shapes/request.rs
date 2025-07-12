@@ -168,7 +168,7 @@ pub struct WebhookSettings {
 /// - 'residential_plus'    → largest and highest quality core pool
 /// - 'mobile'              → 4G/5G mobile proxies for maximum evasion
 /// - 'isp'                 → ISP-grade datacenters
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, Hash)]
 pub enum ProxyType {
     /// Cost-effective entry-level residential pool.
     #[serde(rename = "residential")]
