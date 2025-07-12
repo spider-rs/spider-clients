@@ -197,6 +197,36 @@ pub enum ProxyType {
     ResidentialPlus,
 }
 
+/// List of proxies.
+pub const PROXY_TYPE_LIST: [ProxyType; 10] = [
+    ProxyType::ResidentialStatic,
+    ProxyType::Residential,
+    ProxyType::Isp,
+    ProxyType::Mobile,
+    ProxyType::ResidentialPremium,
+    ProxyType::ResidentialPlus,
+    ProxyType::ResidentialCore,
+    ProxyType::ResidentialFast,
+    ProxyType::ResidentialStatic,
+    ProxyType::Residential,
+];
+
+impl ProxyType {
+    /// Get the canonical string representation of the proxy type.
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            ProxyType::Residential => "residential",
+            ProxyType::ResidentialFast => "residential_fast",
+            ProxyType::ResidentialStatic => "residential_static",
+            ProxyType::Mobile => "mobile",
+            ProxyType::Isp => "isp",
+            ProxyType::ResidentialPremium => "residential_premium",
+            ProxyType::ResidentialCore => "residential_core",
+            ProxyType::ResidentialPlus => "residential_plus",
+        }
+    }
+}
+
 /// Send multiple return formats.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(untagged)]
