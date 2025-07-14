@@ -131,7 +131,6 @@ class WebhookSettings:
     # Flag to handle the metadata of a found page
     on_find_metadata: bool
 
-@dataclass
 class CSSSelector(TypedDict):
     """
     Represents a set of CSS selectors grouped under a common name.
@@ -159,7 +158,6 @@ class Proxy(str, Enum):
     residential_core = "residential_core"            # Balanced core plan
     residential_plus = "residential_plus"            # Extended core pool
 
-@dataclass
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
     url: Optional[str]
@@ -342,7 +340,7 @@ class RequestParamsDict(TypedDict, total=False):
     # - 'residential_premium'   → low-latency premium IPs
     # - 'residential_core'      → balanced plan (quality vs. cost)
     # - 'residential_plus'      → largest and highest quality core pool
-    proxy: Optional[Proxy] = None
+    proxy: Optional[Proxy]
 
     # Use a remote proxy at ~70% reduced cost for file downloads - bring your own proxy.
     remote_proxy: Optional[str]
