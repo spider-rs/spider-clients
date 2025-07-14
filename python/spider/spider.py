@@ -1,6 +1,12 @@
 import os, requests, logging, ijson, tenacity
 from typing import Optional, Dict
-from spider.spider_types import RequestParamsDict, JsonCallback, QueryRequest
+from spider.spider_types import (
+    RequestParamsDict,
+    SearchRequestParams,
+    RequestParamsTransform,
+    JsonCallback,
+    QueryRequest,
+)
 
 
 class Spider:
@@ -17,7 +23,7 @@ class Spider:
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
-        stop=tenacity.stop_after_attempt(5)
+        stop=tenacity.stop_after_attempt(5),
     )
     def api_post(
         self,
@@ -47,7 +53,7 @@ class Spider:
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
-        stop=tenacity.stop_after_attempt(5)
+        stop=tenacity.stop_after_attempt(5),
     )
     def api_get(
         self,
@@ -77,7 +83,7 @@ class Spider:
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
-        stop=tenacity.stop_after_attempt(5)
+        stop=tenacity.stop_after_attempt(5),
     )
     def api_delete(
         self,
@@ -197,7 +203,7 @@ class Spider:
     def search(
         self,
         q: str,
-        params: Optional[RequestParamsDict] = None,
+        params: Optional[SearchRequestParams] = None,
         stream: bool = False,
         content_type: str = "application/json",
     ):
@@ -213,7 +219,11 @@ class Spider:
         )
 
     def transform(
-        self, data, params=None, stream=False, content_type="application/json"
+        self,
+        data,
+        params: Optional[RequestParamsTransform] = None,
+        stream=False,
+        content_type="application/json",
     ):
         """
         Transform HTML to Markdown or text. You can send up to 10MB of data at once.
@@ -427,7 +437,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.57",
+            "User-Agent": f"Spider-Client/0.1.60",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

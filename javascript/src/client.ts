@@ -4,9 +4,11 @@ import {
   QueryRequest,
   SpiderCoreResponse,
   SpiderParams,
+  SearchRequestParams,
   APISchema,
   APIRoutes,
   ApiVersion,
+  RequestParamsTransform,
 } from "./config";
 import { version } from "../package.json";
 import { streamReader } from "./utils/stream-reader";
@@ -116,7 +118,7 @@ export class Spider {
         fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
           method: "DELETE",
           headers,
-          body: JSON.stringify({})
+          body: JSON.stringify({}),
         }),
       {
         numOfAttempts: 5,
@@ -214,7 +216,7 @@ export class Spider {
    * @param {GenericParams} [params={}] - Configuration parameters for the search.
    * @returns {Promise<any>} The result of the crawl, either structured data or a Response object if streaming.
    */
-  async search(q: string, params: GenericParams = {}) {
+  async search(q: string, params: SearchRequestParams = {}) {
     return this._apiPost(APIRoutes.Search, { search: q, ...params });
   }
 
@@ -224,8 +226,17 @@ export class Spider {
    * @param {object} [params={}] - Configuration parameters for the transformation.
    * @returns {Promise<any>} The transformation result.
    */
-  async transform(data: { html: string; url?: string }[], params = {}) {
-    return this._apiPost(APIRoutes.Transform, { data, ...params });
+  async transform(
+    data: { html: string; url?: string }[],
+    params: RequestParamsTransform = { data: [] }
+  ) {
+    return this._apiPost(APIRoutes.Transform, {
+      ...params,
+      data:
+        params.data && Array.isArray(params.data) && params.data?.length
+          ? params.data
+          : data,
+    });
   }
 
   /**

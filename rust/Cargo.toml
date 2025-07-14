@@ -1,6 +1,6 @@
 [package]
 name = "spider-client"
-version = "0.1.57"
+version = "0.1.60"
 edition = "2021"
 authors = [ "j-mendez <jeff@spider.cloud>"]
 description = "Spider Cloud client"

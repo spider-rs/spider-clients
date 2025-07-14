@@ -131,6 +131,7 @@ class WebhookSettings:
     # Flag to handle the metadata of a found page
     on_find_metadata: bool
 
+@dataclass
 class CSSSelector(TypedDict):
     """
     Represents a set of CSS selectors grouped under a common name.
@@ -147,6 +148,7 @@ CSSExtractionMap = Dict[str, List[CSSSelector]]
 
 ReturnFormat = Literal["raw", "markdown", "commonmark", "screenshot", "html2text", "text", "xml", "bytes"];
 
+@dataclass
 class Proxy(str, Enum):
     residential = "residential"                      # Residential basic pool
     residential_fast = "residential_fast"            # High-throughput residential pool
@@ -157,6 +159,7 @@ class Proxy(str, Enum):
     residential_core = "residential_core"            # Balanced core plan
     residential_plus = "residential_plus"            # Extended core pool
 
+@dataclass
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
     url: Optional[str]
@@ -343,5 +346,32 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Use a remote proxy at ~70% reduced cost for file downloads - bring your own proxy.
     remote_proxy: Optional[str]
+
+@dataclass
+class SearchRequestParams:
+    base: Optional[RequestParamsDict] = field(default_factory=RequestParamsDict)  # flattened
+    search: Optional[str] = None
+    search_limit: Optional[int] = None
+    fetch_page_content: Optional[bool] = None
+    location: Optional[str] = None
+    country: Optional[str] = None
+    language: Optional[str] = None
+    num: Optional[int] = None
+    page: Optional[int] = None
+    website_limit: Optional[int] = None
+    quick_search: Optional[bool] = None
+
+class Resource(TypedDict, total=False):
+    html: Optional[bytes]  # The HTML to transform
+    content: Optional[bytes]  # The content to transform
+    url: Optional[str]  # The URL of the HTML for context
+    lang: Optional[str]  # The language of the resource
+
+class RequestParamsTransform(TypedDict, total=False):
+    data: List[Resource]  # The HTML to transform
+    return_format: Optional[ReturnFormat]  # The format to return the content as
+    readability: Optional[bool]  # Add readability preprocessing content
+    clean: Optional[bool]  # Clean the markdown or text for AI
+    clean_full: Optional[bool]  # Clean markdown or text, removing footers, nav, etc.
 
 JsonCallback = Callable[[dict], None]

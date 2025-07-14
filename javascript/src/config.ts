@@ -518,6 +518,60 @@ export interface SpiderParams {
   remote_proxy?: string;
 }
 
+
+/**
+ * Represents the options available for making a spider search request.
+ */
+export interface SearchRequestParams {
+    /** The base request parameters shared across requests */
+    base?: SpiderParams;
+    /** The search query string (merged with other params) required */
+    search?: string;
+    /** Optional limit on the number of websites to search */
+    search_limit?: number;
+    /** Whether to fetch the actual page content (defaults to true) */
+    fetch_page_content?: boolean;
+    /** Optional search location (e.g., city or region name) */
+    location?: string;
+    /** Optional country code (e.g., "US", "DE") */
+    country?: string;
+    /** Optional language code (e.g., "en", "fr") */
+    language?: string;
+    /** Optional number of search results to retrieve */
+    num?: number;
+    /** Optional page number of search results to fetch */
+    page?: number;
+    /** Optional cap on websites if a list is provided via text or URL (comma-separated) */
+    website_limit?: number;
+    /** If true, prioritizes speed over completeness of results */
+    quick_search?: boolean;
+}
+
+export interface Resource {
+  /** The HTML to transform (Base64 or binary) */
+  html?: Uint8Array | string;
+  /** The content to transform (Base64 or binary) */
+  content?: Uint8Array | string;
+  /** The URL of the HTML, useful for readability transformations */
+  url?: string;
+  /** The language of the resource */
+  lang?: string;
+}
+
+export interface RequestParamsTransform {
+  /** The HTML to transform */
+  data: Resource[];
+  /** The format to return the content as */
+  return_format?: ReturnFormat | null;
+  /** Add readability preprocessing content */
+  readability?: boolean;
+  /** Clean the markdown or text for AI */
+  clean?: boolean;
+  /** Clean markdown or text, removing footers, navigation, and more */
+  clean_full?: boolean;
+}
+
+
 // Core actions response type.
 export type SpiderCoreResponse = {
   // The content of the request like html or transformation markdown etc.

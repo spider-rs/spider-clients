@@ -457,6 +457,7 @@ pub struct SearchRequestParams {
     pub quick_search: Option<bool>
 }
 
+
 /// Structure representing request parameters for transforming files.
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct TransformParams {
@@ -473,16 +474,26 @@ pub struct TransformParams {
     /// Clean the markdown or text for AI removing footers, navigation, and more.
     pub clean_full: Option<bool>,
     /// The data being transformed.
-    pub data: Vec<DataParam>,
+    pub data: Vec<Resource>,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct DataParam {
-    /// The HTML resource.
-    pub html: String,
-    /// The website url.
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone, Default)]
+/// Transformation resource to use.
+pub struct Resource {
+    #[serde(default)]
+    /// the html to transform
+    pub html: Option<bytes::Bytes>,
+    #[serde(default)]
+    /// the content to transform
+    pub content: Option<bytes::Bytes>,
+    #[serde(default)]
+    /// the url of the html incase of readability to improve transformations.
     pub url: Option<String>,
+    #[serde(default)]
+    /// the language of the resource.
+    pub lang: Option<String>,
 }
+
 
 /// the request type to perform
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
