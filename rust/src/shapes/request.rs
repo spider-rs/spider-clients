@@ -453,6 +453,8 @@ pub struct SearchRequestParams {
     #[serde(default)]
     /// The websites limit if a list is sent from text or urls comma split. This helps automatic configuration of the system.
     pub website_limit: Option<u32>,
+    /// Prioritize speed over output quantity.
+    pub quick_search: Option<bool>
 }
 
 /// Structure representing request parameters for transforming files.
