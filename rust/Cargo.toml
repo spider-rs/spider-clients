@@ -1,6 +1,6 @@
 [package]
 name = "spider-client"
-version = "0.1.60"
+version = "0.1.61"
 edition = "2021"
 authors = [ "j-mendez <jeff@spider.cloud>"]
 description = "Spider Cloud client"
@@ -22,6 +22,7 @@ backon = { version = "1", features = ["tokio-sleep"] }
 tokio-util = "0.7"
 csv = {version = "1", optional = true }
 quick-xml = { version = "0.38", features = ["serialize"], optional = true }
+strum = { version = "0.27", features = ["derive"] }
 
 [features]
 csv=["dep:csv"]

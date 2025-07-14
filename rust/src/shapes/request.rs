@@ -443,7 +443,7 @@ pub struct SearchRequestParams {
     /// The search location of the request
     pub location: Option<String>,
     /// The country code of the request
-    pub country: Option<String>,
+    pub country: Option<crate::shapes::country_codes::CountryCode>,
     /// The language code of the request.
     pub language: Option<String>,
     /// The number of search results
@@ -454,9 +454,8 @@ pub struct SearchRequestParams {
     /// The websites limit if a list is sent from text or urls comma split. This helps automatic configuration of the system.
     pub website_limit: Option<u32>,
     /// Prioritize speed over output quantity.
-    pub quick_search: Option<bool>
+    pub quick_search: Option<bool>,
 }
-
 
 /// Structure representing request parameters for transforming files.
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
@@ -493,7 +492,6 @@ pub struct Resource {
     /// the language of the resource.
     pub lang: Option<String>,
 }
-
 
 /// the request type to perform
 #[derive(Debug, Default, Clone, Serialize, Deserialize, PartialEq, Eq)]
