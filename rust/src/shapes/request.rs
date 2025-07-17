@@ -428,6 +428,34 @@ pub struct RequestParams {
     pub max_credits_per_page: Option<f64>,
 }
 
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum TBS {
+    #[serde(rename = "qdr:h")]
+    PastHour,
+    #[serde(rename = "qdr:d")]
+    Past24Hours,
+    #[serde(rename = "qdr:w")]
+    PastWeek,
+    #[serde(rename = "qdr:m")]
+    PastMonth,
+    #[serde(rename = "qdr:y")]
+    PastYear,
+}
+
+/// The engine to use.
+#[derive(Serialize, Deserialize, Debug, Clone, Default, PartialEq)]
+pub enum Engine {
+    /// Google
+    Google,
+    /// Brave
+    Brave,
+    /// All
+    #[default]
+    All
+}
+
 /// The structure representing request parameters for a search request.
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct SearchRequestParams {
@@ -448,13 +476,18 @@ pub struct SearchRequestParams {
     pub language: Option<String>,
     /// The number of search results
     pub num: Option<u32>,
+    /// The time period range.
+    pub tbs: Option<TBS>,
     /// The page of the search results.
     pub page: Option<u32>,
-    #[serde(default)]
     /// The websites limit if a list is sent from text or urls comma split. This helps automatic configuration of the system.
     pub website_limit: Option<u32>,
     /// Prioritize speed over output quantity.
     pub quick_search: Option<bool>,
+    /// Auto paginate pages ( up to 100 pages ).
+    pub auto_pagination: Option<bool>,
+    /// The search engine to use.
+    pub engine: Option<Engine>
 }
 
 /// Structure representing request parameters for transforming files.
