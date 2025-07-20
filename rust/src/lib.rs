@@ -259,7 +259,7 @@ impl Spider {
     /// # Returns
     ///
     /// The response from the API.
-    async fn api_post(
+    pub async fn api_post(
         &self,
         endpoint: &str,
         data: impl Serialize + std::fmt::Debug + Clone + Send + Sync,
@@ -321,7 +321,7 @@ impl Spider {
     /// # Returns
     ///
     /// The response from the API as a JSON value.
-    async fn api_get<T: Serialize>(
+    pub async fn api_get<T: Serialize>(
         &self,
         endpoint: &str,
         query_params: Option<&T>,
@@ -389,7 +389,7 @@ impl Spider {
     /// # Returns
     ///
     /// The response from the API.
-    async fn api_delete(
+    pub async fn api_delete(
         &self,
         endpoint: &str,
         params: Option<HashMap<String, serde_json::Value>>,
@@ -446,6 +446,36 @@ impl Spider {
         let res = self.api_post("crawl", data, content_type).await?;
         parse_response(res).await
     }
+
+    /// Scrapes multi URLs.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to scrape.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn multi_scrape_url(
+        &self,
+        params: Option<Vec<RequestParams>>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+if let Ok(mut params) = serde_json::to_value(params) {
+    if let Some(obj) = params.as_object_mut() {
+        obj.insert("limit".to_string(), serde_json::Value::Number(1.into()));
+        data.extend(obj.iter().map(|(k, v)| (k.clone(), v.clone())));
+    }
+}
+        let res = self.api_post("crawl", data, content_type).await?;
+        parse_response(res).await
+    }
+
 
     /// Crawls a URL.
     ///
@@ -516,6 +546,66 @@ impl Spider {
         }
     }
 
+    /// Crawls multiple URLs.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to crawl.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    /// * `callback` - Optional callback function to handle each streamed chunk.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn multi_crawl_url(
+        &self,
+        params: Option<Vec<RequestParams>>,
+        stream: bool,
+        content_type: &str,
+        callback: Option<impl Fn(serde_json::Value) + Send>,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        use tokio_util::codec::{FramedRead, LinesCodec};
+
+
+        let res = self.api_post("crawl", params, content_type).await?;
+
+        if stream {
+            if let Some(callback) = callback {
+                let stream = res.bytes_stream();
+
+                let stream_reader = tokio_util::io::StreamReader::new(
+                    stream
+                        .map(|r| r.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))),
+                );
+
+                let mut lines = FramedRead::new(stream_reader, LinesCodec::new());
+
+                while let Some(line_result) = lines.next().await {
+                    match line_result {
+                        Ok(line) => match serde_json::from_str::<serde_json::Value>(&line) {
+                            Ok(value) => {
+                                callback(value);
+                            }
+                            Err(_e) => {
+                                continue;
+                            }
+                        },
+                        Err(_e) => return Ok(serde_json::Value::Null),
+                    }
+                }
+
+                Ok(serde_json::Value::Null)
+            } else {
+                Ok(serde_json::Value::Null)
+            }
+        } else {
+            parse_response(res).await
+        }
+    }
+
+
     /// Fetches links from a URL.
     ///
     /// # Arguments
@@ -549,6 +639,30 @@ impl Spider {
         parse_response(res).await
     }
 
+
+    /// Fetches links from a URLs.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to fetch links from.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn multi_links(
+        &self,
+        params: Option<Vec<RequestParams>>,
+        _stream: bool,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let res = self.api_post("links", params, content_type).await?;
+        parse_response(res).await
+    }
+
+    
     /// Takes a screenshot of a URL.
     ///
     /// # Arguments
@@ -579,6 +693,28 @@ impl Spider {
         data.insert("url".into(), serde_json::Value::String(url.to_string()));
 
         let res = self.api_post("screenshot", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// Takes a screenshot of multiple URLs.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to take a screenshot of.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn multi_screenshot(
+        &self,
+        params: Option<Vec<RequestParams>>,
+        _stream: bool,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let res = self.api_post("screenshot", params, content_type).await?;
         parse_response(res).await
     }
 
@@ -615,6 +751,27 @@ impl Spider {
 
         let res = self.api_post("search", body, content_type).await?;
 
+        parse_response(res).await
+    }
+
+    /// Searches for multiple querys.
+    ///
+    /// # Arguments
+    ///
+    /// * `q` - The query to search for.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn multi_search(
+        &self,
+        params: Option<Vec<SearchRequestParams>>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let res = self.api_post("search", params, content_type).await?;
         parse_response(res).await
     }
 
