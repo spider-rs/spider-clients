@@ -1,6 +1,6 @@
 [package]
 name = "spider-cloud-cli"
-version = "0.1.65"
+version = "0.1.68"
 edition = "2021"
 authors = [ "j-mendez <jeff@spider.cloud>"]
 description = "The Spider Cloud CLI for web crawling and scraping"

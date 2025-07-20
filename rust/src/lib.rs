@@ -70,11 +70,17 @@ use reqwest::{Error, Response};
 use serde::Serialize;
 use std::collections::HashMap;
 use tokio_stream::StreamExt;
-
 pub use shapes::{request::*, response::*};
+use std::sync::OnceLock;
 
-/// The API url.
-const API_URL: &'static str = "https://api.spider.cloud";
+static API_URL: OnceLock<String> = OnceLock::new();
+
+/// The API endpoint.
+pub fn get_api_url() -> &'static str {
+    API_URL.get_or_init(|| {
+        std::env::var("SPIDER_API_URL").unwrap_or_else(|_| "https://api.spider.cloud".to_string())
+    })
+}
 
 /// Represents a Spider with API key and HTTP client.
 #[derive(Debug, Default)]
@@ -226,7 +232,7 @@ impl Spider {
         data: impl Serialize + Sized + std::fmt::Debug,
         content_type: &str,
     ) -> Result<Response, Error> {
-        let url: String = format!("{API_URL}/{}", endpoint);
+        let url: String = format!("{}/{}", get_api_url(), endpoint);
 
         self.client
             .post(&url)
@@ -290,7 +296,7 @@ impl Spider {
         endpoint: &str,
         query_params: Option<&T>,
     ) -> Result<serde_json::Value, reqwest::Error> {
-        let url = format!("{API_URL}/{}", endpoint);
+        let url = format!("{}/{}", get_api_url(), endpoint);
         let res = self
             .client
             .get(&url)
@@ -351,7 +357,7 @@ impl Spider {
         endpoint: &str,
         params: Option<HashMap<String, serde_json::Value>>,
     ) -> Result<Response, Error> {
-        let url = format!("{API_URL}/v1/{}", endpoint);
+        let url = format!("{}/v1/{}", get_api_url(), endpoint);
         let request_builder = self
             .client
             .delete(&url)
@@ -754,7 +760,7 @@ impl Spider {
             }
         }
 
-        let url = format!("{API_URL}/v1/data/download");
+        let url = format!("{}/v1/data/download", get_api_url());
         let request = self
             .client
             .get(&url)
@@ -799,7 +805,7 @@ impl Spider {
             params.insert("url".to_string(), url.to_string());
         }
 
-        let url = format!("{API_URL}/v1/data/sign-url");
+        let url = format!("{}/v1/data/sign-url", get_api_url());
         let request = self
             .client
             .get(&url)
