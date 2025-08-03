@@ -203,54 +203,6 @@ class AsyncSpider:
         ):
             yield response
 
-    async def extract_contacts(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ) -> AsyncIterator[Any]:
-        """
-        Extract contact information from the specified URL.
-
-        :param url: The URL from which to extract contact information.
-        :param params: Optional parameters for the contact extraction.
-        :return: JSON response containing extracted contact details.
-        """
-        data = {"url": url, **(params or {})}
-        async for response in self._request(
-            "POST",
-            "pipeline/extract-contacts",
-            data=data,
-            stream=stream,
-            content_type=content_type,
-        ):
-            yield response
-
-    async def label(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ) -> AsyncIterator[Any]:
-        """
-        Apply labeling to data extracted from the specified URL.
-
-        :param url: The URL to label data from.
-        :param params: Optional parameters to guide the labeling process.
-        :return: JSON response with labeled data.
-        """
-        data = {"url": url, **(params or {})}
-        async for response in self._request(
-            "POST",
-            "pipeline/label",
-            data=data,
-            stream=stream,
-            content_type=content_type,
-        ):
-            yield response
-
     async def query(
         self,
         params: Optional[QueryRequest] = None,
@@ -431,7 +383,7 @@ class AsyncSpider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "AsyncSpider-Client/0.1.69",
+            "User-Agent": "AsyncSpider-Client/0.1.71",
         }
 
     async def _handle_error(self, response: ClientResponse, action: str) -> None:

@@ -43,7 +43,6 @@
 //!     let crawler_params = RequestParams {
 //!         limit: Some(1),
 //!         proxy_enabled: Some(true),
-//!         store_data: Some(false),
 //!         metadata: Some(false),
 //!         request: Some(RequestType::Http),
 //!         ..Default::default()
@@ -811,84 +810,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
         parse_response(res).await
     }
 
-    /// Extracts contacts from a URL.
-    ///
-    /// # Arguments
-    ///
-    /// * `url` - The URL to extract contacts from.
-    /// * `params` - Optional request parameters.
-    /// * `stream` - Whether streaming is enabled.
-    /// * `content_type` - The content type of the request.
-    ///
-    /// # Returns
-    ///
-    /// The response from the API as a JSON value.
-    pub async fn extract_contacts(
-        &self,
-        url: &str,
-        params: Option<RequestParams>,
-        _stream: bool,
-        content_type: &str,
-    ) -> Result<serde_json::Value, reqwest::Error> {
-        let mut data = HashMap::new();
-
-        if let Ok(params) = serde_json::to_value(params) {
-            if let Ok(params) = serde_json::to_value(params) {
-                if let Some(ref p) = params.as_object() {
-                    data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-            }
-        }
-
-        match serde_json::to_value(url) {
-            Ok(u) => {
-                data.insert("url".into(), u);
-            }
-            _ => (),
-        }
-
-        let res = self
-            .api_post("pipeline/extract-contacts", data, content_type)
-            .await?;
-
-        parse_response(res).await
-    }
-
-    /// Labels data from a URL.
-    ///
-    /// # Arguments
-    ///
-    /// * `url` - The URL to label data from.
-    /// * `params` - Optional request parameters.
-    /// * `stream` - Whether streaming is enabled.
-    /// * `content_type` - The content type of the request.
-    ///
-    /// # Returns
-    ///
-    /// The response from the API as a JSON value.
-    pub async fn label(
-        &self,
-        url: &str,
-        params: Option<RequestParams>,
-        _stream: bool,
-        content_type: &str,
-    ) -> Result<serde_json::Value, reqwest::Error> {
-        let mut data = HashMap::new();
-
-        if let Ok(params) = serde_json::to_value(params) {
-            if let Ok(params) = serde_json::to_value(params) {
-                if let Some(ref p) = params.as_object() {
-                    data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-            }
-        }
-
-        data.insert("url".into(), serde_json::Value::String(url.to_string()));
-
-        let res = self.api_post("pipeline/label", data, content_type).await?;
-        parse_response(res).await
-    }
-
     /// Download a record from storage.
     ///
     /// # Arguments
@@ -1178,24 +1099,6 @@ mod tests {
         )])];
         let response = SPIDER_CLIENT
             .transform(data, None, false, "application/json")
-            .await;
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_extract_contacts() {
-        let response = SPIDER_CLIENT
-            .extract_contacts("https://example.com", None, false, "application/json")
-            .await;
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    #[ignore]
-    async fn test_label() {
-        let response = SPIDER_CLIENT
-            .label("https://example.com", None, false, "application/json")
             .await;
         assert!(response.is_ok());
     }

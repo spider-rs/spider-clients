@@ -236,45 +236,6 @@ class Spider:
             "transform", {"data": data, **(params or {})}, stream, content_type
         )
 
-    def extract_contacts(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ):
-        """
-        Extract contact information from the specified URL.
-
-        :param url: The URL from which to extract contact information.
-        :param params: Optional parameters for the contact extraction.
-        :return: JSON response containing extracted contact details.
-        """
-        return self.api_post(
-            "pipeline/extract-contacts",
-            {"url": url, **(params or {})},
-            stream,
-            content_type,
-        )
-
-    def label(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ):
-        """
-        Apply labeling to data extracted from the specified URL.
-
-        :param url: The URL to label data from.
-        :param params: Optional parameters to guide the labeling process.
-        :return: JSON response with labeled data.
-        """
-        return self.api_post(
-            "pipeline/label", {"url": url, **(params or {})}, stream, content_type
-        )
-
     def query(
         self,
         params: QueryRequest = None,
@@ -437,7 +398,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.69",
+            "User-Agent": f"Spider-Client/0.1.71",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

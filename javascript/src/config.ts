@@ -330,18 +330,9 @@ export interface SpiderParams {
   user_agent?: string;
 
   /**
-   * Specifies whether the response data should be stored.
-   */
-  store_data?: boolean;
-
-  /**
    * Use webhooks to send data.
    */
   webhooks?: WebhookSettings;
-  /**
-   * Configuration settings for GPT (general purpose texture mappings).
-   */
-  gpt_config?: Record<string, any>;
 
   /**
    * Specifies whether to use fingerprinting protection.
@@ -483,7 +474,7 @@ export interface SpiderParams {
    */
   evaluate_on_new_document?: string;
   /**
-   * Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
+   * Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy,
    * geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
    * targeting websites with minimal anti-bot protections.
    */
@@ -512,7 +503,7 @@ export interface SpiderParams {
   proxy?: Proxy;
 
   /**
-   * Use a remote proxy at ~70% reduced cost for file downloads.
+   * Use a remote proxy at ~50% reduced cost for file downloads.
    * This requires bringing your own proxy (e.g., static IP tunnel).
    */
   remote_proxy?: string;
@@ -620,10 +611,6 @@ export enum APIRoutes {
   Search = "search",
   // Transform HTML to markdown or text.
   Transform = "transform",
-  // Pipeline extract leads for a website - emails, phones, etc.
-  PiplineExtractLeads = "pipeline/extract-contacts",
-  // Pipeline label a website by category using AI and metadata.
-  PiplineLabel = "pipeline/label",
   // Dynamic collection routes.
   Data = "data",
   // The last crawl state of a website.

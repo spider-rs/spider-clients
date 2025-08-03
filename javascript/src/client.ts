@@ -228,49 +228,17 @@ export class Spider {
    */
   async transform(
     data: { html: string; url?: string }[],
-    params: RequestParamsTransform = { data: [] }
+    params?: RequestParamsTransform
   ) {
     return this._apiPost(APIRoutes.Transform, {
-      ...params,
+      ...(params ? params : {}),
       data:
-        params.data && Array.isArray(params.data) && params.data?.length
+        params?.data && Array.isArray(params.data) && params.data?.length
           ? params.data
           : data,
     });
   }
 
-  /**
-   * Extracts leads from a website.
-   * @param {string} url - The URL from which to extract contacts.
-   * @param {GenericParams} [params={}] - Configuration parameters for the extraction.
-   * @returns {Promise<any>} The contact information extracted.
-   */
-  async extractContacts(url: string, params: GenericParams = {}) {
-    return this._apiPost(APIRoutes.PiplineExtractLeads, {
-      url: url,
-      ...params,
-    });
-  }
-
-  /**
-   * Applies labeling to data extracted from a specified URL.
-   * @param {string} url - The URL to label.
-   * @param {GenericParams} [params={}] - Configuration parameters for labeling.
-   * @returns {Promise<any>} The labeled data.
-   */
-  async label(url: string, params: GenericParams = {}) {
-    return this._apiPost(APIRoutes.PiplineLabel, { url: url, ...params });
-  }
-
-  /**
-   * Check the crawl state of the website.
-   * @param {string} url - The URL to check.
-   * @param {GenericParams} [params={}] - Configuration parameters for crawl state. Can also pass in "domain" instead of the url to query.
-   * @returns {Promise<any>} The crawl state data.
-   */
-  async getCrawlState(url: string, params: GenericParams = {}) {
-    return this._apiPost(APIRoutes.DataCrawlState, { url: url, ...params });
-  }
 
   /**
    * Create a signed url to download files from the storage.

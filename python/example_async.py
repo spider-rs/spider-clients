@@ -4,7 +4,6 @@ from spider import AsyncSpider
 crawler_params = {
     'limit': 1,
     'proxy_enabled': True,
-    'store_data': False,
     'metadata': False,
     'request': 'http'
 }

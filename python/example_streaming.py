@@ -7,7 +7,6 @@ app = Spider()
 crawler_params = {
     'limit': 1000,
     'proxy_enabled': False,
-    'store_data': False,
     'metadata': False,
     'request': 'http'
 }

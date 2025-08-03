@@ -164,43 +164,6 @@ async fn main() {
                                 Err(e) => eprintln!("Error transforming data: {:?}", e),
                             }
                         }
-                        Commands::ExtractLeads { url, limit } => {
-                            let mut params = RequestParams::default();
-                            if let Some(limit) = limit {
-                                params.limit = Some(limit);
-                            }
-                            println!("Extracting leads from URL: {}", url);
-                            match spider
-                                .extract_contacts(&url, Some(params), false, "application/json")
-                                .await
-                            {
-                                Ok(data) => println!("{}", json!(data)),
-                                Err(e) => eprintln!("Error extracting leads: {:?}", e),
-                            }
-                        }
-                        Commands::Label { url, limit, proxy, remote_proxy } => {
-                            let mut params = RequestParams::default();
-                            if let Some(limit) = limit {
-                                params.limit = Some(limit);
-                            }
-                            params.proxy = proxy.map(Into::into);
-                            params.remote_proxy = remote_proxy.map(Into::into);
-                            println!("Labeling data from URL: {}", url);
-                            match spider
-                                .label(&url, Some(params), false, "application/json")
-                                .await
-                            {
-                                Ok(data) => println!("{}", json!(data)),
-                                Err(e) => eprintln!("Error labeling data: {:?}", e),
-                            }
-                        }
-                        Commands::GetCrawlState { url } => {
-                            println!("Getting crawl state of URL: {}", url);
-                            match spider.get_crawl_state(&url, None, "application/json").await {
-                                Ok(data) => println!("{}", json!(data)),
-                                Err(e) => eprintln!("Error getting crawl state: {:?}", e),
-                            }
-                        }
                         Commands::Query { domain } => {
                             let query = QueryRequest {
                                 domain: Some(domain.to_string()),

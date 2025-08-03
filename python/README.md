@@ -31,7 +31,6 @@ scraped_data = app.scrape_url(url)
 crawler_params = {
     'limit': 1,
     'proxy_enabled': True,
-    'store_data': False,
     'metadata': False,
     'request': 'http'
 }
@@ -71,7 +70,6 @@ Stream crawl the website in chunks to scale.
     url = 'https://example.com'
     crawl_params = {
         'limit': 200,
-        'store_data': False
     }
     response = app.crawl_url(
         url,
@@ -214,7 +212,6 @@ url = 'https://example.com'
 crawler_params = {
     'limit': 1,
     'proxy_enabled': True,
-    'store_data': False,
     'metadata': False,
     'request': 'http'
 }
@@ -237,7 +234,6 @@ url = 'https://example.com'
 crawler_params = {
     'limit': 1,
     'proxy_enabled': True,
-    'store_data': False,
     'metadata': False,
     'request': 'http'
 }

@@ -45,7 +45,6 @@ app
 const crawlParams = {
   limit: 5,
   proxy_enabled: true,
-  store_data: false,
   metadata: false,
   request: "http",
 };
@@ -73,7 +72,6 @@ const url = "https://spider.cloud";
 // Crawl a website
 const crawlParams = {
   limit: 5,
-  store_data: false,
   metadata: true,
   request: "http",
 };
@@ -140,9 +138,6 @@ spider
 - **`links(url, params)`**: Retrieve all links from the specified URL with optional parameters.
 - **`screenshot(url, params)`**: Take a screenshot of the specified URL.
 - **`transform(data, params)`**: Perform a fast HTML transformation to markdown or text.
-- **`extractContacts(url, params)`**: Extract contact information from the specified URL.
-- **`label(url, params)`**: Apply labeling to data extracted from the specified URL.
-- **`getCrawlState(url, params)`**: Check the website crawl state.
 - **`getCredits()`**: Retrieve account's remaining credits.
 - **`getData(table, params)`**: Retrieve data records from the DB.
 - **`deleteData(table, params)`**: Delete records from the DB.

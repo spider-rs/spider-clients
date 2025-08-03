@@ -38,7 +38,6 @@ describe("Spider JS SDK", () => {
     const spiderData = await spiderClient.crawlUrl(url, params);
 
     assert(Array.isArray(spiderData));
-    assert(spiderData.length > 0);
     assert(spiderData[0].content);
     assert(spiderData[0].error !== undefined);
     assert(spiderData[0].status);
@@ -62,7 +61,6 @@ describe("Spider JS SDK", () => {
     const linksData = await spiderClient.links(url, params);
 
     assert(Array.isArray(linksData));
-    assert(linksData.length > 0);
     assert(linksData[0].error !== undefined);
     assert(linksData[0].status);
     assert(linksData[0].url);
@@ -79,7 +77,6 @@ describe("Spider JS SDK", () => {
     const spiderClient = new Spider();
     const searchData = await spiderClient.search(
       "example search query",
-      params
     );
 
     assert(Array.isArray(searchData));
@@ -95,44 +92,12 @@ describe("Spider JS SDK", () => {
     const transformData = [
       { html: "<html><body>Example</body></html>", url: url },
     ];
-    const transformedData = await spiderClient.transform(transformData, params);
+    const transformedData = await spiderClient.transform(transformData);
 
     assert(typeof transformedData === "object");
     assert(transformedData.content);
     assert(transformedData.error !== undefined);
     assert(transformedData.status);
-  });
-
-  test("should extract contacts", async () => {
-    const spiderClient = new Spider();
-    const contactsData = await spiderClient.extractContacts(url, params);
-
-    assert(Array.isArray(contactsData));
-    assert(contactsData.length > 0);
-    assert(contactsData[0].content);
-    assert(contactsData[0].error !== undefined);
-    assert(contactsData[0].status);
-    assert(contactsData[0].url);
-  });
-
-  test("should label data", async () => {
-    const spiderClient = new Spider();
-    const labelData = await spiderClient.label(url, params);
-
-    assert(Array.isArray(labelData));
-    assert(labelData.length > 0);
-    assert(labelData[0].content);
-    assert(labelData[0].error !== undefined);
-    assert(labelData[0].status);
-    assert(labelData[0].url);
-  });
-
-  test("should get crawl state", async () => {
-    const spiderClient = new Spider();
-    const crawlState = await spiderClient.getCrawlState(url, params);
-
-    assert(typeof crawlState === "object");
-    assert(Array.isArray(crawlState.data));
   });
 
   test.skip("should query global db", async () => {

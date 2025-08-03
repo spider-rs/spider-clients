@@ -48,12 +48,12 @@ pub enum Commands {
         return_page_links: Option<bool>,
         #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
         remote_proxy: Option<String>,
         #[arg(
             short,
             long,
-            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
             required = false
         )]
         lite_mode: Option<bool>,
@@ -71,7 +71,7 @@ pub enum Commands {
         limit: Option<u32>,
         #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
         remote_proxy: Option<String>,
         #[arg(
             short,
@@ -83,7 +83,7 @@ pub enum Commands {
         #[arg(
             short,
             long,
-            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
             required = false
         )]
         lite_mode: Option<bool>,
@@ -101,7 +101,7 @@ pub enum Commands {
         limit: Option<u32>,
         #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
         remote_proxy: Option<String>,
         #[arg(
             short,
@@ -113,7 +113,7 @@ pub enum Commands {
         #[arg(
             short,
             long,
-            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
             required = false
         )]
         lite_mode: Option<bool>,
@@ -131,7 +131,7 @@ pub enum Commands {
         limit: Option<u32>,
         #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
+        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
         remote_proxy: Option<String>,
         #[arg(
             short,
@@ -143,7 +143,7 @@ pub enum Commands {
         #[arg(
             short,
             long,
-            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
+            help = "Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy, geo-targeting, and reliability.",
             required = false
         )]
         lite_mode: Option<bool>,
@@ -171,39 +171,6 @@ pub enum Commands {
     Transform {
         #[arg(short, long, help = "The data to transform")]
         data: String,
-    },
-    /// Extract leads from a given URL
-    ExtractLeads {
-        #[arg(short, long, help = "The URL to extract leads from")]
-        url: String,
-        #[arg(
-            short,
-            long,
-            help = "Limit the number of pages to crawl",
-            required = false
-        )]
-        limit: Option<u32>,
-    },
-    /// Label data from a given URL
-    Label {
-        #[arg(short, long, help = "The URL to label data from")]
-        url: String,
-        #[arg(
-            short,
-            long,
-            help = "Limit the number of pages to crawl",
-            required = false
-        )]
-        limit: Option<u32>,
-        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
-        proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~70% reduced cost for file downloads.")]
-        remote_proxy: Option<String>,
-    },
-    /// Get the crawl state of a given URL
-    GetCrawlState {
-        #[arg(short, long, help = "The URL to get the crawl state of")]
-        url: String,
     },
     /// Query for a domain
     Query {

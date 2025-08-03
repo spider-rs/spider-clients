@@ -41,7 +41,6 @@ async fn main() {
     let crawler_params = RequestParams {
         limit: Some(1),
         proxy_enabled: Some(true),
-        store_data: Some(false),
         metadata: Some(false),
         request: Some(RequestType::Http),
         ..Default::default()
@@ -88,7 +87,6 @@ fn handle_json(json_obj: serde_json::Value) {
 let url = "https://example.com";
 let crawl_params = RequestParams {
     limit: Some(200),
-    store_data: Some(false),
     ..Default::default()
 };
 
@@ -249,7 +247,6 @@ let url = "https://example.com";
 let crawler_params = RequestParams {
     limit: Some(1),
     proxy_enabled: Some(true),
-    store_data: Some(false),
     metadata: Some(false),
     request: Some(RequestType::Http),
     ..Default::default()
@@ -273,7 +270,6 @@ let url = "https://example.com";
 let crawler_params = RequestParams {
     limit: Some(1),
     proxy_enabled: Some(true),
-    store_data: Some(false),
     metadata: Some(false),
     request: Some(RequestType::Http),
     ..Default::default()

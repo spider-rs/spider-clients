@@ -224,14 +224,8 @@ class RequestParamsDict(TypedDict, total=False):
     # The user agent string to be used for the request.
     user_agent: Optional[str]
 
-    # Specifies whether the response data should be stored.
-    store_data: Optional[bool]
-
     # The two letter country code for the request geo-location.
     country_code: Optional[str]
-
-    # Configuration settings for GPT (general purpose texture mappings).
-    gpt_config: Optional[Dict]
 
     # Specifies whether to use fingerprinting protection.
     fingerprint: Optional[bool]
@@ -325,7 +319,7 @@ class RequestParamsDict(TypedDict, total=False):
     # Credit limiting only applies to request that are Javascript rendered using smart_mode or chrome for the 'request' type.
     max_credits_per_page: Optional[float]
 
-    #  Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
+    #  Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy,
     #  geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
     #  targeting websites with minimal anti-bot protections.
     lite_mode: Optional[bool]
@@ -342,7 +336,7 @@ class RequestParamsDict(TypedDict, total=False):
     # - 'residential_plus'      → largest and highest quality core pool
     proxy: Optional[Proxy]
 
-    # Use a remote proxy at ~70% reduced cost for file downloads - bring your own proxy.
+    # Use a remote proxy at ~50% reduced cost for file downloads - bring your own proxy.
     remote_proxy: Optional[str]
 
 @dataclass

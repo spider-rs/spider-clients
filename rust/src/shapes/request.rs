@@ -323,12 +323,6 @@ pub struct RequestParams {
     /// The user agent string to be used for the request.
     pub user_agent: Option<String>,
     #[serde(default)]
-    /// Specifies whether the response data should be stored.
-    pub store_data: Option<bool>,
-    #[serde(default)]
-    /// Configuration settings for GPT (general purpose texture mappings).
-    pub gpt_config: Option<HashMap<String, String>>,
-    #[serde(default)]
     /// Specifies whether to use fingerprinting protection.
     pub fingerprint: Option<bool>,
     #[serde(default)]
@@ -410,7 +404,7 @@ pub struct RequestParams {
     /// Evaluates given script in every frame upon creation (before loading frame's scripts).
     pub evaluate_on_new_document: Option<Box<String>>,
     #[serde(default)]
-    /// Runs the request using lite_mode:Lite mode reduces data transfer costs by 70%, with trade-offs in speed, accuracy,
+    /// Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy,
     /// geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
     /// targeting websites with minimal anti-bot protections.
     pub lite_mode: Option<bool>,
@@ -418,7 +412,7 @@ pub struct RequestParams {
     /// The proxy to use for request.
     pub proxy: Option<ProxyType>,
     #[serde(default)]
-    /// Use a remote proxy at ~70% reduced cost for file downloads.
+    /// Use a remote proxy at ~50% reduced cost for file downloads.
     /// This requires a user-supplied static IP proxy endpoint.
     pub remote_proxy: Option<String>,
     #[serde(default)]
