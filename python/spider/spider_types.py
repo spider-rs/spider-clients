@@ -4,65 +4,107 @@ from enum import Enum
 
 @dataclass
 class Evaluate:
-    code: str
-    type: str = "Evaluate"
+    type: Literal["Evaluate"] = "Evaluate"
+    code: str = ""  # Rust: Evaluate(String)
 
 @dataclass
 class Click:
-    selector: str
-    type: str = "Click"
+    type: Literal["Click"] = "Click"
+    selector: str = ""  # Rust: Click(String)
+
+@dataclass
+class ClickAll:
+    type: Literal["ClickAll"] = "ClickAll"
+    selector: str = ""  # Rust: ClickAll(String)
+
+@dataclass
+class ClickAllClickable:
+    type: Literal["ClickAllClickable"] = "ClickAllClickable"
 
 @dataclass
 class Wait:
-    duration: int
-    type: str = "Wait"
+    type: Literal["Wait"] = "Wait"
+    ms: int = 0  # Rust: Wait(u64)
 
 @dataclass
 class WaitForNavigation:
-    type: str = "WaitForNavigation"
+    type: Literal["WaitForNavigation"] = "WaitForNavigation"
+    # no fields
+
+@dataclass
+class WaitForDom:
+    type: Literal["WaitForDom"] = "WaitForDom"
+    selector: Optional[str] = None  # Rust: Option<String>
+    timeout: int = 0                # Rust: u32
 
 @dataclass
 class WaitFor:
-    selector: str
-    type: str = "WaitFor"
+    type: Literal["WaitFor"] = "WaitFor"
+    selector: str = ""  # Rust: WaitFor(String)
+
+@dataclass
+class WaitForWithTimeout:
+    type: Literal["WaitForWithTimeout"] = "WaitForWithTimeout"
+    selector: str = ""
+    timeout: int = 0  # Rust: u64
 
 @dataclass
 class WaitForAndClick:
-    selector: str
-    type: str = "WaitForAndClick"
+    type: Literal["WaitForAndClick"] = "WaitForAndClick"
+    selector: str = ""  # Rust: WaitForAndClick(String)
 
 @dataclass
 class ScrollX:
-    pixels: int
-    type: str = "ScrollX"
+    type: Literal["ScrollX"] = "ScrollX"
+    dx: int = 0  # Rust: ScrollX(i32)
 
 @dataclass
 class ScrollY:
-    pixels: int
-    type: str = "ScrollY"
+    type: Literal["ScrollY"] = "ScrollY"
+    dy: int = 0  # Rust: ScrollY(i32)
 
 @dataclass
 class Fill:
-    selector: str
-    value: str
-    type: str = "Fill"
+    type: Literal["Fill"] = "Fill"
+    selector: str = ""
+    value: str = ""
 
 @dataclass
 class InfiniteScroll:
-    times: int
-    type: str = "InfiniteScroll"
+    type: Literal["InfiniteScroll"] = "InfiniteScroll"
+    step_px: int = 0  # Rust: u32
 
+@dataclass
+class Screenshot:
+    type: Literal["Screenshot"] = "Screenshot"
+    full_page: bool = False
+    omit_background: bool = False
+    output: str = ""
+
+@dataclass
+class ValidateChain:
+    type: Literal["ValidateChain"] = "ValidateChain"
+    # no fields
+
+
+# Discriminated union type alias (for hints)
 WebAutomation = Union[
     Evaluate,
     Click,
+    ClickAll,
+    ClickAllClickable,
     Wait,
     WaitForNavigation,
+    WaitForDom,
     WaitFor,
+    WaitForWithTimeout,
     WaitForAndClick,
     ScrollX,
     ScrollY,
     Fill,
     InfiniteScroll,
+    Screenshot,
+    ValidateChain,
 ]
 
 WebAutomationMap = Dict[str, List[WebAutomation]]
@@ -92,8 +134,12 @@ class TimeoutDict(TypedDict):
     nanos: int
 
 class EventTracker(TypedDict):
+    # track response usage
     responses: bool
+    # track requests usage
     requests: bool
+    # track the automation events with data changes and screenshots
+    automation: bool
 
 class IdleNetworkDict(TypedDict):
     timeout: TimeoutDict

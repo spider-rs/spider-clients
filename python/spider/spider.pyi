@@ -60,20 +60,6 @@ class Spider:
         stream: bool = False,
         content_type: str = "application/json",
     ) -> Any: ...
-    def extract_contacts(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ) -> Any: ...
-    def label(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ) -> Any: ...
     def get_crawl_state(
         self,
         url: str,

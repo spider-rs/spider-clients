@@ -117,7 +117,7 @@ interface Delay {
  * @property {Delay} [delay] - Configuration to wait for a delay.
  * @property {boolean} [page_navigations] - Whether to wait for page navigations.
  */
-interface WaitFor {
+export interface WaitForConfiguration {
   idle_network?: IdleNetwork;
   selector?: Selector;
   dom?: Selector;
@@ -158,17 +158,119 @@ type CSSExtractionMap = {
 };
 
 // Web automation using chrome
+// ---------- Variants ----------
+export type Evaluate = {
+  type: "Evaluate";
+  /** Rust: Evaluate(String) */
+  code: string;
+};
+
+export type Click = {
+  type: "Click";
+  /** Rust: Click(String) */
+  selector: string;
+};
+
+export type ClickAll = {
+  type: "ClickAll";
+  /** Rust: ClickAll(String) */
+  selector: string;
+};
+
+export type ClickAllClickable = {
+  type: "ClickAllClickable";
+};
+
+export type Wait = {
+  type: "Wait";
+  /** Rust: u64 (milliseconds) */
+  ms: number;
+};
+
+export type WaitForNavigation = {
+  type: "WaitForNavigation";
+};
+
+export type WaitForDom = {
+  type: "WaitForDom";
+  /** Rust: Option<String> */
+  selector?: string | null;
+  /** Rust: u32 (milliseconds) */
+  timeout: number;
+};
+
+export type WaitFor = {
+  type: "WaitFor";
+  /** Rust: String */
+  selector: string;
+};
+
+export type WaitForWithTimeout = {
+  type: "WaitForWithTimeout";
+  selector: string;
+  /** Rust: u64 (milliseconds) */
+  timeout: number;
+};
+
+export type WaitForAndClick = {
+  type: "WaitForAndClick";
+  selector: string;
+};
+
+export type ScrollX = {
+  type: "ScrollX";
+  /** Rust: i32 (pixels) */
+  dx: number;
+};
+
+export type ScrollY = {
+  type: "ScrollY";
+  /** Rust: i32 (pixels) */
+  dy: number;
+};
+
+export type Fill = {
+  type: "Fill";
+  selector: string;
+  value: string;
+};
+
+export type InfiniteScroll = {
+  type: "InfiniteScroll";
+  /** Rust: u32 (pixels/step or count—match your semantics) */
+  step_px: number;
+};
+
+export type Screenshot = {
+  type: "Screenshot";
+  /** Keep snake_case to match Rust JSON if interop is needed */
+  full_page: boolean;
+  omit_background: boolean;
+  output: string;
+};
+
+export type ValidateChain = {
+  type: "ValidateChain";
+};
+
+// ---------- Discriminated union ----------
 export type WebAutomation =
-  | { Evaluate: string }
-  | { Click: string }
-  | { Wait: number }
-  | { WaitForNavigation: boolean }
-  | { WaitFor: string }
-  | { WaitForAndClick: string }
-  | { ScrollX: number }
-  | { ScrollY: number }
-  | { Fill: { selector: string; value?: string } }
-  | { InfiniteScroll: number };
+  | Evaluate
+  | Click
+  | ClickAll
+  | ClickAllClickable
+  | Wait
+  | WaitForNavigation
+  | WaitForDom
+  | WaitFor
+  | WaitForWithTimeout
+  | WaitForAndClick
+  | ScrollX
+  | ScrollY
+  | Fill
+  | InfiniteScroll
+  | Screenshot
+  | ValidateChain;
 
 export type ReturnFormat =
   | "markdown"
@@ -190,6 +292,16 @@ export type ExecutionScriptsMap = Record<string, string>;
 export enum RedirectPolicy {
   Loose = "Loose",
   Strict = "Strict",
+}
+
+// Event data tracker.
+export type EventTracker = {
+    // Track response usage.
+    responses?: true;
+    // Track request usage.
+    requests?: true;
+    // Track the automation events with data changes and screenshots.
+    automation?: boolean;
 }
 
 /**
@@ -434,7 +546,7 @@ export interface SpiderParams {
   /**
    * The wait for events on the page. You need to make your `request` `chrome` or `smart`.
    */
-  wait_for?: WaitFor;
+  wait_for?: WaitForConfiguration;
 
   /**
    * Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
@@ -459,10 +571,7 @@ export interface SpiderParams {
   /**
    * Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
    */
-  event_tracker?: {
-    responses?: true;
-    requests?: true;
-  };
+  event_tracker?: EventTracker;
 
   /**
    * The timeout to stop the crawl.

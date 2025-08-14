@@ -25,19 +25,64 @@ pub struct IdleNetwork {
     pub timeout: Timeout,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
-#[serde(tag = "type", rename_all = "PascalCase")]
+
+/// Represents various web automation actions.
+#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub enum WebAutomation {
-    Evaluate { code: String },
-    Click { selector: String },
-    Wait { duration: u64 },
+    /// Runs custom JavaScript code.
+    Evaluate(String),
+    /// Clicks on an element.
+    Click(String),
+    /// Clicks on all elements.
+    ClickAll(String),
+    /// Clicks on all elements.
+    ClickAllClickable(),
+    /// Waits for a fixed duration in milliseconds.
+    Wait(u64),
+    /// Waits for the next navigation event.
     WaitForNavigation,
-    WaitFor { selector: String },
-    WaitForAndClick { selector: String },
-    ScrollX { pixels: i32 },
-    ScrollY { pixels: i32 },
-    Fill { selector: String, value: String },
-    InfiniteScroll { times: u32 },
+    /// Wait for dom updates to stop.
+    WaitForDom {
+        /// The selector of the element to wait for updates.
+        selector: Option<String>,
+        ///  The timeout to wait for in ms.
+        timeout: u32,
+    },
+    /// Waits for an element to appear.
+    WaitFor(String),
+    /// Waits for an element to appear with a timeout.
+    WaitForWithTimeout {
+        /// The selector of the element to wait for updates.
+        selector: String,
+        ///  The timeout to wait for in ms.
+        timeout: u64,
+    },
+    /// Waits for an element to appear and then clicks on it.
+    WaitForAndClick(String),
+    /// Scrolls the screen in the horizontal axis by a specified amount in pixels.
+    ScrollX(i32),
+    /// Scrolls the screen in the vertical axis by a specified amount in pixels.
+    ScrollY(i32),
+    /// Fills an input element with a specified value.
+    Fill {
+        /// The selector of the input element to fill.
+        selector: String,
+        ///  The value to fill the input element with.
+        value: String,
+    },
+    /// Scrolls the page until the end.
+    InfiniteScroll(u32),
+    /// Perform a screenshot on the page - fullscreen and omit background for params.
+    Screenshot {
+        /// Take a full page screenshot.
+        full_page: bool,
+        /// Omit the background.
+        omit_background: bool,
+        /// The output file to store the screenshot.
+        output: String,
+    },
+    /// Only continue to the next automation if the prior step was valid. Use this intermediate after a step to break out of the chain.
+    ValidateChain,
 }
 
 #[derive(Default, Serialize, Deserialize, Debug, Clone)]
@@ -247,8 +292,10 @@ impl Default for ReturnFormatHandling {
 pub struct EventTracker {
     /// The responses received.
     responses: Option<bool>,
-    ///The request sent.
+    /// The request sent.
     requests: Option<bool>,
+    /// Track the automation events with data changes and screenshots.
+    automation: Option<bool>,
 }
 
 /// Structure representing request parameters.
