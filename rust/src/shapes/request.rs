@@ -5,9 +5,9 @@ use std::collections::HashMap;
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ChunkingAlgDict {
     /// The chunking algorithm to use, defined as a specific type.
-    r#type: ChunkingType,
+    pub r#type: ChunkingType,
     /// The amount to chunk by.
-    value: i32,
+    pub value: i32,
 }
 
 // The nested structures
@@ -291,11 +291,11 @@ impl Default for ReturnFormatHandling {
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct EventTracker {
     /// The responses received.
-    responses: Option<bool>,
+    pub responses: Option<bool>,
     /// The request sent.
-    requests: Option<bool>,
+    pub requests: Option<bool>,
     /// Track the automation events with data changes and screenshots.
-    automation: Option<bool>,
+    pub automation: Option<bool>,
 }
 
 /// Structure representing request parameters.

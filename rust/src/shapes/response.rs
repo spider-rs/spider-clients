@@ -218,6 +218,8 @@ pub struct Metadata {
     pub file_size: Option<u64>,
     /// Any structured extraction result (generic).
     pub extracted_data: Option<serde_json::Value>,
+    /// automation metadata:
+    pub automation_data: Option<serde_json::Value>
 }
 
 #[derive(Debug, Deserialize, Serialize, Default)]
