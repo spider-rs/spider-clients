@@ -152,40 +152,6 @@ async def test_transform(async_spider, url, params):
             assert 'status' in response
 
 @pytest.mark.asyncio
-async def test_extract_contacts(async_spider, url, params):
-    mock_response = [{"content": "contacts", "error": None, "status": 200, "url": url}]
-    
-    async def mock_request(*args, **kwargs):
-        yield mock_response
-
-    with patch.object(AsyncSpider, '_request', side_effect=mock_request):
-        async for response in async_spider.extract_contacts(url, params=params):
-            assert isinstance(response, list)
-            assert len(response) > 0
-            assert isinstance(response[0], dict)
-            assert 'content' in response[0]
-            assert 'error' in response[0]
-            assert 'status' in response[0]
-            assert 'url' in response[0]
-
-@pytest.mark.asyncio
-async def test_label(async_spider, url, params):
-    mock_response = [{"content": "labels", "error": None, "status": 200, "url": url}]
-    
-    async def mock_request(*args, **kwargs):
-        yield mock_response
-
-    with patch.object(AsyncSpider, '_request', side_effect=mock_request):
-        async for response in async_spider.label(url, params=params):
-            assert isinstance(response, list)
-            assert len(response) > 0
-            assert isinstance(response[0], dict)
-            assert 'content' in response[0]
-            assert 'error' in response[0]
-            assert 'status' in response[0]
-            assert 'url' in response[0]
-
-@pytest.mark.asyncio
 async def test_get_crawl_state(async_spider, url, params):
     mock_response = {"data": [{"state": "completed", "credits_used": 10}]}
     

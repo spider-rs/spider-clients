@@ -93,28 +93,6 @@ def test_transform(spider, url, params):
     assert 'error' in response
     assert 'status' in response
 
-def test_extract_contacts(spider, url, params):
-    response = spider.extract_contacts(url, params=params)
-    logger.info(f"Extract contacts response: {response}")
-    assert isinstance(response, list)
-    assert len(response) > 0
-    assert isinstance(response[0], dict)
-    assert 'content' in response[0]
-    assert 'error' in response[0]
-    assert 'status' in response[0]
-    assert 'url' in response[0]
-
-def test_label(spider, url, params):
-    response = spider.label(url, params=params)
-    logger.info(f"Label response: {response}")
-    assert isinstance(response, list)
-    assert len(response) > 0
-    assert isinstance(response[0], dict)
-    assert 'content' in response[0]
-    assert 'error' in response[0]
-    assert 'status' in response[0]
-    assert 'url' in response[0]
-
 def test_get_crawl_state(spider, url, params):
     response = spider.get_crawl_state(url, params=params)
     logger.info(f"Get crawl state response: {response}")

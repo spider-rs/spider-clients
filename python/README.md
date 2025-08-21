@@ -134,15 +134,6 @@ url = 'https://example.com'
 contacts = app.extract_contacts(url)
 ```
 
-### Labeling Data from a URL(s)
-
-Label the data extracted from a particular URL:
-
-```python
-url = 'https://example.com'
-labeled_data = app.label(url)
-```
-
 ### Checking Crawl State
 
 You can check the crawl state of the website:

@@ -115,32 +115,6 @@ async def test_transform(api_key, url, params):
             assert 'status' in response
 
 @pytest.mark.asyncio
-async def test_extract_contacts(api_key, url, params):
-    async with AsyncSpider(api_key=api_key) as spider:
-        async for response in spider.extract_contacts(url, params=params):
-            logger.info(f"Extract contacts response: {response}")
-            assert isinstance(response, list)
-            assert len(response) > 0
-            assert isinstance(response[0], dict)
-            assert 'content' in response[0]
-            assert 'error' in response[0]
-            assert 'status' in response[0]
-            assert 'url' in response[0]
-
-@pytest.mark.asyncio
-async def test_label(api_key, url, params):
-    async with AsyncSpider(api_key=api_key) as spider:
-        async for response in spider.label(url, params=params):
-            logger.info(f"Label response: {response}")
-            assert isinstance(response, list)
-            assert len(response) > 0
-            assert isinstance(response[0], dict)
-            assert 'content' in response[0]
-            assert 'error' in response[0]
-            assert 'status' in response[0]
-            assert 'url' in response[0]
-
-@pytest.mark.asyncio
 async def test_get_crawl_state(api_key, url, params):
     async with AsyncSpider(api_key=api_key) as spider:
         async for response in spider.get_crawl_state(url, params=params):

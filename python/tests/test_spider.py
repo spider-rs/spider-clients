@@ -149,40 +149,6 @@ def test_transform(mock_post, spider, url, params):
     mock_post.assert_called_once()
 
 @patch('requests.post')
-def test_extract_contacts(mock_post, spider, url, params):
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = [{"content": "contacts", "error": None, "status": 200, "url": url}]
-    mock_post.return_value = mock_response
-
-    response = spider.extract_contacts(url, params=params)
-    assert isinstance(response, list)
-    assert len(response) > 0
-    assert isinstance(response[0], dict)
-    assert 'content' in response[0]
-    assert 'error' in response[0]
-    assert 'status' in response[0]
-    assert 'url' in response[0]
-    mock_post.assert_called_once()
-
-@patch('requests.post')
-def test_label(mock_post, spider, url, params):
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = [{"content": "labels", "error": None, "status": 200, "url": url}]
-    mock_post.return_value = mock_response
-
-    response = spider.label(url, params=params)
-    assert isinstance(response, list)
-    assert len(response) > 0
-    assert isinstance(response[0], dict)
-    assert 'content' in response[0]
-    assert 'error' in response[0]
-    assert 'status' in response[0]
-    assert 'url' in response[0]
-    mock_post.assert_called_once()
-
-@patch('requests.post')
 def test_get_crawl_state(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200

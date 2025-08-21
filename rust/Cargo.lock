@@ -1045,7 +1045,7 @@ dependencies = [
 
 [[package]]
 name = "spider-client"
-version = "0.1.74"
+version = "0.1.75"
 dependencies = [
  "backon",
  "bytes",

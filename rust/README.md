@@ -158,16 +158,6 @@ let contacts = spider.extract_contacts(url, None, false, "application/json").awa
 println!("Extracted Contacts: {:?}", contacts);
 ```
 
-### Labeling Data from a URL(s)
-
-Label the data extracted from a particular URL:
-
-```rust
-let url = "https://example.com";
-let labeled_data = spider.label(url, None, false, "application/json").await.expect("Failed to label data from URL");
-println!("Labeled Data: {:?}", labeled_data);
-```
-
 ### Checking Crawl State
 
 You can check the crawl state of a specific URL:

@@ -2,7 +2,7 @@ use bytes::Bytes;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(untagged)]
 pub enum Content {
     /// A raw string (e.g. plain text or HTML).
@@ -155,7 +155,7 @@ impl Content {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct ApiResponse {
     /// Textual or binary content of the page.
     pub content: Bytes,
@@ -175,7 +175,7 @@ pub struct ApiResponse {
     pub error: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Costs {
     /// The cost of the AI.
     pub ai_cost: f64,
@@ -191,7 +191,7 @@ pub struct Costs {
     pub transform_cost: f64,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Metadata {
     /// SEO title of the page.
     pub title: String,
@@ -222,13 +222,13 @@ pub struct Metadata {
     pub automation_data: Option<serde_json::Value>
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct SearchList {
     /// The main content list.
     pub content: Vec<SearchEntry>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct SearchEntry {
     #[serde(default)]
     /// The search description.
