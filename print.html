@@ -661,14 +661,6 @@ let screenshot = spider.screenshot(url, None, false, "application/json").await.e
 let contacts = spider.extract_contacts(url, None, false, "application/json").await.expect("Failed to extract contacts from URL");
 println!("Extracted Contacts: {:?}", contacts);
 <span class="boring">}</span></code></pre></pre>
-<h3 id="labeling-data-from-a-urls"><a class="header" href="#labeling-data-from-a-urls">Labeling Data from a URL(s)</a></h3>
-<p>Label the data extracted from a particular URL:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let url = "https://example.com";
-let labeled_data = spider.label(url, None, false, "application/json").await.expect("Failed to label data from URL");
-println!("Labeled Data: {:?}", labeled_data);
-<span class="boring">}</span></code></pre></pre>
 <h3 id="checking-crawl-state"><a class="header" href="#checking-crawl-state">Checking Crawl State</a></h3>
 <p>You can check the crawl state of a specific URL:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
@@ -812,10 +804,6 @@ brew install spider-cloud-cli
 <h4 id="extract-contacts"><a class="header" href="#extract-contacts">Extract Contacts</a></h4>
 <p>Extract contact information from a specified URL.</p>
 <pre><code class="language-sh">spider-cloud-cli extract_contacts --url http://example.com
-</code></pre>
-<h4 id="label"><a class="header" href="#label">Label</a></h4>
-<p>Label data from a specified URL.</p>
-<pre><code class="language-sh">spider-cloud-cli label --url http://example.com
 </code></pre>
 <h4 id="get-crawl-state"><a class="header" href="#get-crawl-state">Get Crawl State</a></h4>
 <p>Get the crawl state of a specified URL.</p>
