@@ -27,7 +27,7 @@ pub struct IdleNetwork {
 
 
 /// Represents various web automation actions.
-#[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum WebAutomation {
     /// Runs custom JavaScript code.
     Evaluate(String),
@@ -37,6 +37,13 @@ pub enum WebAutomation {
     ClickAll(String),
     /// Clicks on all elements.
     ClickAllClickable(),
+    /// Clicks at the position x and y coordinates.
+    ClickPoint {
+        /// The horizontal (X) coordinate.
+        x: f64,
+        /// The vertical (Y) coordinate.
+        y: f64,
+    },
     /// Waits for a fixed duration in milliseconds.
     Wait(u64),
     /// Waits for the next navigation event.

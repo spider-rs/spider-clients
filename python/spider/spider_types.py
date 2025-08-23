@@ -22,6 +22,12 @@ class ClickAllClickable:
     type: Literal["ClickAllClickable"] = "ClickAllClickable"
 
 @dataclass
+class ClickPoint:
+    type: Literal["ClickPoint"] = "ClickPoint"
+    x: float = 0
+    y: float = 0
+
+@dataclass
 class Wait:
     type: Literal["Wait"] = "Wait"
     ms: int = 0  # Rust: Wait(u64)
@@ -93,6 +99,7 @@ WebAutomation = Union[
     Click,
     ClickAll,
     ClickAllClickable,
+    ClickPoint,
     Wait,
     WaitForNavigation,
     WaitForDom,

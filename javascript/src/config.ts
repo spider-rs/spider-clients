@@ -160,39 +160,35 @@ type CSSExtractionMap = {
 // Web automation using chrome
 // ---------- Variants ----------
 export type Evaluate = {
-  type: "Evaluate";
   /** Rust: Evaluate(String) */
   code: string;
 };
 
 export type Click = {
-  type: "Click";
   /** Rust: Click(String) */
   selector: string;
 };
 
 export type ClickAll = {
-  type: "ClickAll";
   /** Rust: ClickAll(String) */
   selector: string;
 };
 
-export type ClickAllClickable = {
-  type: "ClickAllClickable";
+export type ClickAllClickable = {};
+
+export type ClickPoint = {
+  x: number;
+  y: number;
 };
 
 export type Wait = {
-  type: "Wait";
   /** Rust: u64 (milliseconds) */
   ms: number;
 };
 
-export type WaitForNavigation = {
-  type: "WaitForNavigation";
-};
+export type WaitForNavigation = {};
 
 export type WaitForDom = {
-  type: "WaitForDom";
   /** Rust: Option<String> */
   selector?: string | null;
   /** Rust: u32 (milliseconds) */
@@ -200,58 +196,47 @@ export type WaitForDom = {
 };
 
 export type WaitFor = {
-  type: "WaitFor";
-  /** Rust: String */
   selector: string;
 };
 
 export type WaitForWithTimeout = {
-  type: "WaitForWithTimeout";
   selector: string;
   /** Rust: u64 (milliseconds) */
   timeout: number;
 };
 
 export type WaitForAndClick = {
-  type: "WaitForAndClick";
   selector: string;
 };
 
 export type ScrollX = {
-  type: "ScrollX";
   /** Rust: i32 (pixels) */
   dx: number;
 };
 
 export type ScrollY = {
-  type: "ScrollY";
   /** Rust: i32 (pixels) */
   dy: number;
 };
 
 export type Fill = {
-  type: "Fill";
   selector: string;
   value: string;
 };
 
 export type InfiniteScroll = {
-  type: "InfiniteScroll";
   /** Rust: u32 (pixels/step or count—match your semantics) */
   step_px: number;
 };
 
 export type Screenshot = {
-  type: "Screenshot";
   /** Keep snake_case to match Rust JSON if interop is needed */
   full_page: boolean;
   omit_background: boolean;
   output: string;
 };
 
-export type ValidateChain = {
-  type: "ValidateChain";
-};
+export type ValidateChain = {};
 
 // ---------- Discriminated union ----------
 export type WebAutomation =
@@ -259,6 +244,7 @@ export type WebAutomation =
   | Click
   | ClickAll
   | ClickAllClickable
+  | ClickPoint
   | Wait
   | WaitForNavigation
   | WaitForDom
@@ -296,13 +282,13 @@ export enum RedirectPolicy {
 
 // Event data tracker.
 export type EventTracker = {
-    // Track response usage.
-    responses?: true;
-    // Track request usage.
-    requests?: true;
-    // Track the automation events with data changes and screenshots.
-    automation?: boolean;
-}
+  // Track response usage.
+  responses?: true;
+  // Track request usage.
+  requests?: true;
+  // Track the automation events with data changes and screenshots.
+  automation?: boolean;
+};
 
 /**
  * Proxy pool selection for outbound request routing.
@@ -618,33 +604,32 @@ export interface SpiderParams {
   remote_proxy?: string;
 }
 
-
 /**
  * Represents the options available for making a spider search request.
  */
 export interface SearchRequestParams {
-    /** The base request parameters shared across requests */
-    base?: SpiderParams;
-    /** The search query string (merged with other params) required */
-    search?: string;
-    /** Optional limit on the number of websites to search */
-    search_limit?: number;
-    /** Whether to fetch the actual page content (defaults to true) */
-    fetch_page_content?: boolean;
-    /** Optional search location (e.g., city or region name) */
-    location?: string;
-    /** Optional country code (e.g., "US", "DE") */
-    country?: string;
-    /** Optional language code (e.g., "en", "fr") */
-    language?: string;
-    /** Optional number of search results to retrieve */
-    num?: number;
-    /** Optional page number of search results to fetch */
-    page?: number;
-    /** Optional cap on websites if a list is provided via text or URL (comma-separated) */
-    website_limit?: number;
-    /** If true, prioritizes speed over completeness of results */
-    quick_search?: boolean;
+  /** The base request parameters shared across requests */
+  base?: SpiderParams;
+  /** The search query string (merged with other params) required */
+  search?: string;
+  /** Optional limit on the number of websites to search */
+  search_limit?: number;
+  /** Whether to fetch the actual page content (defaults to true) */
+  fetch_page_content?: boolean;
+  /** Optional search location (e.g., city or region name) */
+  location?: string;
+  /** Optional country code (e.g., "US", "DE") */
+  country?: string;
+  /** Optional language code (e.g., "en", "fr") */
+  language?: string;
+  /** Optional number of search results to retrieve */
+  num?: number;
+  /** Optional page number of search results to fetch */
+  page?: number;
+  /** Optional cap on websites if a list is provided via text or URL (comma-separated) */
+  website_limit?: number;
+  /** If true, prioritizes speed over completeness of results */
+  quick_search?: boolean;
 }
 
 export interface Resource {
@@ -670,7 +655,6 @@ export interface RequestParamsTransform {
   /** Clean markdown or text, removing footers, navigation, and more */
   clean_full?: boolean;
 }
-
 
 // Core actions response type.
 export type SpiderCoreResponse = {
