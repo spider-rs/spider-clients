@@ -76,6 +76,12 @@ class Fill:
     value: str = ""
 
 @dataclass
+class Type:
+    type: Literal["Type"] = "Type"
+    modifier: int = 0
+    value: str = ""
+
+@dataclass
 class InfiniteScroll:
     type: Literal["InfiniteScroll"] = "InfiniteScroll"
     step_px: int = 0  # Rust: u32
@@ -109,6 +115,7 @@ WebAutomation = Union[
     ScrollX,
     ScrollY,
     Fill,
+    Type,
     InfiniteScroll,
     Screenshot,
     ValidateChain,

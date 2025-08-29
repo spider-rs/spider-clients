@@ -224,6 +224,12 @@ export type Fill = {
   value: string;
 };
 
+
+export type Type = {
+  modifier: number;
+  value: string;
+};
+
 export type InfiniteScroll = {
   /** Rust: u32 (pixels/step or count—match your semantics) */
   step_px: number;
@@ -254,6 +260,7 @@ export type WebAutomation =
   | ScrollX
   | ScrollY
   | Fill
+  | Type
   | InfiniteScroll
   | Screenshot
   | ValidateChain;

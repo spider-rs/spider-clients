@@ -44,6 +44,12 @@ pub enum WebAutomation {
         /// The vertical (Y) coordinate.
         y: f64,
     },
+    Type { 
+        /// The value to type.
+        value: String,
+        /// The click modifier.
+        modifier: Option<i64> 
+    },
     /// Waits for a fixed duration in milliseconds.
     Wait(u64),
     /// Waits for the next navigation event.
