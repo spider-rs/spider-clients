@@ -395,11 +395,6 @@ export interface SpiderParams {
   headers?: Headers;
 
   /**
-   * Specifies whether anti-bot measures should be used.
-   */
-  anti_bot?: boolean;
-
-  /**
    * Specifies whether to include metadata in the response.
    */
   metadata?: boolean;

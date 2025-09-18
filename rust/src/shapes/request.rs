@@ -362,9 +362,6 @@ pub struct RequestParams {
     /// The headers to be used for the request.
     pub headers: Option<HashMap<String, String>>,
     #[serde(default)]
-    /// Specifies whether anti-bot measures should be used.
-    pub anti_bot: Option<bool>,
-    #[serde(default)]
     /// Specifies whether to send data via webhooks.
     pub webhooks: Option<WebhookSettings>,
     #[serde(default)]

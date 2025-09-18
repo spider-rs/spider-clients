@@ -26,7 +26,7 @@ the following are optional parameters and can be set in the `params` dictionary:
 
 - `request` ("http", "chrome", "smart") : The type of request to make. Default is "http".
 - `return_format` ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".
-- `stealth`, `anti_bot` and a ton of other parameters that you can find in the [documentation](https://spider.cloud/docs/api?ref=python-sdk-book).
+- `stealth` and a ton of other parameters that you can find in the [documentation](https://spider.cloud/docs/api?ref=python-sdk-book).
 
 ```python
 from spider import Spider

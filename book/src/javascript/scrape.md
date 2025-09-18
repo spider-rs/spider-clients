@@ -25,7 +25,7 @@ the following are optional parameters and can be set in the `params` dictionary:
 
 - `request` ("http", "chrome", "smart") : The type of request to make. Default is "http".
 - `return_format` ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".
-- `stealth`, `anti_bot` and a ton of other parameters that you can find in the [documentation](https://spider.cloud/docs/api?ref=javascript-sdk-book).
+- `stealth` and a ton of other parameters that you can find in the [documentation](https://spider.cloud/docs/api?ref=javascript-sdk-book).
 
 ```javascript
 import { Spider } from "@spider-cloud/spider-client";
@@ -34,7 +34,6 @@ const app = new Spider();
 const url = "https://spider.cloud";
 const scrapedData = await app.scrapeUrl(url, {
   return_format: "raw",
-  anti_bot: true,
 });
 console.log(scrapedData);
 ```
@@ -48,8 +47,7 @@ import type { SpiderParams } from "@spider-cloud/spider-client/dist/config";
 const app = new Spider();
 const url = "https://spider.cloud";
 const params: SpiderParams = {
-  return_format: "raw",
-  anti_bot: true,
+  return_format: "raw"
 };
 const scrapedData = await app.scrapeUrl(url, params);
 console.log(scrapedData);

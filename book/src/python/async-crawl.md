@@ -93,7 +93,6 @@ params: spider_types.RequestParamsDict = {
     "limit": 10,
     "request_timeout": 10,
     "stealth": True,
-    # Easier to read and intellisense will help you with the available options
 }
 
 result = asyncio.run(async_crawl_url(url, params=params))

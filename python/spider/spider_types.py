@@ -266,9 +266,6 @@ class RequestParamsDict(TypedDict, total=False):
     # The headers to be used for the request.
     headers: Optional[Dict[str, str]]
 
-    # Specifies whether anti-bot measures should be used.
-    anti_bot: Optional[bool]
-
     # Specifies whether to include metadata in the response.
     metadata: Optional[bool]
 

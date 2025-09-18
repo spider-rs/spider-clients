@@ -1297,7 +1297,7 @@ dependencies = [
 
 [[package]]
 name = "spider-client"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "backon",
  "bytes",
@@ -1312,7 +1312,7 @@ dependencies = [
 
 [[package]]
 name = "spider-cloud-cli"
-version = "0.1.77"
+version = "0.1.78"
 dependencies = [
  "clap",
  "keyring",
