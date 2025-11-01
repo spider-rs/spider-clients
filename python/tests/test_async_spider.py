@@ -152,19 +152,6 @@ async def test_transform(async_spider, url, params):
             assert 'status' in response
 
 @pytest.mark.asyncio
-async def test_get_crawl_state(async_spider, url, params):
-    mock_response = {"data": [{"state": "completed", "credits_used": 10}]}
-    
-    async def mock_request(*args, **kwargs):
-        yield mock_response
-
-    with patch.object(AsyncSpider, '_request', side_effect=mock_request):
-        async for response in async_spider.get_crawl_state(url, params=params):
-            assert isinstance(response, dict)
-            assert 'data' in response
-            assert isinstance(response['data'], list)
-
-@pytest.mark.asyncio
 async def test_get_credits(async_spider):
     mock_response = {"data": [{"credits": 1000}]}
     
@@ -201,40 +188,6 @@ async def test_data_get(async_spider, url, params):
         table = "websites"
         async for response in async_spider.data_get(table, params=params):
             assert isinstance(response['data'], list)
-
-@pytest.mark.asyncio
-async def test_query(async_spider, params):
-    mock_response = {"data": {"status": 200}}
-    
-    async def mock_request(*args, **kwargs):
-        yield mock_response
-
-    with patch.object(AsyncSpider, '_request', side_effect=mock_request):
-        async for response in async_spider.data_get("query", params=params):
-            assert isinstance(response['data'], object)
-
-@pytest.mark.asyncio
-async def test_data_delete(async_spider, params):
-    mock_response = None
-    
-    async def mock_request(*args, **kwargs):
-        yield mock_response
-
-    with patch.object(AsyncSpider, '_request', side_effect=mock_request):
-        table = "websites"
-        async for response in async_spider.data_delete(table, params=params):
-            assert response is None
-
-@pytest.mark.asyncio
-async def test_create_signed_url(async_spider):
-    mock_response = b"mocked raw data"
-    
-    async def mock_request(*args, **kwargs):
-        yield mock_response
-
-    with patch.object(AsyncSpider, '_request', side_effect=mock_request):
-        async for response in async_spider.create_signed_url(params={"domain": "example.com"}):
-            assert response == b"mocked raw data"
 
 @pytest.mark.asyncio
 async def test_handle_error():

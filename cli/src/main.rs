@@ -164,17 +164,6 @@ async fn main() {
                                 Err(e) => eprintln!("Error transforming data: {:?}", e),
                             }
                         }
-                        Commands::Query { domain } => {
-                            let query = QueryRequest {
-                                domain: Some(domain.to_string()),
-                                ..Default::default()
-                            };
-                            println!("Querying record for domain: {}", domain);
-                            match spider.query(&query).await {
-                                Ok(data) => println!("{}", json!(data)),
-                                Err(e) => eprintln!("Error querying record: {:?}", e),
-                            }
-                        }
                         Commands::GetCredits => {
                             println!("Fetching account credits left.");
                             match spider.get_credits().await {

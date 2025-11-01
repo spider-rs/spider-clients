@@ -136,24 +136,6 @@ async def transform():
         print(f"Received chunk: {chunk}")
 
 
-async def contacts():
-    # Initialize the AsyncSpider
-    spider = AsyncSpider()
-
-    # URL to crawl
-    url = 'https://spider.cloud'
-        
-    # For non-streaming usage:
-    print("Non-streaming contacts:")
-    async for result in spider.extract_contacts(url, params=crawler_params, stream=False):
-        print(result)
-
-    # For streaming usage without a callback (just prints the response headers):
-    print("\nStreaming contacts without callback:")
-    async for chunk in spider.extract_contacts(url, params=crawler_params, stream=True):
-        print(f"Received chunk: {chunk}")
-        
-
 async def credits():
     # Initialize the AsyncSpider
     spider = AsyncSpider()
@@ -168,13 +150,7 @@ async def data_get():
     async for result in spider.data_get("websites", params=crawler_params):
         print(result)
         
-
-async def data_delete():
-    spider = AsyncSpider()
-    
-    async for result in spider.data_delete("websites", params=crawler_params):
-        print(result)
-        
+  
 if __name__ == "__main__":
     asyncio.run(crawl_url())
     asyncio.run(scrape_url())
@@ -182,10 +158,8 @@ if __name__ == "__main__":
     asyncio.run(screenshot())
     asyncio.run(search())
     asyncio.run(transform())
-    asyncio.run(contacts())
     asyncio.run(credits())    
     asyncio.run(data_get())    
-    asyncio.run(data_delete())    
     
     
     

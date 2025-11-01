@@ -115,15 +115,6 @@ async def test_transform(api_key, url, params):
             assert 'status' in response
 
 @pytest.mark.asyncio
-async def test_get_crawl_state(api_key, url, params):
-    async with AsyncSpider(api_key=api_key) as spider:
-        async for response in spider.get_crawl_state(url, params=params):
-            logger.info(f"Get crawl state response: {response}")
-            assert isinstance(response, dict)
-            assert 'data' in response
-            assert isinstance(response['data'], list)
-
-@pytest.mark.asyncio
 async def test_get_credits(api_key):
     async with AsyncSpider(api_key=api_key) as spider:
         async for response in spider.get_credits():
@@ -151,19 +142,3 @@ async def test_data_post(api_key, url):
 #             logger.info(f"Data get response: {response}")
 #             print(response)
 #             assert isinstance(response['data'], list)
-
-@pytest.mark.asyncio
-async def test_data_delete(api_key, url, params):
-    async with AsyncSpider(api_key=api_key) as spider:
-        table = "websites"
-        async for response in spider.data_delete(table, params=params):
-            logger.info(f"Data delete response: {response}")
-            print(response)
-            assert response['message'] == 'ok'
-
-@pytest.mark.asyncio
-async def test_create_signed_url(api_key):
-    async with AsyncSpider(api_key=api_key) as spider:
-        async for response in spider.create_signed_url(params={"domain": "example.com"}):
-            logger.info(f"Create signed URL response: {response}")
-            assert isinstance(response, bytes)

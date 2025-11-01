@@ -85,51 +85,6 @@ const streamCallback = (data) => {
 app.crawlUrl(url, crawlParams, stream, streamCallback);
 ```
 
-### Data Operations
-
-The Spider client can interact with specific data tables to create, retrieve, and delete data.
-
-#### Retrieve Data from a Table
-
-To fetch data from a specified table by applying query parameters, use the `getData` method. Provide the table name and an object containing query parameters:
-
-```javascript
-const tableName = "pages";
-const queryParams = { limit: 20 };
-spider
-  .getData(tableName, queryParams)
-  .then((response) => console.log(response))
-  .catch((error) => console.error(error));
-```
-
-This example retrieves data from the 'pages' table, limiting the results to 20 entries.
-
-#### Delete Data from a Table
-
-To delete data from a specified table based on certain conditions, use the `deleteData` method. Provide the table name and an object specifying the conditions for deletion:
-
-```javascript
-const tableName = "websites";
-const deleteParams = { domain: "www.example.com" };
-spider
-  .deleteData(tableName, deleteParams)
-  .then((response) => console.log(response))
-  .catch((error) => console.error(error));
-```
-
-#### Download storage data
-
-To download stored data like raw HTML or markdown use the `createSignedUrl` method. Provide the website name and an object containing query parameters:
-
-```javascript
-const websiteName = "spider.cloud";
-const queryParams = { limit: 20, page: 0 };
-spider
-  .createSignedUrl(websiteName, queryParams)
-  .then((response) => console.log(response))
-  .catch((error) => console.error(error));
-```
-
 ### Available Methods
 
 - **`scrapeUrl(url, params)`**: Scrape data from a specified URL. Optional parameters can be passed to customize the scraping behavior.
@@ -139,9 +94,6 @@ spider
 - **`screenshot(url, params)`**: Take a screenshot of the specified URL.
 - **`transform(data, params)`**: Perform a fast HTML transformation to markdown or text.
 - **`getCredits()`**: Retrieve account's remaining credits.
-- **`getData(table, params)`**: Retrieve data records from the DB.
-- **`deleteData(table, params)`**: Delete records from the DB.
-- **`createSignedUrl(domain, params)`**: Download the records from the DB.
 
 ## Error Handling
 

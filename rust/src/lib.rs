@@ -810,133 +810,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
         parse_response(res).await
     }
 
-    /// Download a record from storage.
-    ///
-    /// # Arguments
-    ///
-    /// * `url` - Optional exact url of the file in storage.
-    /// * `options` - Optional options.
-    /// * `stream` - Whether streaming is enabled.
-    ///
-    /// # Returns
-    ///
-    /// The response from the API.
-    pub async fn download(
-        &self,
-        url: Option<&str>,
-        options: Option<HashMap<&str, i32>>,
-    ) -> Result<reqwest::Response, reqwest::Error> {
-        let mut params = HashMap::new();
-
-        if let Some(url) = url {
-            params.insert("url".to_string(), url.to_string());
-        }
-
-        if let Some(options) = options {
-            for (key, value) in options {
-                params.insert(key.to_string(), value.to_string());
-            }
-        }
-
-        let url = format!("{}/v1/data/download", get_api_url());
-        let request = self
-            .client
-            .get(&url)
-            .header(
-                "User-Agent",
-                format!("Spider-Client/{}", env!("CARGO_PKG_VERSION")),
-            )
-            .header("Content-Type", "application/octet-stream")
-            .header("Authorization", format!("Bearer {}", self.api_key))
-            .query(&params);
-
-        let res = request.send().await?;
-
-        Ok(res)
-    }
-
-    /// Creates a signed URL of a file from storage.
-    ///
-    /// # Arguments
-    ///
-    /// * `url` - Optional exact url of the file in storage.
-    /// * `options` - Optional options.
-    /// * `stream` - Whether streaming is enabled.
-    ///
-    /// # Returns
-    ///
-    /// The response from the API.
-    pub async fn create_signed_url(
-        &self,
-        url: Option<&str>,
-        options: Option<HashMap<&str, i32>>,
-    ) -> Result<serde_json::Value, reqwest::Error> {
-        let mut params = HashMap::new();
-
-        if let Some(options) = options {
-            for (key, value) in options {
-                params.insert(key.to_string(), value.to_string());
-            }
-        }
-
-        if let Some(url) = url {
-            params.insert("url".to_string(), url.to_string());
-        }
-
-        let url = format!("{}/v1/data/sign-url", get_api_url());
-        let request = self
-            .client
-            .get(&url)
-            .header(
-                "User-Agent",
-                format!("Spider-Client/{}", env!("CARGO_PKG_VERSION")),
-            )
-            .header("Authorization", format!("Bearer {}", self.api_key))
-            .query(&params);
-
-        let res = request.send().await?;
-
-        parse_response(res).await
-    }
-
-    /// Gets the crawl state of a URL.
-    ///
-    /// # Arguments
-    ///
-    /// * `url` - The URL to get the crawl state of.
-    /// * `params` - Optional request parameters.
-    /// * `stream` - Whether streaming is enabled.
-    /// * `content_type` - The content type of the request.
-    ///
-    /// # Returns
-    ///
-    pub async fn get_crawl_state(
-        &self,
-        url: &str,
-        params: Option<RequestParams>,
-        content_type: &str,
-    ) -> Result<serde_json::Value, reqwest::Error> {
-        let mut payload = HashMap::new();
-        payload.insert("url".into(), serde_json::Value::String(url.to_string()));
-        payload.insert(
-            "contentType".into(),
-            serde_json::Value::String(content_type.to_string()),
-        );
-
-        if let Ok(params) = serde_json::to_value(params) {
-            if let Ok(params) = serde_json::to_value(params) {
-                if let Some(ref p) = params.as_object() {
-                    payload.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-            }
-        }
-
-        let res = self
-            .api_post("data/crawl_state", payload, content_type)
-            .await?;
-        parse_response(res).await
-    }
-
     /// Get the account credits left.
     pub async fn get_credits(&self) -> Result<serde_json::Value, reqwest::Error> {
         self.api_get::<serde_json::Value>("data/credits", None)
@@ -953,15 +826,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
             .api_post(&format!("data/{}", table), data, "application/json")
             .await?;
         parse_response(res).await
-    }
-
-    /// Query a record from the global DB.
-    pub async fn query(&self, params: &QueryRequest) -> Result<serde_json::Value, reqwest::Error> {
-        let res = self
-            .api_get::<QueryRequest>(&"data/query", Some(params))
-            .await?;
-
-        Ok(res)
     }
 
     /// Get a table record.
@@ -984,28 +848,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
             .api_get::<serde_json::Value>(&format!("data/{}", table), None)
             .await?;
         Ok(res)
-    }
-
-    /// Delete a record.
-    pub async fn data_delete(
-        &self,
-        table: &str,
-        params: Option<RequestParams>,
-    ) -> Result<serde_json::Value, reqwest::Error> {
-        let mut payload = HashMap::new();
-
-        if let Ok(params) = serde_json::to_value(params) {
-            if let Ok(params) = serde_json::to_value(params) {
-                if let Some(ref p) = params.as_object() {
-                    payload.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
-                }
-            }
-        }
-
-        let res = self
-            .api_delete(&format!("data/{}", table), Some(payload))
-            .await?;
-        parse_response(res).await
     }
 }
 
@@ -1100,32 +942,6 @@ mod tests {
         let response = SPIDER_CLIENT
             .transform(data, None, false, "application/json")
             .await;
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    async fn test_create_signed_url() {
-        let response = SPIDER_CLIENT
-            .create_signed_url(Some("example.com"), None)
-            .await;
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    async fn test_get_crawl_state() {
-        let response = SPIDER_CLIENT
-            .get_crawl_state("https://example.com", None, "application/json")
-            .await;
-        assert!(response.is_ok());
-    }
-
-    #[tokio::test]
-    async fn test_query() {
-        let mut query = QueryRequest::default();
-
-        query.domain = Some("spider.cloud".into());
-
-        let response = SPIDER_CLIENT.query(&query).await;
         assert!(response.is_ok());
     }
 

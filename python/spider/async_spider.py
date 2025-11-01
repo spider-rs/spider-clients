@@ -203,104 +203,6 @@ class AsyncSpider:
         ):
             yield response
 
-    async def query(
-        self,
-        params: Optional[QueryRequest] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ) -> AsyncIterator[Any]:
-        """
-        Query a website resource from our database. This costs 1 credit per successful retrieval.
-
-        :param params: Optional parameters to guide the labeling process.
-        :return: The website contents markup.
-        """
-        async for response in self._request(
-            "GET", "data/query", params=params, stream=stream, content_type=content_type
-        ):
-            yield response
-
-    async def download(
-        self,
-        url: Optional[str] = None,
-        params: Optional[Dict[str, int]] = None,
-        stream: bool = True,
-    ) -> AsyncIterator[Any]:
-        """
-        Create a signed URL to download data from a specific domain.
-
-        :param url: Optional url of the exact path to specify the storage path.
-        :param params: Optional dictionary containing configuration parameters, such as:
-            - 'page': Optional page number for pagination.
-            - 'limit': Optional page limit for pagination.
-            - 'domain': Optional domain name to use when url is not known.
-            - 'pathname': Optional pathname to use when urls is not known.
-            - 'expiresIn': Optional expiration time for the signed URL.
-        :param stream: Boolean indicating if the response should be streamed. Defaults to True.
-        :return: The raw response stream if stream is True.
-        """
-        if url:
-            params = params or {}
-            params["url"] = url
-        async for response in self._request(
-            "GET", "data/download", params=params, stream=stream
-        ):
-            yield response
-
-    async def create_signed_url(
-        self,
-        url: Optional[str] = None,
-        params: Optional[Dict[str, int]] = None,
-        stream: bool = True,
-    ) -> AsyncIterator[Any]:
-        """
-        Create a signed URL to download data from a specific domain.
-
-        :param url: Optional url of the exact path to specify the storage path.
-        :param params: Optional dictionary containing configuration parameters, such as:
-            - 'page': Optional page number for pagination.
-            - 'limit': Optional page limit for pagination.
-            - 'domain': Optional domain name to use when url is not known.
-            - 'pathname': Optional pathname to use when urls is not known.
-            - 'expiresIn': Optional expiration time for the signed URL.
-        :param stream: Boolean indicating if the response should be streamed. Defaults to True.
-        :return: The raw response stream if stream is True.
-        """
-        if url:
-            params = params or {}
-            params["url"] = url
-        async for response in self._request(
-            "GET", "data/sign-url", params=params, stream=stream
-        ):
-            yield response
-
-    async def get_crawl_state(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ) -> AsyncIterator[Any]:
-        """
-        Retrieve the website active crawl state.
-
-        :return: JSON response of the crawl state and credits used.
-        """
-        data = {
-            "url": url,
-            "stream": stream,
-            "content_type": content_type,
-            **(params or {}),
-        }
-        async for response in self._request(
-            "POST",
-            "data/crawl_state",
-            data=data,
-            stream=stream,
-            content_type=content_type,
-        ):
-            yield response
-
     async def get_credits(self) -> AsyncIterator[Any]:
         """
         Retrieve the account's remaining credits.
@@ -336,24 +238,6 @@ class AsyncSpider:
         async for response in self._request("GET", f"data/{table}", params=params):
             yield response
 
-    async def data_delete(
-        self,
-        table: str,
-        data: Optional[RequestParamsDict] = {},
-        params: Optional[RequestParamsDict] = None,
-    ) -> AsyncIterator[Any]:
-        """
-        Delete data from a specific table via DELETE request.
-
-        :param table: The table name from which data will be deleted.
-        :param params: Parameters to identify which data to delete.
-        :return: The JSON response from the server.
-        """
-        async for response in self._request(
-            "DELETE", f"data/{table}", data=data, params=params
-        ):
-            yield response
-
     async def _stream_reader(
         self, response: Any, callback: Callable[[Dict[str, Any]], None]
     ) -> None:
@@ -383,7 +267,7 @@ class AsyncSpider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": "AsyncSpider-Client/0.1.78",
+            "User-Agent": "AsyncSpider-Client/0.1.79",
         }
 
     async def _handle_error(self, response: ClientResponse, action: str) -> None:

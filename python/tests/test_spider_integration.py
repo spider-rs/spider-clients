@@ -93,13 +93,6 @@ def test_transform(spider, url, params):
     assert 'error' in response
     assert 'status' in response
 
-def test_get_crawl_state(spider, url, params):
-    response = spider.get_crawl_state(url, params=params)
-    logger.info(f"Get crawl state response: {response}")
-    assert isinstance(response, dict)
-    assert 'data' in response
-    assert isinstance(response['data'], list)
-
 def test_get_credits(spider):
     response = spider.get_credits()
     logger.info(f"Get credits response: {response}")
@@ -116,22 +109,3 @@ def test_data_post(spider, url):
     assert response['data']['url'] == url
     assert response['data']['domain'] == url.replace("http://", "").replace("https://", "")
     assert response['error'] == None
-
-# TODO: 500 error. 
-# def test_data_get(spider, params):
-#     table = "websites"
-#     response = spider.data_get(table, params=params)
-#     logger.info(f"Data get response: {response}")
-#     assert isinstance(response['data'], list)
-
-def test_data_delete(spider, params):
-    table = "websites"
-    response = spider.data_delete(table, params=params)
-    logger.info(f"Data delete response: {response}")
-    assert response['message'] == 'ok'
-
-# TODO: 500 error. 
-# def test_create_signed_url(spider):
-#     response = spider.create_signed_url(domain="example.com", options={"page": 1, "limit": 10})
-#     logger.info(f"Create signed URL response: {response}")
-#     assert isinstance(response, bytes)

@@ -708,14 +708,6 @@ export enum APIRoutes {
   Transform = "transform",
   // Dynamic collection routes.
   Data = "data",
-  // The last crawl state of a website.
-  DataCrawlState = "data/crawl_state",
-  // Sign a file from storage based on the exact url path of the storage or domain - pathname.
-  DataSignUrl = "data/sign-url",
-  // Download a file from storage based on the exact url path of the storage or domain - pathname.
-  DataDownload = "data/download",
-  // Perform a query on the global database to grab content without crawling if available.
-  DataQuery = "data/query",
   // Get the credits remaining for an account.
   DataCredits = "data/credits",
 }

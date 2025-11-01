@@ -81,30 +81,6 @@ Transform specified data.
 spider-cloud-cli transform --data "sample data"
 ```
 
-#### Extract Contacts
-
-Extract contact information from a specified URL.
-
-```sh
-spider-cloud-cli extract_contacts --url http://example.com
-```
-
-#### Get Crawl State
-
-Get the crawl state of a specified URL.
-
-```sh
-spider-cloud-cli get_crawl_state --url http://example.com
-```
-
-#### Query
-
-Query records of a specified domain.
-
-```sh
-spider-cloud-cli query --domain example.com
-```
-
 #### Get Credits
 
 Fetch the account credits left.

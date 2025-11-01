@@ -1,5 +1,5 @@
 from typing import Optional, Dict, Any
-from spider_types import RequestParamsDict, QueryRequest
+from spider_types import RequestParamsDict
 
 class Spider:
     api_key: str
@@ -60,33 +60,11 @@ class Spider:
         stream: bool = False,
         content_type: str = "application/json",
     ) -> Any: ...
-    def get_crawl_state(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ) -> Any: ...
-    def query(
-        self,
-        params: QueryRequest
-    ) -> Any: ...
     def get_credits(self) -> Any: ...
     def data_post(
         self, table: str, data: Optional[RequestParamsDict] = None
     ) -> Any: ...
-    def create_signed_url(
-        self,
-        domain: Optional[str] = None,
-        params: Optional[Dict[str, int]] = None,
-        stream: Optional[bool] = True,
-    ) -> Any: ...
     def data_get(
-        self,
-        table: str,
-        params: Optional[RequestParamsDict] = None,
-    ) -> Any: ...
-    def data_delete(
         self,
         table: str,
         params: Optional[RequestParamsDict] = None,

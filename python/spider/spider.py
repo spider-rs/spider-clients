@@ -236,111 +236,6 @@ class Spider:
             "transform", {"data": data, **(params or {})}, stream, content_type
         )
 
-    def query(
-        self,
-        params: QueryRequest = None,
-        stream: bool = False,
-        content_type: str = "application/json",
-    ):
-        """
-        Query a website resource from our database. This costs 1 credit per successful retrieval.
-        :param params: Optional parameters to guide the labeling process.
-        :return: The website contents markup.
-        """
-        return self.api_get("data/query", {**(params or {})}, stream, content_type)
-
-    def download(
-        self,
-        url: Optional[str] = None,
-        params: Optional[Dict[str, int]] = None,
-        stream: Optional[bool] = True,
-    ):
-        """
-        Download the file from storage.
-
-        :param url: Optional url of the exact path to specify the storage path.
-        :param params: Optional dictionary containing configuration parameters, such as:
-            - 'page': Optional page number for pagination.
-            - 'limit': Optional page limit for pagination.
-            - 'domain': Optional domain name to use when url is not known.
-            - 'pathname': Optional pathname to use when urls is not known.
-            - 'expiresIn': Optional expiration time for the signed URL.
-        :param stream: Boolean indicating if the response should be streamed. Defaults to True.
-        :return: The raw response stream if stream is True.
-        """
-        if url:
-            params["url"] = url
-        if params:
-            params.update(params)
-
-        endpoint = "data/download"
-        headers = self._prepare_headers("application/octet-stream")
-        response = self._get_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers, stream, params=params
-        )
-        if 200 <= response.status_code < 300:
-            if stream:
-                return response.raw
-            else:
-                return response.content
-        else:
-            self._handle_error(response, f"download from {endpoint}")
-
-    def create_signed_url(
-        self,
-        url: Optional[str] = None,
-        params: Optional[Dict[str, int]] = None,
-        stream: Optional[bool] = True,
-    ):
-        """
-        Create a signed url to download files from the storage.
-
-        :param url: Optional url of the exact path to specify the storage path.
-        :param params: Optional dictionary containing configuration parameters, such as:
-            - 'page': Optional page number for pagination.
-            - 'limit': Optional page limit for pagination.
-            - 'domain': Optional domain name to use when url is not known.
-            - 'pathname': Optional pathname to use when urls is not known.
-            - 'expiresIn': Optional expiration time for the signed URL.
-        :param stream: Boolean indicating if the response should be streamed. Defaults to True.
-        :return: The raw response stream if stream is True.
-        """
-        if url:
-            params["url"] = url
-        if params:
-            params.update(params)
-
-        endpoint = "data/sign-url"
-        headers = self._prepare_headers("application/octet-stream")
-        response = self._get_request(
-            f"https://api.spider.cloud/v1/{endpoint}", headers, stream, params=params
-        )
-        if 200 <= response.status_code < 300:
-            if stream:
-                return response.raw
-            else:
-                return response.content
-        else:
-            self._handle_error(response, f"download from {endpoint}")
-
-    def get_crawl_state(
-        self,
-        url: str,
-        params: Optional[RequestParamsDict] = None,
-        stream: Optional[bool] = False,
-        content_type: Optional[str] = "application/json",
-    ):
-        """
-        Retrieve the website active crawl state.
-
-        :return: JSON response of the crawl state and credits used.
-        """
-        payload = {"url": url, "stream": stream, "content_type": content_type}
-        if params:
-            payload.update(params)
-
-        return self.api_post("data/crawl_state", payload, stream)
-
     def get_credits(self):
         """
         Retrieve the account's remaining credits.
@@ -371,19 +266,6 @@ class Spider:
         """
         return self.api_get(f"data/{table}", params)
 
-    def data_delete(
-        self,
-        table: str,
-        params: Optional[RequestParamsDict] = None,
-    ):
-        """
-        Delete data from a specific table via DELETE request.
-        :param table: The table name from which data will be deleted.
-        :param params: Parameters to identify which data to delete.
-        :return: The JSON response from the server.
-        """
-        return self.api_delete(f"data/{table}", params=params)
-
     def stream_reader(self, response, callback):
         response.raise_for_status()
 
@@ -398,7 +280,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.78",
+            "User-Agent": f"Spider-Client/0.1.79",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

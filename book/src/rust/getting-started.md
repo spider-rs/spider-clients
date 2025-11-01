@@ -148,41 +148,6 @@ let url = "https://example.com";
 let screenshot = spider.screenshot(url, None, false, "application/json").await.expect("Failed to take screenshot of URL");
 ```
 
-### Extracting Contact Information
-
-Extract contact details from a specified URL:
-
-```rust
-let url = "https://example.com";
-let contacts = spider.extract_contacts(url, None, false, "application/json").await.expect("Failed to extract contacts from URL");
-println!("Extracted Contacts: {:?}", contacts);
-```
-
-### Checking Crawl State
-
-You can check the crawl state of a specific URL:
-
-```rust
-let url = "https://example.com";
-let state = spider.get_crawl_state(url, None, false, "application/json").await.expect("Failed to get crawl state for URL");
-println!("Crawl State: {:?}", state);
-```
-
-### Downloading Files
-
-You can download the results of the website:
-
-```rust
-let url = "https://example.com";
-let options = hashmap!{
-    "page" => 0,
-    "limit" => 100,
-    "expiresIn" => 3600 // Optional, add if needed
-};
-let response = spider.create_signed_url(Some(url), Some(options)).await.expect("Failed to create signed URL");
-println!("Download URL: {:?}", response);
-```
-
 ### Checking Available Credits
 
 You can check the remaining credits on your account:
@@ -190,38 +155,6 @@ You can check the remaining credits on your account:
 ```rust
 let credits = spider.get_credits().await.expect("Failed to get credits");
 println!("Remaining Credits: {:?}", credits);
-```
-
-### Data Operations
-
-The Spider client can now interact with specific data tables to create, retrieve, and delete data.
-
-#### Retrieve Data from a Table
-
-To fetch data from a specified table by applying query parameters:
-
-```rust
-let table_name = "pages";
-let query_params = RequestParams {
-    limit: Some(20),
-    ..Default::default()
-};
-let response = spider.data_get(table_name, Some(query_params)).await.expect("Failed to retrieve data from table");
-println!("Data from table: {:?}", response);
-```
-
-#### Delete Data from a Table
-
-To delete data from a specified table based on certain conditions:
-
-```rust
-let table_name = "websites";
-let delete_params = RequestParams {
-    domain: Some("www.example.com".to_string()),
-    ..Default::default()
-};
-let response = spider.data_delete(table_name, Some(delete_params)).await.expect("Failed to delete data from table");
-println!("Delete Response: {:?}", response);
 ```
 
 ## Streaming

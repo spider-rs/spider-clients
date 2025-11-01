@@ -148,19 +148,6 @@ def test_transform(mock_post, spider, url, params):
     assert 'status' in response
     mock_post.assert_called_once()
 
-@patch('requests.post')
-def test_get_crawl_state(mock_post, spider, url, params):
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": [{"state": "completed", "credits_used": 10}]}
-    mock_post.return_value = mock_response
-
-    response = spider.get_crawl_state(url, params=params)
-    assert isinstance(response, dict)
-    assert 'data' in response
-    assert isinstance(response['data'], list)
-    mock_post.assert_called_once()
-
 @patch('requests.get')
 def test_get_credits(mock_get, spider):
     mock_response = MagicMock()
@@ -196,38 +183,6 @@ def test_data_get(mock_get, spider, url, params):
     table = "websites"
     response = spider.data_get(table, params=params)
     assert isinstance(response['data'], list)
-    mock_get.assert_called_once()
-
-@patch('requests.get')
-def test_query(mock_get, spider, params):
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.json.return_value = {"data": {"status": 200}}
-    mock_get.return_value = mock_response
-    response = spider.data_get("query", params=params)
-    assert isinstance(response['data'], object)
-    mock_get.assert_called_once()
-
-@patch('requests.delete')
-def test_data_delete(mock_delete, spider, params):
-    mock_response = MagicMock()
-    mock_response.status_code = 204
-    mock_delete.return_value = mock_response
-
-    table = "websites"
-    response = spider.data_delete(table, params=params)
-    assert response is not None
-    mock_delete.assert_called_once()
-
-@patch('requests.get')
-def test_create_signed_url(mock_get, spider):
-    mock_response = MagicMock()
-    mock_response.status_code = 200
-    mock_response.raw = b"mocked raw data"
-    mock_get.return_value = mock_response
-
-    response = spider.create_signed_url(params={"domain": "example.com"})
-    assert response == b"mocked raw data"
     mock_get.assert_called_once()
 
 def test_stream_reader():

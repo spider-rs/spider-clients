@@ -172,11 +172,6 @@ pub enum Commands {
         #[arg(short, long, help = "The data to transform")]
         data: String,
     },
-    /// Query for a domain
-    Query {
-        #[arg(short, long, help = "The domain to query")]
-        domain: String,
-    },
     /// Get the remaining credits
     GetCredits,
     /// Authenticate using an API key

@@ -1,7 +1,6 @@
 import {
   ChunkCallbackFunction,
   Collection,
-  QueryRequest,
   SpiderCoreResponse,
   SpiderParams,
   SearchRequestParams,
@@ -103,32 +102,6 @@ export class Spider {
       return response.json();
     } else {
       this.handleError(response, `get from ${endpoint}`);
-    }
-  }
-
-  /**
-   * Internal method to handle DELETE requests.
-   * @param {string} endpoint - The API endpoint from which data should be retrieved.
-   * @returns {Promise<any>} The data returned from the endpoint in JSON format.
-   */
-  private async _apiDelete(endpoint: string) {
-    const headers = this.prepareHeaders;
-    const response = await backOff(
-      () =>
-        fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
-          method: "DELETE",
-          headers,
-          body: JSON.stringify({}),
-        }),
-      {
-        numOfAttempts: 5,
-      }
-    );
-
-    if (response.ok) {
-      return response;
-    } else {
-      return this.handleError(response, `delete from ${endpoint}`);
     }
   }
 
@@ -239,53 +212,6 @@ export class Spider {
     });
   }
 
-
-  /**
-   * Create a signed url to download files from the storage.
-   * @param {string} [domain] - The domain for the user's storage. If not provided, downloads all files.
-   * @param {Object} [options] - The download options.
-   * @param {boolean} [raw] - Return the raw response.
-
-   * @returns {Promise<Response>} The response containing the file stream.
-   */
-  async createSignedUrl(
-    url?: string,
-    options?: {
-      page?: number;
-      limit?: number;
-      expiresIn?: number;
-      // optional if you do not know the url put the domain and path.
-      domain?: string;
-      pathname?: string;
-    }
-  ): Promise<any> {
-    const { page, limit, expiresIn, domain, pathname } = options ?? {};
-
-    const params = new URLSearchParams({
-      ...(url && { url }),
-      ...(domain && { domain }),
-      ...(pathname && { pathname }),
-      ...(page && { page: page.toString() }),
-      ...(limit && { limit: limit.toString() }),
-      ...(expiresIn && { expiresIn: expiresIn.toString() }),
-    });
-    const endpoint = `${APISchema["url"]}/${
-      APIRoutes.DataSignUrl
-    }?${params.toString()}`;
-    const headers = this.prepareHeaders;
-
-    const response = await fetch(endpoint, {
-      method: "GET",
-      headers,
-    });
-
-    if (response.ok) {
-      return await response.json();
-    } else {
-      this.handleError(response, `Failed to sign files`);
-    }
-  }
-
   /**
    * Retrieves the number of credits available on the account.
    * @returns {Promise<any>} The current credit balance.
@@ -305,81 +231,6 @@ export class Spider {
     data: GenericParams | Record<string, any>
   ): Promise<any> {
     return this._apiPost(`${APIRoutes.Data}/${collection}`, data);
-  }
-
-  /**
-   * Send a GET request to retrieve data from a specified table.
-   * @param {Collection} table - The table name in the database.
-   * @param {object} params - The query parameters for data retrieval.
-   * @returns {Promise<any>} The response from the server.
-   */
-  async getData(
-    collections: Collection,
-    params: GenericParams | Record<string, any>
-  ): Promise<any> {
-    return this._apiGet(
-      `${APIRoutes.Data}/${collections}?${new URLSearchParams(
-        params as any
-      ).toString()}`
-    );
-  }
-
-  /**
-   * Download a record. The url is the path of the storage hash returned and not the exact website url.
-   * @param {QueryRequest} params - The query parameters for data retrieval.
-   * @returns {Promise<any>} The download response from the server.
-   */
-  async download(query: QueryRequest, output?: "text" | "blob"): Promise<any> {
-    const headers = this.prepareHeaders;
-    const endpoint = `${APIRoutes.DataDownload}?${new URLSearchParams(
-      query as Record<string, string>
-    ).toString()}`;
-    const response = await fetch(
-      `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
-      {
-        method: "GET",
-        headers,
-      }
-    );
-
-    if (response.ok) {
-      if (output === "text") {
-        return await response.text();
-      }
-      return await response.blob();
-    } else {
-      this.handleError(response, `get from ${endpoint}`);
-    }
-  }
-
-  /**
-   * Perform a query to get a document.
-   * @param {QueryRequest} params - The query parameters for data retrieval.
-   * @returns {Promise<any>} The response from the server.
-   */
-  async query(query: QueryRequest): Promise<any> {
-    return this._apiGet(
-      `${APIRoutes.DataQuery}?${new URLSearchParams(
-        query as Record<string, string>
-      ).toString()}`
-    );
-  }
-
-  /**
-   * Send a DELETE request to remove data from a specified table.
-   * @param {Collection} table - The table name in the database.
-   * @param {object} params - Parameters to identify records to delete.
-   * @returns {Promise<any>} The response from the server.
-   */
-  async deleteData(
-    collection: Collection,
-    params: GenericParams | Record<string, any>
-  ): Promise<any> {
-    return this._apiDelete(
-      `${APIRoutes.Data}/${collection}?${new URLSearchParams(
-        params as any
-      ).toString()}`
-    );
   }
 
   /**
