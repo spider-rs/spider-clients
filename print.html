@@ -274,7 +274,6 @@ params: spider_types.RequestParamsDict = {
     "request_timeout": 10,
     "stealth": True,
     "return_format": [ "raw", "markdown" ],
-    # Easier to read and intellisense will help you with the available options
 }
 
 app = Spider()
@@ -304,7 +303,7 @@ print(scraped_data)
 <ul>
 <li><code>request</code> ("http", "chrome", "smart") : The type of request to make. Default is "http".</li>
 <li><code>return_format</code> ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".</li>
-<li><code>stealth</code>, <code>anti_bot</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=python-sdk-book">documentation</a>.</li>
+<li><code>stealth</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=python-sdk-book">documentation</a>.</li>
 </ul>
 <pre><code class="language-python">from spider import Spider
 
@@ -412,7 +411,6 @@ params: spider_types.RequestParamsDict = {
     "limit": 10,
     "request_timeout": 10,
     "stealth": True,
-    # Easier to read and intellisense will help you with the available options
 }
 
 result = asyncio.run(async_crawl_url(url, params=params))
@@ -464,7 +462,6 @@ const app = new Spider();
 const url = "https://spider.cloud";
 const scrapedData = await app.crawlUrl(url, {
   limit: 10,
-  anti_bot: true,
   return_format: "raw",
 });
 console.log(scrapedData);
@@ -477,7 +474,6 @@ const app = new Spider();
 const url = "https://spider.cloud";
 const params: SpiderParams = {
   return_format: ["raw", "markdown"],
-  anti_bot: true,
 };
 const scrapedData = await app.crawlUrl(url, params);
 console.log(scrapedData);
@@ -502,7 +498,7 @@ console.log(scrapedData);
 <ul>
 <li><code>request</code> ("http", "chrome", "smart") : The type of request to make. Default is "http".</li>
 <li><code>return_format</code> ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".</li>
-<li><code>stealth</code>, <code>anti_bot</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=javascript-sdk-book">documentation</a>.</li>
+<li><code>stealth</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=javascript-sdk-book">documentation</a>.</li>
 </ul>
 <pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
 
@@ -510,7 +506,6 @@ const app = new Spider();
 const url = "https://spider.cloud";
 const scrapedData = await app.scrapeUrl(url, {
   return_format: "raw",
-  anti_bot: true,
 });
 console.log(scrapedData);
 </code></pre>
@@ -521,8 +516,7 @@ import type { SpiderParams } from "@spider-cloud/spider-client/dist/config";
 const app = new Spider();
 const url = "https://spider.cloud";
 const params: SpiderParams = {
-  return_format: "raw",
-  anti_bot: true,
+  return_format: "raw"
 };
 const scrapedData = await app.scrapeUrl(url, params);
 console.log(scrapedData);
@@ -653,67 +647,12 @@ println!("Transformed Data: {:?}", result);
 </span>let url = "https://example.com";
 let screenshot = spider.screenshot(url, None, false, "application/json").await.expect("Failed to take screenshot of URL");
 <span class="boring">}</span></code></pre></pre>
-<h3 id="extracting-contact-information"><a class="header" href="#extracting-contact-information">Extracting Contact Information</a></h3>
-<p>Extract contact details from a specified URL:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let url = "https://example.com";
-let contacts = spider.extract_contacts(url, None, false, "application/json").await.expect("Failed to extract contacts from URL");
-println!("Extracted Contacts: {:?}", contacts);
-<span class="boring">}</span></code></pre></pre>
-<h3 id="checking-crawl-state"><a class="header" href="#checking-crawl-state">Checking Crawl State</a></h3>
-<p>You can check the crawl state of a specific URL:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let url = "https://example.com";
-let state = spider.get_crawl_state(url, None, false, "application/json").await.expect("Failed to get crawl state for URL");
-println!("Crawl State: {:?}", state);
-<span class="boring">}</span></code></pre></pre>
-<h3 id="downloading-files"><a class="header" href="#downloading-files">Downloading Files</a></h3>
-<p>You can download the results of the website:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let url = "https://example.com";
-let options = hashmap!{
-    "page" =&gt; 0,
-    "limit" =&gt; 100,
-    "expiresIn" =&gt; 3600 // Optional, add if needed
-};
-let response = spider.create_signed_url(Some(url), Some(options)).await.expect("Failed to create signed URL");
-println!("Download URL: {:?}", response);
-<span class="boring">}</span></code></pre></pre>
 <h3 id="checking-available-credits"><a class="header" href="#checking-available-credits">Checking Available Credits</a></h3>
 <p>You can check the remaining credits on your account:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let credits = spider.get_credits().await.expect("Failed to get credits");
 println!("Remaining Credits: {:?}", credits);
-<span class="boring">}</span></code></pre></pre>
-<h3 id="data-operations"><a class="header" href="#data-operations">Data Operations</a></h3>
-<p>The Spider client can now interact with specific data tables to create, retrieve, and delete data.</p>
-<h4 id="retrieve-data-from-a-table"><a class="header" href="#retrieve-data-from-a-table">Retrieve Data from a Table</a></h4>
-<p>To fetch data from a specified table by applying query parameters:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let table_name = "pages";
-let query_params = RequestParams {
-    limit: Some(20),
-    ..Default::default()
-};
-let response = spider.data_get(table_name, Some(query_params)).await.expect("Failed to retrieve data from table");
-println!("Data from table: {:?}", response);
-<span class="boring">}</span></code></pre></pre>
-<h4 id="delete-data-from-a-table"><a class="header" href="#delete-data-from-a-table">Delete Data from a Table</a></h4>
-<p>To delete data from a specified table based on certain conditions:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let table_name = "websites";
-let delete_params = RequestParams {
-    domain: Some("www.example.com".to_string()),
-    ..Default::default()
-};
-let response = spider.data_delete(table_name, Some(delete_params)).await.expect("Failed to delete data from table");
-println!("Delete Response: {:?}", response);
 <span class="boring">}</span></code></pre></pre>
 <h2 id="streaming"><a class="header" href="#streaming">Streaming</a></h2>
 <p>If you need to use streaming, set the <code>stream</code> parameter to <code>true</code> and provide a callback function:</p>
@@ -800,18 +739,6 @@ brew install spider-cloud-cli
 <h4 id="transform-1"><a class="header" href="#transform-1">Transform</a></h4>
 <p>Transform specified data.</p>
 <pre><code class="language-sh">spider-cloud-cli transform --data "sample data"
-</code></pre>
-<h4 id="extract-contacts"><a class="header" href="#extract-contacts">Extract Contacts</a></h4>
-<p>Extract contact information from a specified URL.</p>
-<pre><code class="language-sh">spider-cloud-cli extract_contacts --url http://example.com
-</code></pre>
-<h4 id="get-crawl-state"><a class="header" href="#get-crawl-state">Get Crawl State</a></h4>
-<p>Get the crawl state of a specified URL.</p>
-<pre><code class="language-sh">spider-cloud-cli get_crawl_state --url http://example.com
-</code></pre>
-<h4 id="query"><a class="header" href="#query">Query</a></h4>
-<p>Query records of a specified domain.</p>
-<pre><code class="language-sh">spider-cloud-cli query --domain example.com
 </code></pre>
 <h4 id="get-credits"><a class="header" href="#get-credits">Get Credits</a></h4>
 <p>Fetch the account credits left.</p>

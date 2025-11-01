@@ -211,7 +211,6 @@ const app = new Spider();
 const url = "https://spider.cloud";
 const scrapedData = await app.crawlUrl(url, {
   limit: 10,
-  anti_bot: true,
   return_format: "raw",
 });
 console.log(scrapedData);
@@ -224,7 +223,6 @@ const app = new Spider();
 const url = "https://spider.cloud";
 const params: SpiderParams = {
   return_format: ["raw", "markdown"],
-  anti_bot: true,
 };
 const scrapedData = await app.crawlUrl(url, params);
 console.log(scrapedData);

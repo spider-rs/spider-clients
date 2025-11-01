@@ -307,67 +307,12 @@ println!("Transformed Data: {:?}", result);
 </span>let url = "https://example.com";
 let screenshot = spider.screenshot(url, None, false, "application/json").await.expect("Failed to take screenshot of URL");
 <span class="boring">}</span></code></pre></pre>
-<h3 id="extracting-contact-information"><a class="header" href="#extracting-contact-information">Extracting Contact Information</a></h3>
-<p>Extract contact details from a specified URL:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let url = "https://example.com";
-let contacts = spider.extract_contacts(url, None, false, "application/json").await.expect("Failed to extract contacts from URL");
-println!("Extracted Contacts: {:?}", contacts);
-<span class="boring">}</span></code></pre></pre>
-<h3 id="checking-crawl-state"><a class="header" href="#checking-crawl-state">Checking Crawl State</a></h3>
-<p>You can check the crawl state of a specific URL:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let url = "https://example.com";
-let state = spider.get_crawl_state(url, None, false, "application/json").await.expect("Failed to get crawl state for URL");
-println!("Crawl State: {:?}", state);
-<span class="boring">}</span></code></pre></pre>
-<h3 id="downloading-files"><a class="header" href="#downloading-files">Downloading Files</a></h3>
-<p>You can download the results of the website:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let url = "https://example.com";
-let options = hashmap!{
-    "page" =&gt; 0,
-    "limit" =&gt; 100,
-    "expiresIn" =&gt; 3600 // Optional, add if needed
-};
-let response = spider.create_signed_url(Some(url), Some(options)).await.expect("Failed to create signed URL");
-println!("Download URL: {:?}", response);
-<span class="boring">}</span></code></pre></pre>
 <h3 id="checking-available-credits"><a class="header" href="#checking-available-credits">Checking Available Credits</a></h3>
 <p>You can check the remaining credits on your account:</p>
 <pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
 </span><span class="boring">fn main() {
 </span>let credits = spider.get_credits().await.expect("Failed to get credits");
 println!("Remaining Credits: {:?}", credits);
-<span class="boring">}</span></code></pre></pre>
-<h3 id="data-operations"><a class="header" href="#data-operations">Data Operations</a></h3>
-<p>The Spider client can now interact with specific data tables to create, retrieve, and delete data.</p>
-<h4 id="retrieve-data-from-a-table"><a class="header" href="#retrieve-data-from-a-table">Retrieve Data from a Table</a></h4>
-<p>To fetch data from a specified table by applying query parameters:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let table_name = "pages";
-let query_params = RequestParams {
-    limit: Some(20),
-    ..Default::default()
-};
-let response = spider.data_get(table_name, Some(query_params)).await.expect("Failed to retrieve data from table");
-println!("Data from table: {:?}", response);
-<span class="boring">}</span></code></pre></pre>
-<h4 id="delete-data-from-a-table"><a class="header" href="#delete-data-from-a-table">Delete Data from a Table</a></h4>
-<p>To delete data from a specified table based on certain conditions:</p>
-<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
-</span><span class="boring">fn main() {
-</span>let table_name = "websites";
-let delete_params = RequestParams {
-    domain: Some("www.example.com".to_string()),
-    ..Default::default()
-};
-let response = spider.data_delete(table_name, Some(delete_params)).await.expect("Failed to delete data from table");
-println!("Delete Response: {:?}", response);
 <span class="boring">}</span></code></pre></pre>
 <h2 id="streaming"><a class="header" href="#streaming">Streaming</a></h2>
 <p>If you need to use streaming, set the <code>stream</code> parameter to <code>true</code> and provide a callback function:</p>

@@ -201,7 +201,7 @@ console.log(scrapedData);
 <ul>
 <li><code>request</code> ("http", "chrome", "smart") : The type of request to make. Default is "http".</li>
 <li><code>return_format</code> ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".</li>
-<li><code>stealth</code>, <code>anti_bot</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=javascript-sdk-book">documentation</a>.</li>
+<li><code>stealth</code> and a ton of other parameters that you can find in the <a href="https://spider.cloud/docs/api?ref=javascript-sdk-book">documentation</a>.</li>
 </ul>
 <pre><code class="language-javascript">import { Spider } from "@spider-cloud/spider-client";
 
@@ -209,7 +209,6 @@ const app = new Spider();
 const url = "https://spider.cloud";
 const scrapedData = await app.scrapeUrl(url, {
   return_format: "raw",
-  anti_bot: true,
 });
 console.log(scrapedData);
 </code></pre>
@@ -220,8 +219,7 @@ import type { SpiderParams } from "@spider-cloud/spider-client/dist/config";
 const app = new Spider();
 const url = "https://spider.cloud";
 const params: SpiderParams = {
-  return_format: "raw",
-  anti_bot: true,
+  return_format: "raw"
 };
 const scrapedData = await app.scrapeUrl(url, params);
 console.log(scrapedData);
