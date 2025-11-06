@@ -231,42 +231,20 @@ pub enum ProxyType {
     /// Cost-effective entry-level residential pool.
     #[serde(rename = "residential")]
     Residential,
-    /// Higher-throughput residential pool for better performance.
-    #[serde(rename = "residential_fast")]
-    ResidentialFast,
-    /// Static residential IPs, rotated daily for session persistence.
-    #[serde(rename = "residential_static")]
-    ResidentialStatic,
     /// 4G / 5G mobile proxies for maximum stealth and evasion.
     #[serde(rename = "mobile")]
     Mobile,
     /// ISP-grade residential routing (alias: `datacenter`).
     #[serde(rename = "isp", alias = "datacenter")]
     #[default]
-    Isp,
-    /// Premium low-latency residential proxy pool.
-    #[serde(rename = "residential_premium")]
-    ResidentialPremium,
-    /// Core residential plan optimized for balance between cost and quality.
-    #[serde(rename = "residential_core")]
-    ResidentialCore,
-    /// Extended core residential pool with the largest, highest-quality IPs.
-    #[serde(rename = "residential_plus")]
-    ResidentialPlus,
+    Isp
 }
 
 /// List of proxies.
-pub const PROXY_TYPE_LIST: [ProxyType; 10] = [
-    ProxyType::ResidentialStatic,
+pub const PROXY_TYPE_LIST: [ProxyType; 3] = [
     ProxyType::Residential,
     ProxyType::Isp,
-    ProxyType::Mobile,
-    ProxyType::ResidentialPremium,
-    ProxyType::ResidentialPlus,
-    ProxyType::ResidentialCore,
-    ProxyType::ResidentialFast,
-    ProxyType::ResidentialStatic,
-    ProxyType::Residential,
+    ProxyType::Mobile
 ];
 
 impl ProxyType {
@@ -274,13 +252,8 @@ impl ProxyType {
     pub fn as_str(&self) -> &'static str {
         match self {
             ProxyType::Residential => "residential",
-            ProxyType::ResidentialFast => "residential_fast",
-            ProxyType::ResidentialStatic => "residential_static",
             ProxyType::Mobile => "mobile",
-            ProxyType::Isp => "isp",
-            ProxyType::ResidentialPremium => "residential_premium",
-            ProxyType::ResidentialCore => "residential_core",
-            ProxyType::ResidentialPlus => "residential_plus",
+            ProxyType::Isp => "isp"
         }
     }
 }

@@ -384,13 +384,8 @@ class RequestParamsDict(TypedDict, total=False):
     # Proxy pool selection for outbound request routing.
     # Choose a pool based on your use case (e.g., stealth, speed, or stability).
     # - 'residential'           → cost-effective entry-level residential pool
-    # - 'residential_fast'      → faster residential pool for higher throughput
-    # - 'residential_static'    → static residential IPs, rotated daily
     # - 'mobile'                → 4G/5G mobile proxies for maximum evasion
     # - 'isp'                   → ISP-grade residential (alias: 'datacenter')
-    # - 'residential_premium'   → low-latency premium IPs
-    # - 'residential_core'      → balanced plan (quality vs. cost)
-    # - 'residential_plus'      → largest and highest quality core pool
     proxy: Optional[Proxy]
 
     # Use a remote proxy at ~50% reduced cost for file downloads - bring your own proxy.

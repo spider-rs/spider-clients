@@ -8,20 +8,10 @@ use serde::{Serialize, Deserialize};
 pub enum ProxyType {
     /// Cost-effective entry-level residential pool.
     Residential,
-    /// Higher-throughput residential pool.
-    ResidentialFast,
-    /// Static residential IPs, rotated daily.
-    ResidentialStatic,
     /// 4G / 5G mobile proxies for stealth.
     Mobile,
     /// ISP-grade / datacenter-like routing.
-    Isp,
-    /// Premium low-latency residential pool.
-    ResidentialPremium,
-    /// Balanced plan (cost vs. quality).
-    ResidentialCore,
-    /// Largest, highest-quality IP pool.
-    ResidentialPlus,
+    Isp
 }
 
 #[derive(Parser, Debug)]
@@ -185,13 +175,8 @@ impl From<ProxyType> for spider_client::ProxyType {
     fn from(p: ProxyType) -> Self {
         match p {
            ProxyType::Residential => Self::Residential,
-           ProxyType::ResidentialFast => Self::ResidentialFast,
-           ProxyType::ResidentialStatic => Self::ResidentialStatic,
            ProxyType::Mobile => Self::Mobile,
-           ProxyType::Isp => Self::Isp,
-           ProxyType::ResidentialPremium => Self::ResidentialPremium,
-           ProxyType::ResidentialCore => Self::ResidentialCore,
-            ProxyType::ResidentialPlus => Self::ResidentialPlus,
+           ProxyType::Isp => Self::Isp
         }
     }
 }

@@ -3,7 +3,7 @@ use args::{Cli, Commands};
 use clap::Parser;
 use keyring::Entry;
 use serde_json::json;
-use spider_client::{QueryRequest, RequestParams, SearchRequestParams, Spider};
+use spider_client::{RequestParams, SearchRequestParams, Spider};
 use std::collections::HashMap;
 use tokio;
 
