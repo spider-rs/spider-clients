@@ -112,13 +112,17 @@ interface Delay {
 /**
  * Represents the wait_for configuration.
  * @typedef {Object} WaitFor
- * @property {IdleNetwork} [idle_network] - Configuration to wait for network to be idle.
+ * @property {IdleNetwork} [idle_network] - Configuration to wait for network to be idle between period.
+ * @property {IdleNetwork0} [idle_network] - Configuration to wait for network to be idle with max timeout.
+ * @property {AlmostIdleNetwork0} [idle_network] - Configuration to wait for network to almost idle with max timeout.
  * @property {Selector} [selector] - Configuration to wait for a CSS selector.
  * @property {Delay} [delay] - Configuration to wait for a delay.
  * @property {boolean} [page_navigations] - Whether to wait for page navigations.
  */
 export interface WaitForConfiguration {
   idle_network?: IdleNetwork;
+  idle_network0?: IdleNetwork;
+  almost_idle_network0?: IdleNetwork;
   selector?: Selector;
   dom?: Selector;
   delay?: Delay;
@@ -310,6 +314,32 @@ export type Proxy =
   | "mobile"
   | "isp";
 
+  export type LinkRewriteReplace = {
+  type: "replace";
+  /**
+   * Only apply when the link's host matches this value.
+   * Optional key; null means "no host filter".
+   */
+  host?: string | null;
+  find: string;
+  replace_with: string;
+};
+
+// Link rewrite regex.
+export type LinkRewriteRegex = {
+  type: "regex";
+  /**
+   * Only apply when the link's host matches this value.
+   * Optional key; null means "no host filter".
+   */
+  host?: string | null;
+  pattern: string;
+  replace_with: string;
+};
+
+// The link rewrite rule.
+export type LinkRewriteRule = LinkRewriteReplace | LinkRewriteRegex;
+
 /**
  * Represents the options available for making a spider request.
  */
@@ -423,6 +453,8 @@ export interface SpiderParams {
    * Use webhooks to send data.
    */
   webhooks?: WebhookSettings;
+
+  link_rewrite?: LinkRewriteRule
 
   /**
    * Specifies whether to use fingerprinting protection.

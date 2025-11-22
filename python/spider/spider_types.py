@@ -170,6 +170,8 @@ class DelayDict(TypedDict):
 
 class WaitForDict(TypedDict, total=False):
     idle_network: Optional[IdleNetworkDict]
+    idle_network0: Optional[IdleNetworkDict]
+    almost_idle_network0: Optional[IdleNetworkDict]
     selector: Optional[SelectorDict]
     dom: Optional[SelectorDict]
     delay: Optional[DelayDict]
@@ -217,6 +219,23 @@ class Proxy(str, Enum):
     residential_premium = "residential_premium"      # Low-latency premium pool
     residential_core = "residential_core"            # Balanced core plan
     residential_plus = "residential_plus"            # Extended core pool
+
+class LinkRewriteReplace(TypedDict):
+    type: Literal["replace"]
+    host: Optional[str]
+    find: str
+    replace_with: str
+
+
+class LinkRewriteRegex(TypedDict):
+    type: Literal["regex"]
+    host: Optional[str]
+    pattern: str
+    replace_with: str
+
+
+LinkRewriteRule = Union[LinkRewriteReplace, LinkRewriteRegex]
+
 
 class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
@@ -280,6 +299,9 @@ class RequestParamsDict(TypedDict, total=False):
 
     # The user agent string to be used for the request.
     user_agent: Optional[str]
+
+    # URL rewrite rule applied to every discovered link before it's crawled.
+    link_rewrite: Optional[LinkRewriteRule]
 
     # The two letter country code for the request geo-location.
     country_code: Optional[str]

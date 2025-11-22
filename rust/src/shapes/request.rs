@@ -132,6 +132,10 @@ fn default_some_true() -> Option<bool> {
 pub struct WaitFor {
     /// Wait until idle networks with a timeout of idleness.
     pub idle_network: Option<IdleNetwork>,
+    /// Wait until network to be idle with a max timeout.
+    pub idle_network0: Option<IdleNetwork>,
+    /// Wait until network to almost be idle with a max timeout.
+    pub almost_idle_network0: Option<IdleNetwork>,
     /// Wait until a selector exist. Can determine if a selector exist after executing all js and network events.
     pub selector: Option<Selector>,
     /// Wait for the dom to update
@@ -284,6 +288,30 @@ pub struct EventTracker {
     pub automation: Option<bool>,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(tag = "type")]
+pub enum LinkRewriteRule {
+    #[serde(rename = "replace")]
+    /// A string replacer.
+    Replace {
+        /// Only apply when the link's host matches this value.
+        #[serde(default)]
+        host: Option<String>,
+        find: String,
+        replace_with: String,
+    },
+
+    #[serde(rename = "regex")]
+    /// A regex replacer.
+    Regex {
+        /// Only apply when the link's host matches this value.
+        #[serde(default)]
+        host: Option<String>,
+        pattern: String,
+        replace_with: String,
+    },
+}
+
 /// Structure representing request parameters.
 #[derive(Debug, Default, Deserialize, Serialize, Clone)]
 pub struct RequestParams {
@@ -319,6 +347,9 @@ pub struct RequestParams {
     #[serde(default)]
     /// The blacklist routes to ignore. This can be a Regex string pattern.
     pub blacklist: Option<Vec<String>>,
+    #[serde(default)]
+    /// URL rewrite rule applied to every discovered link.
+    pub link_rewrite: Option<LinkRewriteRule>,
     #[serde(default)]
     /// The whitelist routes to only crawl. This can be a Regex string pattern and used with black_listing.
     pub whitelist: Option<Vec<String>>,
