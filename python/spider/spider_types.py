@@ -28,6 +28,37 @@ class ClickPoint:
     y: float = 0
 
 @dataclass
+class ClickHold:
+    type: Literal["ClickHold"] = "ClickHold"
+    selector: str = ""          # Rust: ClickHold { selector: String, hold_for_ms: u64 }
+    hold_for_ms: int = 0        # duration in ms
+
+@dataclass
+class ClickHoldPoint:
+    type: Literal["ClickHoldPoint"] = "ClickHoldPoint"
+    x: float = 0                # Rust: ClickHoldPoint { x: f64, y: f64, hold_for_ms: u64 }
+    y: float = 0
+    hold_for_ms: int = 0        # duration in ms
+
+@dataclass
+class ClickDrag:
+    type: Literal["ClickDrag"] = "ClickDrag"
+    # NOTE: Python can't use 'from'/'to' as field names; these map to Rust/TS `from` and `to`.
+    from_selector: str = ""     # maps to Rust: from (selector)
+    to_selector: str = ""       # maps to Rust: to (selector)
+    modifier: Optional[int] = None  # Rust: Option<i64>
+
+@dataclass
+class ClickDragPoint:
+    type: Literal["ClickDragPoint"] = "ClickDragPoint"
+    # Rust: ClickDragPoint { from_x, from_y, to_x, to_y, modifier: Option<i64> }
+    from_x: float = 0
+    from_y: float = 0
+    to_x: float = 0
+    to_y: float = 0
+    modifier: Optional[int] = None
+
+@dataclass
 class Wait:
     type: Literal["Wait"] = "Wait"
     ms: int = 0  # Rust: Wait(u64)
@@ -106,6 +137,10 @@ WebAutomation = Union[
     ClickAll,
     ClickAllClickable,
     ClickPoint,
+    ClickHold,
+    ClickHoldPoint,
+    ClickDrag,
+    ClickDragPoint,
     Wait,
     WaitForNavigation,
     WaitForDom,

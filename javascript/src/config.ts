@@ -181,8 +181,44 @@ export type ClickAll = {
 export type ClickAllClickable = {};
 
 export type ClickPoint = {
+  /** Rust: ClickPoint { x: f64, y: f64 } */
   x: number;
   y: number;
+};
+
+/** Rust: ClickHold { selector: String, hold_for_ms: u64 } */
+export type ClickHold = {
+  selector: string;
+  /** Duration to hold in milliseconds */
+  hold_for_ms: number;
+};
+
+/** Rust: ClickHoldPoint { x: f64, y: f64, hold_for_ms: u64 } */
+export type ClickHoldPoint = {
+  x: number;
+  y: number;
+  /** Duration to hold in milliseconds */
+  hold_for_ms: number;
+};
+
+/** Rust: ClickDrag { from: String, to: String, modifier: Option<i64> } */
+export type ClickDrag = {
+  /** CSS selector for the drag start element */
+  from: string;
+  /** CSS selector for the drag destination element */
+  to: string;
+  /** Optional keyboard modifier (e.g. Shift=8), maps to Option<i64> */
+  modifier?: number | null;
+};
+
+/** Rust: ClickDragPoint { from_x, from_y, to_x, to_y, modifier: Option<i64> } */
+export type ClickDragPoint = {
+  from_x: number;
+  from_y: number;
+  to_x: number;
+  to_y: number;
+  /** Optional keyboard modifier (e.g. Shift=8), maps to Option<i64> */
+  modifier?: number | null;
 };
 
 export type Wait = {
@@ -228,7 +264,6 @@ export type Fill = {
   value: string;
 };
 
-
 export type Type = {
   modifier: number;
   value: string;
@@ -255,6 +290,10 @@ export type WebAutomation =
   | ClickAll
   | ClickAllClickable
   | ClickPoint
+  | ClickHold
+  | ClickHoldPoint
+  | ClickDrag
+  | ClickDragPoint
   | Wait
   | WaitForNavigation
   | WaitForDom

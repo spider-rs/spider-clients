@@ -25,7 +25,6 @@ pub struct IdleNetwork {
     pub timeout: Timeout,
 }
 
-
 /// Represents various web automation actions.
 #[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum WebAutomation {
@@ -43,6 +42,44 @@ pub enum WebAutomation {
         x: f64,
         /// The vertical (Y) coordinate.
         y: f64,
+    },
+    /// Click and hold on an element found by selector for a duration in ms.
+    ClickHold {
+        /// The CSS selector to target.
+        selector: String,
+        /// Duration to hold in milliseconds.
+        hold_for_ms: u64,
+    },
+    /// Click and hold at a specific point for a duration in ms.
+    ClickHoldPoint {
+        /// The horizontal (X) coordinate.
+        x: f64,
+        /// The vertical (Y) coordinate.
+        y: f64,
+        /// Duration to hold in milliseconds.
+        hold_for_ms: u64,
+    },
+    /// Click-and-drag from one element to another (selector-based).
+    ClickDrag {
+        /// CSS selector for the start element.
+        from: String,
+        /// CSS selector for the destination element.
+        to: String,
+        /// Optional key modifier (Rust: Option<i64>).
+        modifier: Option<i64>,
+    },
+    /// Click-and-drag from one point to another.
+    ClickDragPoint {
+        /// Start X coordinate.
+        from_x: f64,
+        /// Start Y coordinate.
+        from_y: f64,
+        /// End X coordinate.
+        to_x: f64,
+        /// End Y coordinate.
+        to_y: f64,
+        /// Optional key modifier (Rust: Option<i64>).
+        modifier: Option<i64>,
     },
     Type { 
         /// The value to type.
