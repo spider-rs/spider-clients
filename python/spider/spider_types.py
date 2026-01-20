@@ -404,6 +404,11 @@ class RequestParamsDict(TypedDict, total=False):
     # The chunking algorithm to use.
     chunking_alg: Optional[ChunkingAlgDict]
 
+  
+    # Disables service-provided hints that add request optimizations to improve crawl outcomes,
+    # such as network blacklists, request-type selection, geo handling, and more.
+    disable_hints: Optional[bool]
+
     # Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
     disable_intercept: Optional[bool]
 

@@ -598,6 +598,12 @@ export interface SpiderParams {
   wait_for?: WaitForConfiguration;
 
   /**
+   * Disables service-provided hints that add request optimizations to improve crawl outcomes,
+   * such as network blacklists, request-type selection, geo handling, and more.
+   */
+  disable_hints?: boolean;
+
+  /**
    * Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
    */
   disable_intercept?: boolean;

@@ -481,6 +481,10 @@ pub struct RequestParams {
     /// Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
     pub disable_intercept: Option<bool>,
     #[serde(default)]
+    /// Disables service-provided hints that add request optimizations to improve crawl outcomes,
+    /// such as network blacklists, request-type selection, geo handling, and more.
+    pub disable_hints: Option<bool>,
+    #[serde(default)]
     /// The wait for events on the page. You need to make your `request` `chrome` or `smart`.
     pub wait_for: Option<WaitFor>,
     #[serde(default)]
