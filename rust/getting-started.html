@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "light";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-e99e62b0.js";
+            window.path_to_searchindex_js = "../searchindex-81a151ad.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-ae045a77.js"></script>
@@ -278,6 +278,13 @@ let crawl_params = RequestParams {
     ..Default::default()
 };
 let crawl_result = spider.search(query, Some(crawl_params), false, "application/json").await.expect("Failed to perform search");
+<span class="boring">}</span></code></pre>
+<h3 id="unblocking-a-url"><a class="header" href="#unblocking-a-url">Unblocking a URL</a></h3>
+<p>To unblock data from a single URL:</p>
+<pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>let url = "https://example.com";
+let scraped_data = spider.unblock_url(url, None, false, "application/json").await.expect("Failed to scrape the URL");
 <span class="boring">}</span></code></pre>
 <h3 id="retrieving-links-from-a-urls"><a class="header" href="#retrieving-links-from-a-urls">Retrieving Links from a URL(s)</a></h3>
 <p>Extract all links from a specified URL:</p>
