@@ -81,11 +81,11 @@ pub enum WebAutomation {
         /// Optional key modifier (Rust: Option<i64>).
         modifier: Option<i64>,
     },
-    Type { 
+    Type {
         /// The value to type.
         value: String,
         /// The click modifier.
-        modifier: Option<i64> 
+        modifier: Option<i64>,
     },
     /// Waits for a fixed duration in milliseconds.
     Wait(u64),
@@ -278,15 +278,12 @@ pub enum ProxyType {
     /// ISP-grade residential routing (alias: `datacenter`).
     #[serde(rename = "isp", alias = "datacenter")]
     #[default]
-    Isp
+    Isp,
 }
 
 /// List of proxies.
-pub const PROXY_TYPE_LIST: [ProxyType; 3] = [
-    ProxyType::Residential,
-    ProxyType::Isp,
-    ProxyType::Mobile
-];
+pub const PROXY_TYPE_LIST: [ProxyType; 3] =
+    [ProxyType::Residential, ProxyType::Isp, ProxyType::Mobile];
 
 impl ProxyType {
     /// Get the canonical string representation of the proxy type.
@@ -294,7 +291,7 @@ impl ProxyType {
         match self {
             ProxyType::Residential => "residential",
             ProxyType::Mobile => "mobile",
-            ProxyType::Isp => "isp"
+            ProxyType::Isp => "isp",
         }
     }
 }
@@ -524,7 +521,6 @@ pub struct RequestParams {
     pub max_credits_per_page: Option<f64>,
 }
 
-
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum TBS {
@@ -549,7 +545,7 @@ pub enum Engine {
     Brave,
     /// All
     #[default]
-    All
+    All,
 }
 
 /// The structure representing request parameters for a search request.
@@ -583,7 +579,7 @@ pub struct SearchRequestParams {
     /// Auto paginate pages ( up to 100 pages ).
     pub auto_pagination: Option<bool>,
     /// The search engine to use.
-    pub engine: Option<Engine>
+    pub engine: Option<Engine>,
 }
 
 /// Structure representing request parameters for transforming files.

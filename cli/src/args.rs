@@ -1,9 +1,7 @@
 use clap::{Parser, Subcommand, ValueEnum};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-#[derive(
-    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ValueEnum
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ValueEnum)]
 #[serde(rename_all = "snake_case")]
 pub enum ProxyType {
     /// Cost-effective entry-level residential pool.
@@ -11,7 +9,7 @@ pub enum ProxyType {
     /// 4G / 5G mobile proxies for stealth.
     Mobile,
     /// ISP-grade / datacenter-like routing.
-    Isp
+    Isp,
 }
 
 #[derive(Parser, Debug)]
@@ -36,9 +34,16 @@ pub enum Commands {
             required = false
         )]
         return_page_links: Option<bool>,
-        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        #[arg(
+            long,
+            help = "Select proxy pool (e.g. residential, mobile, isp)",
+            value_enum
+        )]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
+        #[arg(
+            long,
+            help = "Use a remote proxy at ~50% reduced cost for file downloads."
+        )]
         remote_proxy: Option<String>,
         #[arg(
             short,
@@ -59,9 +64,16 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
-        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        #[arg(
+            long,
+            help = "Select proxy pool (e.g. residential, mobile, isp)",
+            value_enum
+        )]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
+        #[arg(
+            long,
+            help = "Use a remote proxy at ~50% reduced cost for file downloads."
+        )]
         remote_proxy: Option<String>,
         #[arg(
             short,
@@ -89,9 +101,16 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
-        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        #[arg(
+            long,
+            help = "Select proxy pool (e.g. residential, mobile, isp)",
+            value_enum
+        )]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
+        #[arg(
+            long,
+            help = "Use a remote proxy at ~50% reduced cost for file downloads."
+        )]
         remote_proxy: Option<String>,
         #[arg(
             short,
@@ -119,9 +138,16 @@ pub enum Commands {
             required = false
         )]
         limit: Option<u32>,
-        #[arg(long, help = "Select proxy pool (e.g. residential, mobile, isp)", value_enum)]
+        #[arg(
+            long,
+            help = "Select proxy pool (e.g. residential, mobile, isp)",
+            value_enum
+        )]
         proxy: Option<ProxyType>,
-        #[arg(long, help = "Use a remote proxy at ~50% reduced cost for file downloads.")]
+        #[arg(
+            long,
+            help = "Use a remote proxy at ~50% reduced cost for file downloads."
+        )]
         remote_proxy: Option<String>,
         #[arg(
             short,
@@ -157,6 +183,29 @@ pub enum Commands {
         )]
         return_page_links: Option<bool>,
     },
+    /// Unblock a given URL
+    Unblocker {
+        #[arg(short, long, help = "The URL to unblock")]
+        url: String,
+        #[arg(
+            short,
+            long,
+            help = "Returns the link(s) found on the page that match the crawler query.",
+            required = false
+        )]
+        return_page_links: Option<bool>,
+        #[arg(
+            long,
+            help = "Select proxy pool (e.g. residential, mobile, isp)",
+            value_enum
+        )]
+        proxy: Option<ProxyType>,
+        #[arg(
+            long,
+            help = "Use a remote proxy at ~50% reduced cost for file downloads."
+        )]
+        remote_proxy: Option<String>,
+    },
     /// Transform the provided data
     Transform {
         #[arg(short, long, help = "The data to transform")]
@@ -174,9 +223,9 @@ pub enum Commands {
 impl From<ProxyType> for spider_client::ProxyType {
     fn from(p: ProxyType) -> Self {
         match p {
-           ProxyType::Residential => Self::Residential,
-           ProxyType::Mobile => Self::Mobile,
-           ProxyType::Isp => Self::Isp
+            ProxyType::Residential => Self::Residential,
+            ProxyType::Mobile => Self::Mobile,
+            ProxyType::Isp => Self::Isp,
         }
     }
 }

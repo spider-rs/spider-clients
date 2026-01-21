@@ -765,6 +765,10 @@ export enum ApiVersion {
 export enum APIRoutes {
   // Crawl a website to collect the contents. Can be one page or many.
   Crawl = "crawl",
+  // Scrape a website to collect the contents. Can be one page or many.
+  Scrape = "scrape",
+  // Unblock a website to collect the contents. Can be one page or many.
+  Unblocker = "unblocker",
   // Crawl a website to collect the links. Can be one page or many.
   Links = "links",
   // Crawl a website to collect screenshots. Can be one page or many.

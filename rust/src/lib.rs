@@ -67,10 +67,10 @@ use backon::Retryable;
 use reqwest::Client;
 use reqwest::{Error, Response};
 use serde::Serialize;
-use std::collections::HashMap;
-use tokio_stream::StreamExt;
 pub use shapes::{request::*, response::*};
+use std::collections::HashMap;
 use std::sync::OnceLock;
+use tokio_stream::StreamExt;
 
 static API_URL: OnceLock<String> = OnceLock::new();
 
@@ -440,9 +440,7 @@ impl Spider {
             );
         }
 
-        data.insert("limit".to_string(), serde_json::Value::Number(1.into()));
-
-        let res = self.api_post("crawl", data, content_type).await?;
+        let res = self.api_post("scrape", data, content_type).await?;
         parse_response(res).await
     }
 
@@ -465,16 +463,15 @@ impl Spider {
     ) -> Result<serde_json::Value, reqwest::Error> {
         let mut data = HashMap::new();
 
-if let Ok(mut params) = serde_json::to_value(params) {
-    if let Some(obj) = params.as_object_mut() {
-        obj.insert("limit".to_string(), serde_json::Value::Number(1.into()));
-        data.extend(obj.iter().map(|(k, v)| (k.clone(), v.clone())));
-    }
-}
-        let res = self.api_post("crawl", data, content_type).await?;
+        if let Ok(mut params) = serde_json::to_value(params) {
+            if let Some(obj) = params.as_object_mut() {
+                obj.insert("limit".to_string(), serde_json::Value::Number(1.into()));
+                data.extend(obj.iter().map(|(k, v)| (k.clone(), v.clone())));
+            }
+        }
+        let res = self.api_post("scrape", data, content_type).await?;
         parse_response(res).await
     }
-
 
     /// Crawls a URL.
     ///
@@ -567,7 +564,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
     ) -> Result<serde_json::Value, reqwest::Error> {
         use tokio_util::codec::{FramedRead, LinesCodec};
 
-
         let res = self.api_post("crawl", params, content_type).await?;
 
         if stream {
@@ -604,7 +600,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
         }
     }
 
-
     /// Fetches links from a URL.
     ///
     /// # Arguments
@@ -638,7 +633,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
         parse_response(res).await
     }
 
-
     /// Fetches links from a URLs.
     ///
     /// # Arguments
@@ -661,7 +655,6 @@ if let Ok(mut params) = serde_json::to_value(params) {
         parse_response(res).await
     }
 
-    
     /// Takes a screenshot of a URL.
     ///
     /// # Arguments
@@ -771,6 +764,72 @@ if let Ok(mut params) = serde_json::to_value(params) {
         content_type: &str,
     ) -> Result<serde_json::Value, reqwest::Error> {
         let res = self.api_post("search", params, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// Unblock a URL.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to scrape.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn unblock_url(
+        &self,
+        url: &str,
+        params: Option<RequestParams>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        if !url.is_empty() {
+            data.insert(
+                "url".to_string(),
+                serde_json::Value::String(url.to_string()),
+            );
+        }
+
+        let res = self.api_post("unblocker", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// Unblock multi URLs.
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to scrape.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn multi_unblock_url(
+        &self,
+        params: Option<Vec<RequestParams>>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(mut params) = serde_json::to_value(params) {
+            if let Some(obj) = params.as_object_mut() {
+                obj.insert("limit".to_string(), serde_json::Value::Number(1.into()));
+                data.extend(obj.iter().map(|(k, v)| (k.clone(), v.clone())));
+            }
+        }
+        let res = self.api_post("unblocker", data, content_type).await?;
         parse_response(res).await
     }
 

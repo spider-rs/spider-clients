@@ -36,12 +36,32 @@ async fn main() {
                             return_page_links,
                             lite_mode,
                             proxy,
-                            remote_proxy
+                            remote_proxy,
                         } => {
                             println!("Scraping URL: {}", url);
                             let mut params = RequestParams::default();
                             params.return_page_links = return_page_links;
                             params.lite_mode = lite_mode;
+                            params.proxy = proxy.map(Into::into);
+                            params.remote_proxy = remote_proxy.map(Into::into);
+
+                            match spider
+                                .scrape_url(&url, Some(params), "application/json")
+                                .await
+                            {
+                                Ok(data) => println!("{}", json!(data)),
+                                Err(e) => eprintln!("Error scraping URL: {:?}", e),
+                            }
+                        }
+                        Commands::Unblocker {
+                            url,
+                            return_page_links,
+                            proxy,
+                            remote_proxy,
+                        } => {
+                            println!("Unblocking URL: {}", url);
+                            let mut params = RequestParams::default();
+                            params.return_page_links = return_page_links;
                             params.proxy = proxy.map(Into::into);
                             params.remote_proxy = remote_proxy.map(Into::into);
 
@@ -59,7 +79,7 @@ async fn main() {
                             return_page_links,
                             lite_mode,
                             proxy,
-                            remote_proxy
+                            remote_proxy,
                         } => {
                             println!("Crawling URL: {}", url);
                             let mut params = RequestParams::default();
@@ -90,7 +110,7 @@ async fn main() {
                             limit,
                             lite_mode,
                             proxy,
-                            remote_proxy
+                            remote_proxy,
                         } => {
                             println!("Fetching links from URL: {}", url);
                             let mut params = RequestParams::default();
@@ -115,7 +135,7 @@ async fn main() {
                             return_page_links,
                             lite_mode,
                             proxy,
-                            remote_proxy
+                            remote_proxy,
                         } => {
                             let mut params = RequestParams::default();
                             if let Some(limit) = limit {

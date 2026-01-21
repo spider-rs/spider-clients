@@ -115,6 +115,16 @@ let crawl_params = RequestParams {
 let crawl_result = spider.search(query, Some(crawl_params), false, "application/json").await.expect("Failed to perform search");
 ```
 
+### Unblocking a URL
+
+To unblock data from a single URL:
+
+```rust
+let url = "https://example.com";
+let scraped_data = spider.unblock_url(url, None, false, "application/json").await.expect("Failed to scrape the URL");
+```
+
+
 ### Retrieving Links from a URL(s)
 
 Extract all links from a specified URL:

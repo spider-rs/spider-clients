@@ -236,6 +236,24 @@ class Spider:
             "transform", {"data": data, **(params or {})}, stream, content_type
         )
 
+    def unblock_url(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ):
+        """
+        Unblock data from the specified URL.
+
+        :param url: The URL from which to scrape data.
+        :param params: Optional dictionary of additional parameters for the scrape request.
+        :return: JSON response containing the scraping results.
+        """
+        return self.api_post(
+            "unblocker", {"url": url, "limit": 1, **(params or {})}, stream, content_type
+        )
+
     def get_credits(self):
         """
         Retrieve the account's remaining credits.
@@ -280,7 +298,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.84",
+            "User-Agent": f"Spider-Client/0.1.85",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

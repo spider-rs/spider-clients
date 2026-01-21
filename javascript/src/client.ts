@@ -184,6 +184,16 @@ export class Spider {
   }
 
   /**
+   * Unblock a challenging url to get data.
+   * @param {string} url - The URL to get data from.
+   * @param {GenericParams} [params={}] - Configuration parameters for the screenshot.
+   * @returns {Promise<any>} The screenshot data.
+   */
+  async unblocker(url: string, params: GenericParams = {}) {
+    return this._apiPost(APIRoutes.Unblocker, { url: url, ...params });
+  }
+
+  /**
    *  Perform a search and gather a list of websites to start crawling and collect resources.
    * @param {string} search - The search query.
    * @param {GenericParams} [params={}] - Configuration parameters for the search.
