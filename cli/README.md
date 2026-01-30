@@ -28,7 +28,7 @@ After installing, you can use the CLI by typing `spider-cloud-cli` followed by a
 Before using most of the commands, you need to authenticate by providing an API key:
 
 ```sh
-spider-cloud-cli auth --api_key YOUR_API_KEY
+spider-cloud-cli auth --api-key YOUR_API_KEY
 ```
 
 ### Commands
