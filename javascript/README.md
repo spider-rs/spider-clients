@@ -93,7 +93,36 @@ app.crawlUrl(url, crawlParams, stream, streamCallback);
 - **`links(url, params)`**: Retrieve all links from the specified URL with optional parameters.
 - **`screenshot(url, params)`**: Take a screenshot of the specified URL.
 - **`transform(data, params)`**: Perform a fast HTML transformation to markdown or text.
+- **`unblocker(url, params)`**: Unblock challenging websites with anti-bot bypass. Supports AI extraction with `custom_prompt`.
 - **`getCredits()`**: Retrieve account's remaining credits.
+
+### AI Studio Methods
+
+AI Studio methods require an active AI Studio subscription.
+
+- **`aiCrawl(url, prompt, params)`**: AI-guided crawling using natural language prompts.
+- **`aiScrape(url, prompt, params)`**: AI-guided scraping using natural language prompts.
+- **`aiSearch(prompt, params)`**: AI-enhanced web search using natural language queries.
+- **`aiBrowser(url, prompt, params)`**: AI-guided browser automation using natural language commands.
+- **`aiLinks(url, prompt, params)`**: AI-guided link extraction and filtering.
+
+```javascript
+// AI Scrape example
+const result = await app.aiScrape(
+  "https://example.com/products",
+  "Extract all product names, prices, and descriptions"
+);
+```
+
+### Unblocker with AI Extraction
+
+```javascript
+// Unblock and extract data using AI
+const result = await app.unblocker("https://protected-site.com/products", {
+  custom_prompt: "Extract all product names and prices as JSON"
+});
+// Extracted data is available in result[0].metadata.extracted_data
+```
 
 ## Error Handling
 

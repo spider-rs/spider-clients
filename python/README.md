@@ -133,6 +133,83 @@ You can check the remaining credits on your account:
 credits = app.get_credits()
 ```
 
+### Unblocker
+
+Access blocked or protected content with anti-bot bypass:
+
+```python
+url = 'https://protected-site.com'
+result = app.unblocker(url)
+```
+
+### Unblocker with AI Extraction
+
+Unblock and extract structured data using AI:
+
+```python
+url = 'https://protected-site.com/products'
+result = app.unblocker(url, params={
+    'custom_prompt': 'Extract all product names and prices as JSON'
+})
+# Extracted data is available in result[0]['metadata']['extracted_data']
+```
+
+## AI Studio Methods
+
+AI Studio methods require an active AI Studio subscription. See [spider.cloud/ai/pricing](https://spider.cloud/ai/pricing) for plans.
+
+### AI Crawl
+
+AI-guided crawling using natural language prompts:
+
+```python
+result = app.ai_crawl(
+    url='https://example.com',
+    prompt='Find all blog posts and extract titles and summaries'
+)
+```
+
+### AI Scrape
+
+AI-guided scraping using natural language prompts:
+
+```python
+result = app.ai_scrape(
+    url='https://example.com/products',
+    prompt='Extract all product names, prices, and descriptions'
+)
+```
+
+### AI Search
+
+AI-enhanced web search using natural language:
+
+```python
+result = app.ai_search(prompt='Find the best Python web scraping libraries')
+```
+
+### AI Browser
+
+AI-guided browser automation:
+
+```python
+result = app.ai_browser(
+    url='https://example.com/login',
+    prompt='Click the sign in button and fill the email field with test@example.com'
+)
+```
+
+### AI Links
+
+AI-guided link extraction and filtering:
+
+```python
+result = app.ai_links(
+    url='https://example.com',
+    prompt='Find all links to product pages and documentation'
+)
+```
+
 ## Streaming
 
 If you need to stream the request use the third param:
