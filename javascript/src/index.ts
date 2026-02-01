@@ -4,6 +4,7 @@ export {
   setBaseUrl,
   APISchema,
   AI_STUDIO_RATE_LIMITS,
+  AIStudioInfo,
   AIStudioSubscriptionRequired,
   AIStudioRateLimitExceeded,
 } from "./config";

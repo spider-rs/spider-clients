@@ -811,12 +811,35 @@ export interface AIRequestParams extends Omit<SpiderParams, "url"> {
 }
 
 /**
+ * AI Studio subscription info and URLs.
+ */
+export const AIStudioInfo = {
+  /** Base URL for AI Studio */
+  baseUrl: "https://aistudio.spider.cloud",
+  /** URL for pricing/subscription page */
+  pricingUrl: "https://aistudio.spider.cloud/pricing",
+  /** URL for AI Studio documentation */
+  docsUrl: "https://aistudio.spider.cloud/docs",
+  /** Available subscription tiers */
+  tiers: {
+    starter: { price: 6, credits: 30000, rateLimit: 1 },
+    lite: { price: 30, credits: 150000, rateLimit: 5 },
+    standard: { price: 125, credits: 600000, rateLimit: 10 },
+    custom: { price: 600, credits: 3000000, rateLimit: 25 },
+  },
+} as const;
+
+/**
  * Error thrown when AI Studio subscription is required but not active.
  */
 export class AIStudioSubscriptionRequired extends Error {
-  constructor(message = "AI Studio subscription required. Visit https://aistudio.spider.cloud/pricing to subscribe.") {
-    super(message);
+  /** URL to subscribe to AI Studio */
+  subscribeUrl: string;
+
+  constructor(message = "AI Studio subscription required to use /ai/* endpoints.") {
+    super(`${message}\n\nSubscribe at: ${AIStudioInfo.pricingUrl}\n\nPlans start at $${AIStudioInfo.tiers.starter.price}/month with ${AIStudioInfo.tiers.starter.credits.toLocaleString()} credits.`);
     this.name = "AIStudioSubscriptionRequired";
+    this.subscribeUrl = AIStudioInfo.pricingUrl;
   }
 }
 
@@ -825,11 +848,17 @@ export class AIStudioSubscriptionRequired extends Error {
  */
 export class AIStudioRateLimitExceeded extends Error {
   retryAfterMs: number;
+  /** URL to upgrade subscription for higher rate limits */
+  upgradeUrl: string;
 
-  constructor(retryAfterMs: number) {
-    super(`AI Studio rate limit exceeded. Retry after ${retryAfterMs}ms.`);
+  constructor(retryAfterMs: number, currentTier?: AIStudioTier) {
+    const upgradeHint = currentTier && currentTier !== "custom"
+      ? `\n\nUpgrade your plan for higher rate limits: ${AIStudioInfo.pricingUrl}`
+      : "";
+    super(`AI Studio rate limit exceeded. Retry after ${retryAfterMs}ms.${upgradeHint}`);
     this.name = "AIStudioRateLimitExceeded";
     this.retryAfterMs = retryAfterMs;
+    this.upgradeUrl = AIStudioInfo.pricingUrl;
   }
 }
 

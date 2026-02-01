@@ -9,25 +9,18 @@ from spider.spider_types import (
 )
 
 
-class AIStudioSubscriptionRequired(Exception):
-    """Raised when AI Studio subscription is required but not active."""
+# AI Studio URLs and info
+AI_STUDIO_BASE_URL = "https://aistudio.spider.cloud"
+AI_STUDIO_PRICING_URL = "https://aistudio.spider.cloud/pricing"
+AI_STUDIO_DOCS_URL = "https://aistudio.spider.cloud/docs"
 
-    def __init__(
-        self,
-        message="AI Studio subscription required. Visit https://aistudio.spider.cloud/pricing to subscribe.",
-    ):
-        self.message = message
-        super().__init__(self.message)
-
-
-class AIStudioRateLimitExceeded(Exception):
-    """Raised when AI Studio rate limit is exceeded."""
-
-    def __init__(self, retry_after_ms: int):
-        self.retry_after_ms = retry_after_ms
-        self.message = f"AI Studio rate limit exceeded. Retry after {retry_after_ms}ms."
-        super().__init__(self.message)
-
+# AI Studio tier info: (price, credits, rate_limit)
+AI_STUDIO_TIERS = {
+    "starter": {"price": 6, "credits": 30000, "rate_limit": 1},
+    "lite": {"price": 30, "credits": 150000, "rate_limit": 5},
+    "standard": {"price": 125, "credits": 600000, "rate_limit": 10},
+    "custom": {"price": 600, "credits": 3000000, "rate_limit": 25},
+}
 
 # AI Studio tier rate limits (requests per second)
 AI_STUDIO_RATE_LIMITS = {
@@ -36,6 +29,36 @@ AI_STUDIO_RATE_LIMITS = {
     "standard": 10,
     "custom": 25,
 }
+
+
+class AIStudioSubscriptionRequired(Exception):
+    """Raised when AI Studio subscription is required but not active."""
+
+    subscribe_url = AI_STUDIO_PRICING_URL
+
+    def __init__(self, message: str = None):
+        starter = AI_STUDIO_TIERS["starter"]
+        default_msg = (
+            f"AI Studio subscription required to use /ai/* endpoints.\n\n"
+            f"Subscribe at: {AI_STUDIO_PRICING_URL}\n\n"
+            f"Plans start at ${starter['price']}/month with {starter['credits']:,} credits."
+        )
+        self.message = message or default_msg
+        super().__init__(self.message)
+
+
+class AIStudioRateLimitExceeded(Exception):
+    """Raised when AI Studio rate limit is exceeded."""
+
+    upgrade_url = AI_STUDIO_PRICING_URL
+
+    def __init__(self, retry_after_ms: int, current_tier: str = None):
+        self.retry_after_ms = retry_after_ms
+        upgrade_hint = ""
+        if current_tier and current_tier != "custom":
+            upgrade_hint = f"\n\nUpgrade your plan for higher rate limits: {AI_STUDIO_PRICING_URL}"
+        self.message = f"AI Studio rate limit exceeded. Retry after {retry_after_ms}ms.{upgrade_hint}"
+        super().__init__(self.message)
 
 
 class RateLimiter:
