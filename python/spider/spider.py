@@ -1,4 +1,4 @@
-import os, requests, logging, ijson, tenacity
+import os, requests, logging, ijson, tenacity, time
 from typing import Optional, Dict
 from spider.spider_types import (
     RequestParamsDict,
@@ -9,17 +9,91 @@ from spider.spider_types import (
 )
 
 
+class AIStudioSubscriptionRequired(Exception):
+    """Raised when AI Studio subscription is required but not active."""
+
+    def __init__(
+        self,
+        message="AI Studio subscription required. Visit https://aistudio.spider.cloud/pricing to subscribe.",
+    ):
+        self.message = message
+        super().__init__(self.message)
+
+
+class AIStudioRateLimitExceeded(Exception):
+    """Raised when AI Studio rate limit is exceeded."""
+
+    def __init__(self, retry_after_ms: int):
+        self.retry_after_ms = retry_after_ms
+        self.message = f"AI Studio rate limit exceeded. Retry after {retry_after_ms}ms."
+        super().__init__(self.message)
+
+
+# AI Studio tier rate limits (requests per second)
+AI_STUDIO_RATE_LIMITS = {
+    "starter": 1,
+    "lite": 5,
+    "standard": 10,
+    "custom": 25,
+}
+
+
+class RateLimiter:
+    """Simple client-side rate limiter using sliding window."""
+
+    def __init__(self, requests_per_second: int):
+        self.max_requests = requests_per_second
+        self.window_ms = 1000
+        self.timestamps: list = []
+
+    def set_limit(self, requests_per_second: int):
+        """Update the rate limit."""
+        self.max_requests = requests_per_second
+
+    def acquire(self):
+        """Wait until a request can be made, then acquire the slot."""
+        while True:
+            now = int(time.time() * 1000)
+            # Remove timestamps outside the window
+            self.timestamps = [t for t in self.timestamps if now - t < self.window_ms]
+
+            if len(self.timestamps) < self.max_requests:
+                self.timestamps.append(now)
+                return
+
+            # Calculate wait time
+            oldest = self.timestamps[0]
+            wait_time = (self.window_ms - (now - oldest)) / 1000.0
+            if wait_time > 0:
+                time.sleep(wait_time)
+
+
 class Spider:
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: Optional[str] = None, ai_studio_tier: str = "starter"):
         """
         Initialize the Spider with an API key.
 
         :param api_key: A string of the API key for Spider. Defaults to the SPIDER_API_KEY environment variable.
+        :param ai_studio_tier: AI Studio subscription tier for rate limiting. Options: starter, lite, standard, custom.
         :raises ValueError: If no API key is provided.
         """
         self.api_key = api_key or os.getenv("SPIDER_API_KEY")
         if self.api_key is None:
             raise ValueError("No API key provided")
+
+        self.ai_studio_tier = ai_studio_tier
+        self._ai_rate_limiter = RateLimiter(
+            AI_STUDIO_RATE_LIMITS.get(ai_studio_tier, 1)
+        )
+
+    def set_ai_studio_tier(self, tier: str):
+        """
+        Update the AI Studio subscription tier (adjusts rate limiting).
+
+        :param tier: The subscription tier (starter, lite, standard, custom).
+        """
+        self.ai_studio_tier = tier
+        self._ai_rate_limiter.set_limit(AI_STUDIO_RATE_LIMITS.get(tier, 1))
 
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
@@ -309,6 +383,134 @@ class Spider:
 
     def _delete_request(self, url: str, headers, json=None, stream=False):
         return requests.delete(url, headers=headers, json=json, stream=stream)
+
+    def _ai_api_post(self, endpoint: str, data: dict):
+        """
+        Internal method for AI Studio POST requests with rate limiting.
+
+        :param endpoint: The AI Studio endpoint.
+        :param data: Request data including prompt.
+        :return: JSON response.
+        :raises AIStudioSubscriptionRequired: When subscription is not active.
+        :raises AIStudioRateLimitExceeded: When rate limit is exceeded.
+        """
+        # Apply client-side rate limiting
+        self._ai_rate_limiter.acquire()
+
+        headers = self._prepare_headers()
+        response = requests.post(
+            f"https://api.spider.cloud/{endpoint}", headers=headers, json=data
+        )
+
+        if 200 <= response.status_code < 300:
+            return response.json()
+
+        # Handle AI Studio specific errors
+        if response.status_code == 402:
+            raise AIStudioSubscriptionRequired()
+
+        if response.status_code == 429:
+            retry_after = response.headers.get("Retry-After", "1")
+            retry_after_ms = int(retry_after) * 1000
+            raise AIStudioRateLimitExceeded(retry_after_ms)
+
+        self._handle_error(response, f"AI request to {endpoint}")
+
+    def ai_crawl(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ):
+        """
+        AI-guided crawling using natural language prompts.
+        Requires an active AI Studio subscription.
+
+        :param url: The URL to start crawling.
+        :param prompt: Natural language instruction for what to crawl and extract.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with crawl results.
+        :raises AIStudioSubscriptionRequired: When subscription is not active.
+        """
+        return self._ai_api_post(
+            "ai/crawl", {"url": url, "prompt": prompt, **(params or {})}
+        )
+
+    def ai_scrape(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ):
+        """
+        AI-guided scraping using natural language prompts.
+        Requires an active AI Studio subscription.
+
+        :param url: The URL to scrape.
+        :param prompt: Natural language description of data to extract.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with scraped data.
+        :raises AIStudioSubscriptionRequired: When subscription is not active.
+        """
+        return self._ai_api_post(
+            "ai/scrape", {"url": url, "prompt": prompt, **(params or {})}
+        )
+
+    def ai_search(
+        self,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ):
+        """
+        AI-enhanced web search using natural language queries.
+        Requires an active AI Studio subscription.
+
+        :param prompt: Natural language search query.
+        :param params: Optional search parameters.
+        :return: JSON response with search results.
+        :raises AIStudioSubscriptionRequired: When subscription is not active.
+        """
+        return self._ai_api_post("ai/search", {"prompt": prompt, **(params or {})})
+
+    def ai_browser(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ):
+        """
+        AI-guided browser automation using natural language commands.
+        Requires an active AI Studio subscription.
+
+        :param url: The URL to automate.
+        :param prompt: Natural language description of browser actions.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with automation results.
+        :raises AIStudioSubscriptionRequired: When subscription is not active.
+        """
+        return self._ai_api_post(
+            "ai/browser", {"url": url, "prompt": prompt, **(params or {})}
+        )
+
+    def ai_links(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ):
+        """
+        AI-guided link extraction and filtering.
+        Requires an active AI Studio subscription.
+
+        :param url: The URL to extract links from.
+        :param prompt: Natural language description of what links to find.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with filtered links.
+        :raises AIStudioSubscriptionRequired: When subscription is not active.
+        """
+        return self._ai_api_post(
+            "ai/links", {"url": url, "prompt": prompt, **(params or {})}
+        )
 
     def _handle_error(self, response, action):
         if response.status_code in [402, 409, 500]:

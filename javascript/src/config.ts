@@ -781,6 +781,56 @@ export enum APIRoutes {
   Data = "data",
   // Get the credits remaining for an account.
   DataCredits = "data/credits",
+  // AI Studio endpoints (requires AI Studio subscription)
+  AICrawl = "ai/crawl",
+  AIScrape = "ai/scrape",
+  AISearch = "ai/search",
+  AIBrowser = "ai/browser",
+  AILinks = "ai/links",
+}
+
+/**
+ * AI Studio subscription tiers with their rate limits (requests per second).
+ */
+export const AI_STUDIO_RATE_LIMITS = {
+  starter: 1,
+  lite: 5,
+  standard: 10,
+  custom: 25,
+} as const;
+
+export type AIStudioTier = keyof typeof AI_STUDIO_RATE_LIMITS;
+
+/**
+ * Parameters for AI Studio endpoints.
+ * All AI endpoints require a 'prompt' parameter for natural language instructions.
+ */
+export interface AIRequestParams extends Omit<SpiderParams, "url"> {
+  /** Natural language instruction for AI-guided extraction */
+  prompt: string;
+}
+
+/**
+ * Error thrown when AI Studio subscription is required but not active.
+ */
+export class AIStudioSubscriptionRequired extends Error {
+  constructor(message = "AI Studio subscription required. Visit https://aistudio.spider.cloud/pricing to subscribe.") {
+    super(message);
+    this.name = "AIStudioSubscriptionRequired";
+  }
+}
+
+/**
+ * Error thrown when AI Studio rate limit is exceeded.
+ */
+export class AIStudioRateLimitExceeded extends Error {
+  retryAfterMs: number;
+
+  constructor(retryAfterMs: number) {
+    super(`AI Studio rate limit exceeded. Retry after ${retryAfterMs}ms.`);
+    this.name = "AIStudioRateLimitExceeded";
+    this.retryAfterMs = retryAfterMs;
+  }
 }
 
 // The base API target info for Spider Cloud.

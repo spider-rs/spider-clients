@@ -8,10 +8,68 @@ import {
   APIRoutes,
   ApiVersion,
   RequestParamsTransform,
+  AIRequestParams,
+  AIStudioTier,
+  AI_STUDIO_RATE_LIMITS,
+  AIStudioSubscriptionRequired,
+  AIStudioRateLimitExceeded,
 } from "./config";
 import { version } from "../package.json";
 import { streamReader } from "./utils/stream-reader";
 import { backOff } from "exponential-backoff";
+
+/**
+ * Simple client-side rate limiter for AI Studio endpoints.
+ * Uses a sliding window approach to limit requests per second.
+ */
+class RateLimiter {
+  private timestamps: number[] = [];
+  private maxRequests: number;
+  private windowMs: number;
+
+  constructor(requestsPerSecond: number) {
+    this.maxRequests = requestsPerSecond;
+    this.windowMs = 1000;
+  }
+
+  /**
+   * Update the rate limit (e.g., when user tier changes).
+   */
+  setLimit(requestsPerSecond: number) {
+    this.maxRequests = requestsPerSecond;
+  }
+
+  /**
+   * Check if a request can be made. If not, returns the ms to wait.
+   * If yes, records the request and returns 0.
+   */
+  tryAcquire(): number {
+    const now = Date.now();
+    // Remove timestamps outside the window
+    this.timestamps = this.timestamps.filter((t) => now - t < this.windowMs);
+
+    if (this.timestamps.length >= this.maxRequests) {
+      // Calculate how long to wait
+      const oldestInWindow = this.timestamps[0];
+      const waitTime = this.windowMs - (now - oldestInWindow);
+      return Math.max(1, waitTime);
+    }
+
+    this.timestamps.push(now);
+    return 0;
+  }
+
+  /**
+   * Wait until a request can be made, then acquire the slot.
+   */
+  async acquire(): Promise<void> {
+    const waitTime = this.tryAcquire();
+    if (waitTime > 0) {
+      await new Promise((resolve) => setTimeout(resolve, waitTime));
+      return this.acquire();
+    }
+  }
+}
 
 /**
  * Generic params for core request.
@@ -30,18 +88,34 @@ export interface SpiderConfig {
  */
 export class Spider {
   private apiKey?: string;
+  private aiRateLimiter: RateLimiter;
+  private aiStudioTier: AIStudioTier;
 
   /**
    * Create an instance of Spider.
    * @param {string | null} apiKey - The API key used to authenticate to the Spider API. If null, attempts to source from environment variables.
+   * @param {AIStudioTier} aiStudioTier - The AI Studio subscription tier for rate limiting. Defaults to 'starter'.
    * @throws Will throw an error if the API key is not provided.
    */
-  constructor(props?: SpiderConfig) {
+  constructor(props?: SpiderConfig & { aiStudioTier?: AIStudioTier }) {
     this.apiKey = props?.apiKey || process?.env?.SPIDER_API_KEY;
+    this.aiStudioTier = props?.aiStudioTier || "starter";
+    this.aiRateLimiter = new RateLimiter(
+      AI_STUDIO_RATE_LIMITS[this.aiStudioTier]
+    );
 
     if (!this.apiKey) {
       throw new Error("No API key provided");
     }
+  }
+
+  /**
+   * Update the AI Studio subscription tier (adjusts rate limiting).
+   * @param {AIStudioTier} tier - The new subscription tier.
+   */
+  setAIStudioTier(tier: AIStudioTier) {
+    this.aiStudioTier = tier;
+    this.aiRateLimiter.setLimit(AI_STUDIO_RATE_LIMITS[tier]);
   }
 
   /**
@@ -264,6 +338,139 @@ export class Spider {
       ...this.prepareHeaders,
       "Content-Type": "application/jsonl",
     };
+  }
+
+  /**
+   * Internal method to handle AI Studio POST requests with rate limiting.
+   * @param {string} endpoint - The AI Studio endpoint.
+   * @param {Record<string, any>} data - The request data including prompt.
+   * @returns {Promise<any>} The response data.
+   * @throws {AIStudioSubscriptionRequired} When subscription is not active.
+   * @throws {AIStudioRateLimitExceeded} When rate limit is exceeded server-side.
+   */
+  private async _aiApiPost(
+    endpoint: string,
+    data: Record<string, any>
+  ): Promise<any> {
+    // Apply client-side rate limiting
+    await this.aiRateLimiter.acquire();
+
+    const headers = this.prepareHeaders;
+    const response = await backOff(
+      () =>
+        fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(data),
+        }),
+      {
+        numOfAttempts: 3,
+        retry: (e, attemptNumber) => {
+          // Don't retry on subscription or rate limit errors
+          return attemptNumber < 3;
+        },
+      }
+    );
+
+    if (response.ok) {
+      return response.json();
+    }
+
+    // Handle AI Studio specific errors
+    if (response.status === 402) {
+      throw new AIStudioSubscriptionRequired();
+    }
+
+    if (response.status === 429) {
+      const retryAfter = response.headers.get("Retry-After");
+      const retryAfterMs = retryAfter ? parseInt(retryAfter) * 1000 : 1000;
+      throw new AIStudioRateLimitExceeded(retryAfterMs);
+    }
+
+    this.handleError(response, `AI request to ${endpoint}`);
+  }
+
+  /**
+   * AI-guided crawling using natural language prompts.
+   * Requires an active AI Studio subscription.
+   * @param {string} url - The URL to start crawling.
+   * @param {string} prompt - Natural language instruction for what to crawl and extract.
+   * @param {AIRequestParams} [params={}] - Additional parameters for the crawl.
+   * @returns {Promise<any>} The crawl results guided by the AI prompt.
+   * @throws {AIStudioSubscriptionRequired} When subscription is not active.
+   */
+  async aiCrawl(
+    url: string,
+    prompt: string,
+    params: Omit<AIRequestParams, "prompt"> = {}
+  ): Promise<any> {
+    return this._aiApiPost(APIRoutes.AICrawl, { url, prompt, ...params });
+  }
+
+  /**
+   * AI-guided scraping using natural language prompts.
+   * Requires an active AI Studio subscription.
+   * @param {string} url - The URL to scrape.
+   * @param {string} prompt - Natural language description of data to extract.
+   * @param {AIRequestParams} [params={}] - Additional parameters for the scrape.
+   * @returns {Promise<any>} The scraped data guided by the AI prompt.
+   * @throws {AIStudioSubscriptionRequired} When subscription is not active.
+   */
+  async aiScrape(
+    url: string,
+    prompt: string,
+    params: Omit<AIRequestParams, "prompt"> = {}
+  ): Promise<any> {
+    return this._aiApiPost(APIRoutes.AIScrape, { url, prompt, ...params });
+  }
+
+  /**
+   * AI-enhanced web search using natural language queries.
+   * Requires an active AI Studio subscription.
+   * @param {string} prompt - Natural language search query.
+   * @param {SearchRequestParams} [params={}] - Additional search parameters.
+   * @returns {Promise<any>} The search results with AI-enhanced relevance.
+   * @throws {AIStudioSubscriptionRequired} When subscription is not active.
+   */
+  async aiSearch(
+    prompt: string,
+    params: SearchRequestParams = {}
+  ): Promise<any> {
+    return this._aiApiPost(APIRoutes.AISearch, { prompt, ...params });
+  }
+
+  /**
+   * AI-guided browser automation using natural language commands.
+   * Requires an active AI Studio subscription.
+   * @param {string} url - The URL to automate.
+   * @param {string} prompt - Natural language description of browser actions.
+   * @param {AIRequestParams} [params={}] - Additional parameters for automation.
+   * @returns {Promise<any>} The automation results.
+   * @throws {AIStudioSubscriptionRequired} When subscription is not active.
+   */
+  async aiBrowser(
+    url: string,
+    prompt: string,
+    params: Omit<AIRequestParams, "prompt"> = {}
+  ): Promise<any> {
+    return this._aiApiPost(APIRoutes.AIBrowser, { url, prompt, ...params });
+  }
+
+  /**
+   * AI-guided link extraction and filtering.
+   * Requires an active AI Studio subscription.
+   * @param {string} url - The URL to extract links from.
+   * @param {string} prompt - Natural language description of what links to find.
+   * @param {AIRequestParams} [params={}] - Additional parameters.
+   * @returns {Promise<any>} The filtered links based on AI analysis.
+   * @throws {AIStudioSubscriptionRequired} When subscription is not active.
+   */
+  async aiLinks(
+    url: string,
+    prompt: string,
+    params: Omit<AIRequestParams, "prompt"> = {}
+  ): Promise<any> {
+    return this._aiApiPost(APIRoutes.AILinks, { url, prompt, ...params });
   }
 
   /**
