@@ -124,6 +124,37 @@ const result = await app.unblocker("https://protected-site.com/products", {
 // Extracted data is available in result[0].metadata.extracted_data
 ```
 
+### Unblocker with JSON Schema Extraction
+
+Use JSON Schema for structured, validated extraction output:
+
+```javascript
+const result = await app.unblocker("https://protected-site.com/products", {
+  extraction_schema: {
+    name: "products",
+    description: "Product listing extraction",
+    schema: JSON.stringify({
+      type: "object",
+      properties: {
+        products: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              name: { type: "string" },
+              price: { type: "number" }
+            },
+            required: ["name", "price"]
+          }
+        }
+      }
+    }),
+    strict: true
+  }
+});
+// Extracted data conforms to the schema in result[0].metadata.extracted_data
+```
+
 ## Error Handling
 
 The SDK provides robust error handling and will throw exceptions when it encounters critical issues. Always use `.catch()` on promises to handle these errors gracefully.

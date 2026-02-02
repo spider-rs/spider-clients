@@ -154,6 +154,38 @@ result = app.unblocker(url, params={
 # Extracted data is available in result[0]['metadata']['extracted_data']
 ```
 
+### Unblocker with JSON Schema Extraction
+
+Use JSON Schema for structured, validated extraction output:
+
+```python
+url = 'https://protected-site.com/products'
+result = app.unblocker(url, params={
+    'extraction_schema': {
+        'name': 'products',
+        'description': 'Product listing extraction',
+        'schema': '''{
+            "type": "object",
+            "properties": {
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "name": {"type": "string"},
+                            "price": {"type": "number"}
+                        },
+                        "required": ["name", "price"]
+                    }
+                }
+            }
+        }''',
+        'strict': True
+    }
+})
+# Extracted data conforms to the schema in result[0]['metadata']['extracted_data']
+```
+
 ## AI Studio Methods
 
 AI Studio methods require an active AI Studio subscription. See [spider.cloud/ai/pricing](https://spider.cloud/ai/pricing) for plans.
