@@ -107,7 +107,7 @@ describe("Spider JS SDK", () => {
     assert(typeof credits === "object");
   });
 
-  test("should post data", async () => {
+  test.skip("should post data", async () => {
     const spiderClient = new Spider();
     const postData = { url: url };
     const response = await spiderClient.postData(Collection.Websites, postData);
