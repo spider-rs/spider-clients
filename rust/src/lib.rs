@@ -212,6 +212,7 @@ impl Spider {
             Some(key) => Ok(Self {
                 api_key: key,
                 client: Client::new(),
+                rate_limit: RateLimitInfo::default(),
             }),
             None => Err("No API key provided"),
         }
@@ -234,6 +235,7 @@ impl Spider {
             Some(key) => Ok(Self {
                 api_key: key,
                 client,
+                rate_limit: RateLimitInfo::default(),
             }),
             None => Err("No API key provided"),
         }
