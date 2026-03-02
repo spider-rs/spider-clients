@@ -19,6 +19,18 @@ import { streamReader } from "./utils/stream-reader";
 import { backOff } from "exponential-backoff";
 
 /**
+ * Rate limit state from API response headers.
+ */
+export interface RateLimitInfo {
+  /** Maximum requests allowed per minute. */
+  limit: number;
+  /** Requests remaining in the current window. */
+  remaining: number;
+  /** Seconds until the rate limit window resets. */
+  resetSeconds: number;
+}
+
+/**
  * Simple client-side rate limiter for AI Studio endpoints.
  * Uses a sliding window approach to limit requests per second.
  */
@@ -91,6 +103,9 @@ export class Spider {
   private aiRateLimiter: RateLimiter;
   private aiStudioTier: AIStudioTier;
 
+  /** The latest rate limit state from API response headers. */
+  public rateLimit: RateLimitInfo = { limit: 0, remaining: 0, resetSeconds: 0 };
+
   /**
    * Create an instance of Spider.
    * @param {string | null} apiKey - The API key used to authenticate to the Spider API. If null, attempts to source from environment variables.
@@ -119,6 +134,18 @@ export class Spider {
   }
 
   /**
+   * Update rate limit state from response headers.
+   */
+  private _updateRateLimit(headers: Headers) {
+    const limit = headers.get("RateLimit-Limit");
+    const remaining = headers.get("RateLimit-Remaining");
+    const reset = headers.get("RateLimit-Reset");
+    if (limit) this.rateLimit.limit = Number(limit);
+    if (remaining) this.rateLimit.remaining = Number(remaining);
+    if (reset) this.rateLimit.resetSeconds = Number(reset);
+  }
+
+  /**
    * Internal method to handle POST requests.
    * @param {string} endpoint - The API endpoint to which the POST request should be sent.
    * @param {Record<string, any>} data - The JSON data to be sent in the request body.
@@ -133,12 +160,28 @@ export class Spider {
   ) {
     const headers = jsonl ? this.prepareHeadersJsonL : this.prepareHeaders;
     const response = await backOff(
-      () =>
-        fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
-          method: "POST",
-          headers: headers,
-          body: JSON.stringify(data),
-        }),
+      async () => {
+        const res = await fetch(
+          `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+          {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(data),
+          }
+        );
+
+        this._updateRateLimit(res.headers);
+
+        if (res.status === 429) {
+          const retryAfter = Number(res.headers.get("Retry-After") || "1");
+          await new Promise((r) => setTimeout(r, retryAfter * 1000));
+          throw new Error(
+            `Rate limited on ${endpoint}. Retrying after ${retryAfter}s.`
+          );
+        }
+
+        return res;
+      },
       {
         numOfAttempts: 5,
       }
@@ -162,11 +205,27 @@ export class Spider {
   private async _apiGet(endpoint: string) {
     const headers = this.prepareHeaders;
     const response = await backOff(
-      () =>
-        fetch(`${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`, {
-          method: "GET",
-          headers: headers,
-        }),
+      async () => {
+        const res = await fetch(
+          `${APISchema["url"]}/${ApiVersion.V1}/${endpoint}`,
+          {
+            method: "GET",
+            headers: headers,
+          }
+        );
+
+        this._updateRateLimit(res.headers);
+
+        if (res.status === 429) {
+          const retryAfter = Number(res.headers.get("Retry-After") || "1");
+          await new Promise((r) => setTimeout(r, retryAfter * 1000));
+          throw new Error(
+            `Rate limited on ${endpoint}. Retrying after ${retryAfter}s.`
+          );
+        }
+
+        return res;
+      },
       {
         numOfAttempts: 5,
       }

@@ -69,8 +69,32 @@ use reqwest::{Error, Response};
 use serde::Serialize;
 pub use shapes::{request::*, response::*};
 use std::collections::HashMap;
+use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::OnceLock;
 use tokio_stream::StreamExt;
+
+/// Rate limit state from API response headers.
+/// Uses atomics so it can be updated from `&self`.
+#[derive(Debug, Default)]
+pub struct RateLimitInfo {
+    /// Maximum requests allowed per minute.
+    pub limit: AtomicU32,
+    /// Requests remaining in the current window.
+    pub remaining: AtomicU32,
+    /// Seconds until the rate limit window resets.
+    pub reset_seconds: AtomicU32,
+}
+
+impl RateLimitInfo {
+    /// Read the current rate limit snapshot.
+    pub fn snapshot(&self) -> (u32, u32, u32) {
+        (
+            self.limit.load(Ordering::Relaxed),
+            self.remaining.load(Ordering::Relaxed),
+            self.reset_seconds.load(Ordering::Relaxed),
+        )
+    }
+}
 
 static API_URL: OnceLock<String> = OnceLock::new();
 
@@ -88,6 +112,8 @@ pub struct Spider {
     pub api_key: String,
     /// The Spider Client to re-use.
     pub client: Client,
+    /// The latest rate limit info from API responses.
+    pub rate_limit: RateLimitInfo,
 }
 
 /// Handle the json response.
@@ -213,6 +239,31 @@ impl Spider {
         }
     }
 
+    /// Update rate limit state from response headers.
+    fn update_rate_limit(&self, headers: &reqwest::header::HeaderMap) {
+        if let Some(v) = headers.get("RateLimit-Limit").and_then(|v| v.to_str().ok()) {
+            if let Ok(n) = v.parse::<u32>() {
+                self.rate_limit.limit.store(n, Ordering::Relaxed);
+            }
+        }
+        if let Some(v) = headers
+            .get("RateLimit-Remaining")
+            .and_then(|v| v.to_str().ok())
+        {
+            if let Ok(n) = v.parse::<u32>() {
+                self.rate_limit.remaining.store(n, Ordering::Relaxed);
+            }
+        }
+        if let Some(v) = headers
+            .get("RateLimit-Reset")
+            .and_then(|v| v.to_str().ok())
+        {
+            if let Ok(n) = v.parse::<u32>() {
+                self.rate_limit.reset_seconds.store(n, Ordering::Relaxed);
+            }
+        }
+    }
+
     /// Sends a POST request to the API.
     ///
     /// # Arguments
@@ -233,7 +284,8 @@ impl Spider {
     ) -> Result<Response, Error> {
         let url: String = format!("{}/{}", get_api_url(), endpoint);
 
-        self.client
+        let resp = self
+            .client
             .post(&url)
             .header(
                 "User-Agent",
@@ -243,7 +295,22 @@ impl Spider {
             .header("Authorization", format!("Bearer {}", self.api_key))
             .json(&data)
             .send()
-            .await
+            .await?;
+
+        self.update_rate_limit(resp.headers());
+
+        if resp.status() == reqwest::StatusCode::TOO_MANY_REQUESTS {
+            let retry_after = resp
+                .headers()
+                .get("Retry-After")
+                .and_then(|v| v.to_str().ok())
+                .and_then(|v| v.parse::<u64>().ok())
+                .unwrap_or(1);
+            tokio::time::sleep(std::time::Duration::from_secs(retry_after)).await;
+            return resp.error_for_status();
+        }
+
+        Ok(resp)
     }
 
     /// Sends a POST request to the API.
@@ -274,6 +341,7 @@ impl Spider {
             .when(|err: &reqwest::Error| {
                 if let Some(status) = err.status() {
                     status.is_server_error()
+                        || status == reqwest::StatusCode::TOO_MANY_REQUESTS
                 } else {
                     err.is_timeout()
                 }
@@ -308,6 +376,20 @@ impl Spider {
             .header("Authorization", format!("Bearer {}", self.api_key))
             .send()
             .await?;
+
+        self.update_rate_limit(res.headers());
+
+        if res.status() == reqwest::StatusCode::TOO_MANY_REQUESTS {
+            let retry_after = res
+                .headers()
+                .get("Retry-After")
+                .and_then(|v| v.to_str().ok())
+                .and_then(|v| v.parse::<u64>().ok())
+                .unwrap_or(1);
+            tokio::time::sleep(std::time::Duration::from_secs(retry_after)).await;
+            return Err(res.error_for_status().unwrap_err());
+        }
+
         parse_response(res).await
     }
 
@@ -332,6 +414,7 @@ impl Spider {
             .when(|err: &reqwest::Error| {
                 if let Some(status) = err.status() {
                     status.is_server_error()
+                        || status == reqwest::StatusCode::TOO_MANY_REQUESTS
                 } else {
                     err.is_timeout()
                 }

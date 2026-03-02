@@ -1,5 +1,6 @@
 import os, requests, logging, ijson, tenacity, time
 from typing import Optional, Dict
+from dataclasses import dataclass
 from spider.spider_types import (
     RequestParamsDict,
     SearchRequestParams,
@@ -7,6 +8,24 @@ from spider.spider_types import (
     JsonCallback,
     QueryRequest,
 )
+
+
+@dataclass
+class RateLimitState:
+    """Tracks the latest rate limit info from API response headers."""
+
+    limit: int = 0
+    remaining: int = 0
+    reset_seconds: int = 0
+
+    def update_from_headers(self, headers):
+        """Update rate limit state from response headers."""
+        if "RateLimit-Limit" in headers:
+            self.limit = int(headers["RateLimit-Limit"])
+        if "RateLimit-Remaining" in headers:
+            self.remaining = int(headers["RateLimit-Remaining"])
+        if "RateLimit-Reset" in headers:
+            self.reset_seconds = int(headers["RateLimit-Reset"])
 
 
 # AI Studio URLs and info
@@ -104,6 +123,7 @@ class Spider:
         if self.api_key is None:
             raise ValueError("No API key provided")
 
+        self.rate_limit = RateLimitState()
         self.ai_studio_tier = ai_studio_tier
         self._ai_rate_limiter = RateLimiter(
             AI_STUDIO_RATE_LIMITS.get(ai_studio_tier, 1)
@@ -121,6 +141,7 @@ class Spider:
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
         stop=tenacity.stop_after_attempt(5),
+        retry=tenacity.retry_if_exception_type(requests.exceptions.RequestException),
     )
     def api_post(
         self,
@@ -141,6 +162,16 @@ class Spider:
         response = self._post_request(
             f"https://api.spider.cloud/{endpoint}", data, headers, stream
         )
+
+        self.rate_limit.update_from_headers(response.headers)
+
+        if response.status_code == 429:
+            retry_after = int(response.headers.get("Retry-After", "1"))
+            time.sleep(retry_after)
+            raise requests.exceptions.RequestException(
+                f"Rate limited on {endpoint}. Retrying after {retry_after}s."
+            )
+
         if stream:
             return response
         elif 200 <= response.status_code < 300:
@@ -151,6 +182,7 @@ class Spider:
     @tenacity.retry(
         wait=tenacity.wait_exponential(multiplier=1, min=1, max=60),
         stop=tenacity.stop_after_attempt(5),
+        retry=tenacity.retry_if_exception_type(requests.exceptions.RequestException),
     )
     def api_get(
         self,
@@ -173,6 +205,16 @@ class Spider:
             params=params,
             stream=stream,
         )
+
+        self.rate_limit.update_from_headers(response.headers)
+
+        if response.status_code == 429:
+            retry_after = int(response.headers.get("Retry-After", "1"))
+            time.sleep(retry_after)
+            raise requests.exceptions.RequestException(
+                f"Rate limited on {endpoint}. Retrying after {retry_after}s."
+            )
+
         if 200 <= response.status_code < 300:
             return response.json()
         else:
@@ -395,7 +437,7 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.86",
+            "User-Agent": f"Spider-Client/0.1.87",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):

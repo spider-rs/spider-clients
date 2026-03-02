@@ -49,6 +49,16 @@ func WithAIStudioTier(tier AIStudioTier) Option {
 	}
 }
 
+// RateLimitInfo holds the latest rate limit state from API response headers.
+type RateLimitInfo struct {
+	// Maximum requests allowed per minute.
+	Limit int
+	// Requests remaining in the current window.
+	Remaining int
+	// Seconds until the rate limit window resets.
+	ResetSeconds int
+}
+
 // Spider is the API client.
 type Spider struct {
 	apiKey      string
@@ -56,6 +66,9 @@ type Spider struct {
 	httpClient  *http.Client
 	aiTier      AIStudioTier
 	rateLimiter *rateLimiter
+
+	// RateLimit holds the latest rate limit info from API responses.
+	RateLimit RateLimitInfo
 }
 
 // New creates a new Spider client. If apiKey is empty, the SPIDER_API_KEY
@@ -218,6 +231,24 @@ func (s *Spider) headers(contentType string) http.Header {
 	return h
 }
 
+func (s *Spider) updateRateLimit(header http.Header) {
+	if v := header.Get("RateLimit-Limit"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			s.RateLimit.Limit = n
+		}
+	}
+	if v := header.Get("RateLimit-Remaining"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			s.RateLimit.Remaining = n
+		}
+	}
+	if v := header.Get("RateLimit-Reset"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			s.RateLimit.ResetSeconds = n
+		}
+	}
+}
+
 // doPost sends a POST with retries and returns the raw response.
 // The caller must close resp.Body.
 func (s *Spider) doPost(ctx context.Context, route string, body interface{}, jsonl bool) (*http.Response, error) {
@@ -255,6 +286,25 @@ func (s *Spider) doPost(ctx context.Context, route string, body interface{}, jso
 		if err != nil {
 			continue // retry on network error
 		}
+
+		s.updateRateLimit(resp.Header)
+
+		if resp.StatusCode == http.StatusTooManyRequests {
+			retryAfter := 1
+			if ra := resp.Header.Get("Retry-After"); ra != "" {
+				if secs, err := strconv.Atoi(ra); err == nil {
+					retryAfter = secs
+				}
+			}
+			resp.Body.Close()
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			case <-time.After(time.Duration(retryAfter) * time.Second):
+			}
+			continue
+		}
+
 		if resp.StatusCode >= 500 {
 			resp.Body.Close()
 			continue // retry on server error
@@ -326,6 +376,25 @@ func (s *Spider) apiGet(ctx context.Context, route string) (json.RawMessage, err
 		if err != nil {
 			continue
 		}
+
+		s.updateRateLimit(resp.Header)
+
+		if resp.StatusCode == http.StatusTooManyRequests {
+			retryAfter := 1
+			if ra := resp.Header.Get("Retry-After"); ra != "" {
+				if secs, parseErr := strconv.Atoi(ra); parseErr == nil {
+					retryAfter = secs
+				}
+			}
+			resp.Body.Close()
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			case <-time.After(time.Duration(retryAfter) * time.Second):
+			}
+			continue
+		}
+
 		if resp.StatusCode >= 500 {
 			resp.Body.Close()
 			continue
