@@ -1,6 +1,6 @@
 {
   "name": "@spider-cloud/spider-client",
-  "version": "0.1.87",
+  "version": "0.2.0",
   "description": "Isomorphic Javascript SDK for Spider Cloud services",
   "scripts": {
     "test": "node --import tsx  --test __tests__/*test.ts",
@@ -8,7 +8,7 @@
     "prepublishOnly": "npm test && npm run build"
   },
   "main": "dist/index.js",
-  "types": "dist/client.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
   ],
@@ -17,6 +17,9 @@
     "sdk",
     "web crawling",
     "web scraping",
+    "browser automation",
+    "cdp",
+    "headless",
     "api",
     "llm scraping"
   ],
@@ -29,6 +32,7 @@
     "typescript": "5.7.3"
   },
   "dependencies": {
-    "exponential-backoff": "^3.1.2"
+    "exponential-backoff": "^3.1.2",
+    "spider-browser": "^0.2.3"
   }
 }

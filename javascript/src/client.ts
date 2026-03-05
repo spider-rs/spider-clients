@@ -14,6 +14,7 @@ import {
   AIStudioSubscriptionRequired,
   AIStudioRateLimitExceeded,
 } from "./config";
+import { SpiderBrowser, type SpiderBrowserOptions } from "spider-browser";
 import { version } from "../package.json";
 import { streamReader } from "./utils/stream-reader";
 import { backOff } from "exponential-backoff";
@@ -530,6 +531,24 @@ export class Spider {
     params: Omit<AIRequestParams, "prompt"> = {}
   ): Promise<any> {
     return this._aiApiPost(APIRoutes.AILinks, { url, prompt, ...params });
+  }
+
+  /**
+   * Creates a SpiderBrowser instance for WebSocket-based browser automation (CDP/BiDi).
+   * @param {Omit<SpiderBrowserOptions, 'apiKey'>} [options] - Browser options (excluding apiKey, which is inherited from the client).
+   * @returns {SpiderBrowser} A new SpiderBrowser instance.
+   */
+  browser(options?: Omit<SpiderBrowserOptions, "apiKey">): SpiderBrowser {
+    return new SpiderBrowser({ apiKey: this.apiKey!, ...options });
+  }
+
+  /**
+   * Generates the API URL for a recording session's video/metadata.
+   * @param {string} sessionId - The recording session ID.
+   * @returns {string} The full URL to the recording endpoint.
+   */
+  static getRecordingVideoUrl(sessionId: string): string {
+    return `${APISchema.url}/v1/data/recordings/${sessionId}`;
   }
 
   /**
