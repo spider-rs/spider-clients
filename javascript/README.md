@@ -155,6 +155,36 @@ const result = await app.unblocker("https://protected-site.com/products", {
 // Extracted data conforms to the schema in result[0].metadata.extracted_data
 ```
 
+### Browser Automation
+
+The SDK includes built-in browser automation via [spider-browser](https://www.npmjs.com/package/spider-browser), giving you WebSocket-based CDP/BiDi control alongside the API client.
+
+```javascript
+import { Spider } from "@spider-cloud/spider-client";
+
+const app = new Spider({ apiKey: "YOUR_API_KEY" });
+
+// Create a browser instance (inherits your API key)
+const browser = app.browser();
+
+// Connect and interact
+await browser.connect();
+```
+
+You can also import browser primitives directly:
+
+```javascript
+import { SpiderBrowser, Agent, act, observe, extract, RetryEngine } from "@spider-cloud/spider-client";
+```
+
+#### Recording Videos
+
+Retrieve the URL for a recorded browser session:
+
+```javascript
+const videoUrl = Spider.getRecordingVideoUrl("session-id");
+```
+
 ## Error Handling
 
 The SDK provides robust error handling and will throw exceptions when it encounters critical issues. Always use `.catch()` on promises to handle these errors gracefully.

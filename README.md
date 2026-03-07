@@ -14,6 +14,10 @@ Integrate Spider effortlessly into your JavaScript projects. Visit our [JavaScri
 
 Incorporate Spider smoothly into your Rust projects. Visit our [Rust client library directory](./rust/) to learn how to use Spider in your applications. Enhance your web scraping capabilities and unlock new possibilities with our advanced technology.
 
+## Go
+
+Integrate Spider into your Go applications. Visit our [Go client library directory](./go/) for installation instructions, usage guides, and examples. Build high-performance crawlers and scrapers with Spider's Go SDK.
+
 ## CLI
 
 Integrate Spider into your CLI with ease. Visit our [CLI client library directory](./cli/) to explore how you can utilize Spider in your command-line applications.
