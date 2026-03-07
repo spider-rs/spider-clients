@@ -171,6 +171,40 @@ if err != nil {
 }
 ```
 
+## Browser Automation
+
+The Go client integrates with the [spider-browser](https://github.com/spider-rs/spider-browser/tree/main/go) SDK for WebSocket-based browser automation with CDP/BiDi support.
+
+```go
+client := spider.New("your-api-key")
+
+// Create a browser instance (inherits API key from client)
+browser := client.Browser(
+    spider.WithBrowserType("chrome"),
+    spider.WithLLM(spider.LLMConfig{
+        Provider: "openai",
+        Model:    "gpt-4o",
+        APIKey:   "your-openai-key",
+    }),
+)
+
+if err := browser.Init(); err != nil {
+    log.Fatal(err)
+}
+defer browser.Close()
+
+// Navigate
+if err := browser.Goto("https://example.com"); err != nil {
+    log.Fatal(err)
+}
+
+// AI-powered actions
+browser.Act("Click the login button")
+
+// Get page content
+html, _ := browser.Page().Content(8000, 1000)
+```
+
 ## License
 
 MIT
