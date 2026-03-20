@@ -1,6 +1,7 @@
 import os, requests, logging, ijson, tenacity, time
 from typing import Optional, Dict
 from dataclasses import dataclass
+from requests.adapters import HTTPAdapter
 from spider.spider_types import (
     RequestParamsDict,
     SearchRequestParams,
@@ -129,6 +130,12 @@ class Spider:
             AI_STUDIO_RATE_LIMITS.get(ai_studio_tier, 1)
         )
 
+        # Persistent session for connection reuse (TCP keep-alive / pooling)
+        self._session = requests.Session()
+        adapter = HTTPAdapter(pool_connections=10, pool_maxsize=100)
+        self._session.mount("https://", adapter)
+        self._session.mount("http://", adapter)
+
     def set_ai_studio_tier(self, tier: str):
         """
         Update the AI Studio subscription tier (adjusts rate limiting).
@@ -199,7 +206,7 @@ class Spider:
         :return: The JSON decoded response.
         """
         headers = self._prepare_headers(content_type)
-        response = requests.get(
+        response = self._get_request(
             f"https://api.spider.cloud/{endpoint}",
             headers=headers,
             params=params,
@@ -437,17 +444,17 @@ class Spider:
         return {
             "Content-Type": content_type,
             "Authorization": f"Bearer {self.api_key}",
-            "User-Agent": f"Spider-Client/0.1.87",
+            "User-Agent": f"Spider-Client/0.1.88",
         }
 
     def _post_request(self, url: str, data, headers, stream=False):
-        return requests.post(url, headers=headers, json=data, stream=stream)
+        return self._session.post(url, headers=headers, json=data, stream=stream)
 
     def _get_request(self, url: str, headers, stream=False, params=None):
-        return requests.get(url, headers=headers, stream=stream, params=params)
+        return self._session.get(url, headers=headers, stream=stream, params=params)
 
     def _delete_request(self, url: str, headers, json=None, stream=False):
-        return requests.delete(url, headers=headers, json=json, stream=stream)
+        return self._session.delete(url, headers=headers, json=json, stream=stream)
 
     def _ai_api_post(self, endpoint: str, data: dict):
         """
@@ -463,8 +470,8 @@ class Spider:
         self._ai_rate_limiter.acquire()
 
         headers = self._prepare_headers()
-        response = requests.post(
-            f"https://api.spider.cloud/{endpoint}", headers=headers, json=data
+        response = self._post_request(
+            f"https://api.spider.cloud/{endpoint}", data=data, headers=headers
         )
 
         if 200 <= response.status_code < 300:
