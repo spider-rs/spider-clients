@@ -1,0 +1,53 @@
+name: Release JavaScript (npm)
+
+on:
+  push:
+    tags:
+      - "js-v*.*.*"
+
+permissions:
+  contents: read
+  id-token: write # required for npm provenance
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+          cache: "npm"
+          cache-dependency-path: ./javascript/package-lock.json
+
+      - name: Verify tag matches package.json version
+        working-directory: ./javascript
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          TAG_VERSION="${GITHUB_REF_NAME#js-v}"
+          echo "package.json=$PKG_VERSION tag=$TAG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME ($TAG_VERSION) does not match package.json ($PKG_VERSION)"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./javascript
+
+      - name: Build
+        run: npm run build
+        working-directory: ./javascript
+
+      # Tests run on every push/PR to main (nodejs.yml); the build above is the
+      # release gate. --ignore-scripts skips the prepublishOnly hook so the
+      # publish does not depend on the live API at release time.
+      - name: Publish
+        run: npm publish --ignore-scripts --provenance --access public
+        working-directory: ./javascript
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

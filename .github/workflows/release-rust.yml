@@ -1,0 +1,40 @@
+name: Release Rust client (crates.io)
+
+on:
+  push:
+    tags:
+      - "rust-v*.*.*"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish spider-client to crates.io
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Verify tag matches Cargo.toml version
+        working-directory: ./rust
+        run: |
+          PKG_VERSION="$(grep -m1 '^version' Cargo.toml | sed -E 's/.*"([^"]+)".*/\1/')"
+          TAG_VERSION="${GITHUB_REF_NAME#rust-v}"
+          echo "Cargo.toml=$PKG_VERSION tag=$TAG_VERSION"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME ($TAG_VERSION) does not match Cargo.toml ($PKG_VERSION)"
+            exit 1
+          fi
+
+      - name: Build
+        run: cargo build --release
+        working-directory: ./rust
+
+      - name: Publish
+        run: cargo publish --token "$CARGO_REGISTRY_TOKEN"
+        working-directory: ./rust
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}

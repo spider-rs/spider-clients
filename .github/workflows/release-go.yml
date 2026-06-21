@@ -1,0 +1,46 @@
+name: Release Go client
+
+# Go modules are served straight from the git tag by the module proxy — there is
+# no registry to push to. This workflow validates the build for the tagged
+# commit and cuts a GitHub Release with generated notes.
+
+on:
+  push:
+    tags:
+      - "go/v*.*.*"
+
+permissions:
+  contents: write # to create the GitHub Release
+
+jobs:
+  release:
+    name: Validate and release Go module
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "stable"
+          cache-dependency-path: ./go/go.sum
+
+      - name: Verify tag matches Version const
+        working-directory: ./go
+        run: |
+          CONST_VERSION="$(grep -E '^\s*Version\s*=' config.go | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
+          TAG_VERSION="${GITHUB_REF_NAME#go/v}"
+          echo "config.go=$CONST_VERSION tag=$TAG_VERSION"
+          if [ "$CONST_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME ($TAG_VERSION) does not match config.go Version ($CONST_VERSION)"
+            exit 1
+          fi
+
+      - name: Build
+        run: go build ./...
+        working-directory: ./go
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" --title "Go $GITHUB_REF_NAME" --generate-notes
