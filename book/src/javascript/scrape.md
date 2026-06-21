@@ -23,7 +23,7 @@ The `scrapeUrl` method has the following parameters:
 
 the following are optional parameters and can be set in the `params` dictionary:
 
-- `request` ("http", "chrome", "smart") : The type of request to make. Default is "http".
+- `request` ("http", "browser", "smart") : The type of request to make. Default is "http". `"browser"` uses Spider's custom browser; `"chrome"` is a deprecated alias for `"browser"` and is still accepted.
 - `return_format` ("raw", "markdown", "commonmark", "html2text", "text", "bytes") : The format in which to return the scraped data. Default is "markdown".
 - Other parameters that you can find in the [documentation](https://spider.cloud/docs/api?ref=javascript-sdk-book).
 

@@ -28,9 +28,10 @@ const (
 type RequestType string
 
 const (
-	RequestHTTP   RequestType = "http"
-	RequestChrome RequestType = "chrome"
-	RequestSmart  RequestType = "smart"
+	RequestHTTP    RequestType = "http"
+	RequestBrowser RequestType = "browser"
+	RequestChrome  RequestType = "chrome" // Deprecated: alias for RequestBrowser; the API still accepts "chrome".
+	RequestSmart   RequestType = "smart"
 )
 
 // ReturnFormat controls the output format.

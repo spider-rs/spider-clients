@@ -373,7 +373,7 @@ pub struct RequestParams {
     /// Specifies whether the request should be cached.
     pub cache: Option<bool>,
     #[serde(default)]
-    /// Perform an infinite scroll on the page as new content arises. The request param also needs to be set to 'chrome' or 'smart'.
+    /// Perform an infinite scroll on the page as new content arises. The request param also needs to be set to 'browser' or 'smart'.
     pub scroll: Option<u32>,
     #[serde(default)]
     /// The budget for various resources.
@@ -475,26 +475,26 @@ pub struct RequestParams {
     /// The chunking algorithm to use.
     pub chunking_alg: Option<ChunkingAlgDict>,
     #[serde(default)]
-    /// Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
+    /// Disable request interception when running 'request' as 'browser' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
     pub disable_intercept: Option<bool>,
     #[serde(default)]
     /// Disables service-provided hints that add request optimizations to improve crawl outcomes,
     /// such as network blacklists, request-type selection, geo handling, and more.
     pub disable_hints: Option<bool>,
     #[serde(default)]
-    /// The wait for events on the page. You need to make your `request` `chrome` or `smart`.
+    /// The wait for events on the page. You need to make your `request` `browser` or `smart`.
     pub wait_for: Option<WaitFor>,
     #[serde(default)]
-    /// Perform custom Javascript tasks on a url or url path. You need to make your `request` `chrome` or `smart`
+    /// Perform custom Javascript tasks on a url or url path. You need to make your `request` `browser` or `smart`
     pub execution_scripts: Option<ExecutionScriptsMap>,
     #[serde(default)]
-    /// Perform web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`
+    /// Perform web automated tasks on a url or url path. You need to make your `request` `browser` or `smart`
     pub automation_scripts: Option<WebAutomationMap>,
     #[serde(default)]
     /// The redirect policy for HTTP request. Set the value to Loose to allow all.
     pub redirect_policy: Option<RedirectPolicy>,
     #[serde(default)]
-    /// Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
+    /// Track the request sent and responses received for `browser` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
     pub event_tracker: Option<EventTracker>,
     #[serde(default)]
     /// The timeout to stop the crawl.
@@ -517,7 +517,7 @@ pub struct RequestParams {
     #[serde(default)]
     /// Set the maximum number of credits to use per page.
     /// Credits are measured in decimal units, where 10,000 credits equal one dollar (100 credits per penny).
-    /// Credit limiting only applies to request that are Javascript rendered using smart_mode or chrome for the 'request' type.
+    /// Credit limiting only applies to request that are Javascript rendered using smart_mode or browser for the 'request' type.
     pub max_credits_per_page: Option<f64>,
 }
 
@@ -624,10 +624,12 @@ pub struct Resource {
 pub enum RequestType {
     /// Default HTTP request
     Http,
-    /// Chrome browser rendering
+    /// Browser rendering using Spider's custom browser.
+    Browser,
+    /// Deprecated alias for [`RequestType::Browser`]; the API still accepts `"chrome"`.
     Chrome,
     #[default]
-    /// Smart mode defaulting to HTTP and using Chrome when needed.
+    /// Smart mode defaulting to HTTP and using the browser when needed.
     SmartMode,
 }
 

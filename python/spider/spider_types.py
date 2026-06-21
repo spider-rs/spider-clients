@@ -276,8 +276,9 @@ class RequestParamsDict(TypedDict, total=False):
     # The URL to be crawled.
     url: Optional[str]
 
-    # The type of request to be made.
-    request: Optional[Literal["http", "chrome", "smart"]]
+    # The type of request to be made. "browser" uses Spider's custom browser;
+    # "chrome" is a deprecated alias for "browser" and is still accepted.
+    request: Optional[Literal["http", "browser", "chrome", "smart"]]
 
     # The maximum number of pages the crawler should visit.
     limit: Optional[int]
@@ -392,7 +393,7 @@ class RequestParamsDict(TypedDict, total=False):
     # The timeout for the request, in milliseconds.
     request_timeout: Optional[int]
 
-    # Perform an infinite scroll on the page as new content arises. The request param also needs to be set to 'chrome' or 'smart'.
+    # Perform an infinite scroll on the page as new content arises. The request param also needs to be set to 'browser' or 'smart'.
     scroll: Optional[int]
 
     # Specifies whether to run the request in the background.
@@ -409,22 +410,22 @@ class RequestParamsDict(TypedDict, total=False):
     # such as network blacklists, request-type selection, geo handling, and more.
     disable_hints: Optional[bool]
 
-    # Disable request interception when running 'request' as 'chrome' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
+    # Disable request interception when running 'request' as 'browser' or 'smart'. This can help when the page uses 3rd party or external scripts to load content.
     disable_intercept: Optional[bool]
 
-    # The wait for events on the page. You need to make your `request` `chrome` or `smart`.
+    # The wait for events on the page. You need to make your `request` `browser` or `smart`.
     wait_for: Optional[WaitForDict]
 
-    # Perform custom Javascript tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
+    # Perform custom Javascript tasks on a url or url path. You need to make your `request` `browser` or `smart`.
     exuecution_scripts: Optional[ExecutionScriptsMap]
 
-    # Perform custom web automated tasks on a url or url path. You need to make your `request` `chrome` or `smart`.
+    # Perform custom web automated tasks on a url or url path. You need to make your `request` `browser` or `smart`.
     automation_scripts: Optional[WebAutomationMap]
 
     # The redirect policy for HTTP request. Set the value to Loose to allow all.
     redirect_policy: Optional[RedirectPolicy]
 
-    # Track the request sent and responses received for `chrome` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
+    # Track the request sent and responses received for `browser` or `smart`. The responses will track the bytes used and the requests will have the monotime sent.
     event_tracker: Optional[EventTracker]
 
     # The timeout to stop the crawl.
@@ -435,7 +436,7 @@ class RequestParamsDict(TypedDict, total=False):
 
     # Set the maximum number of credits to use per page. 
     # Credits are measured in decimal units, where 10,000 credits equal one dollar (100 credits per penny).
-    # Credit limiting only applies to request that are Javascript rendered using smart_mode or chrome for the 'request' type.
+    # Credit limiting only applies to request that are Javascript rendered using smart_mode or browser for the 'request' type.
     max_credits_per_page: Optional[float]
 
     #  Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy,
