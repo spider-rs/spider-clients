@@ -8,6 +8,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## 2026-06-26
+
+### Added
+
+- **Coordinate localization for search.** The search request now accepts
+  `latitude` and `longitude` for exact-coordinate localization, plus an optional
+  `radius` (bias radius in meters; `-1` = unset). Applies to the Go, Python,
+  Rust, JavaScript, and CLI clients. The CLI exposes `--latitude`,
+  `--longitude`, and `--radius` on the `search` command.
+
+### Client versions
+
+| Client     | Package                                       | Version  | Release tag    |
+| ---------- | --------------------------------------------- | -------- | -------------- |
+| JavaScript | `@spider-cloud/spider-client` (npm)           | `0.2.2`  | `js-v0.2.2`    |
+| Python     | `spider_client` (PyPI)                        | `0.1.90` | `py-v0.1.90`   |
+| Rust       | `spider-client` (crates.io)                   | `0.1.89` | `rust-v0.1.89` |
+| CLI        | `spider-cloud-cli` (crates.io)                | `0.1.89` | `cli-v0.1.89`  |
+| Go         | `github.com/spider-rs/spider-clients/go`      | `0.1.89` | `go/v0.1.89`   |
+
 ## 2026-06-21
 
 ### Added

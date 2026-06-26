@@ -256,10 +256,7 @@ impl Spider {
                 self.rate_limit.remaining.store(n, Ordering::Relaxed);
             }
         }
-        if let Some(v) = headers
-            .get("RateLimit-Reset")
-            .and_then(|v| v.to_str().ok())
-        {
+        if let Some(v) = headers.get("RateLimit-Reset").and_then(|v| v.to_str().ok()) {
             if let Ok(n) = v.parse::<u32>() {
                 self.rate_limit.reset_seconds.store(n, Ordering::Relaxed);
             }
@@ -342,8 +339,7 @@ impl Spider {
             .retry(ExponentialBuilder::default().with_max_times(5))
             .when(|err: &reqwest::Error| {
                 if let Some(status) = err.status() {
-                    status.is_server_error()
-                        || status == reqwest::StatusCode::TOO_MANY_REQUESTS
+                    status.is_server_error() || status == reqwest::StatusCode::TOO_MANY_REQUESTS
                 } else {
                     err.is_timeout()
                 }
@@ -415,8 +411,7 @@ impl Spider {
             .retry(ExponentialBuilder::default().with_max_times(5))
             .when(|err: &reqwest::Error| {
                 if let Some(status) = err.status() {
-                    status.is_server_error()
-                        || status == reqwest::StatusCode::TOO_MANY_REQUESTS
+                    status.is_server_error() || status == reqwest::StatusCode::TOO_MANY_REQUESTS
                 } else {
                     err.is_timeout()
                 }

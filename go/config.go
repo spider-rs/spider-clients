@@ -4,7 +4,7 @@ package spider
 const (
 	BaseURL    = "https://api.spider.cloud"
 	APIVersion = "v1"
-	Version    = "0.1.88"
+	Version    = "0.1.89"
 )
 
 // API routes.
@@ -100,48 +100,48 @@ var AIStudioRateLimits = map[AIStudioTier]int{
 // SpiderParams are the core crawl/scrape request parameters.
 // Fields use json:"snake_case" tags matching the API.
 type SpiderParams struct {
-	URL                string            `json:"url,omitempty"`
-	Limit              int               `json:"limit,omitempty"`
-	Depth              int               `json:"depth,omitempty"`
-	Request            RequestType       `json:"request,omitempty"`
-	ReturnFormat       ReturnFormat      `json:"return_format,omitempty"`
-	TLD                bool              `json:"tld,omitempty"`
-	Metadata           bool              `json:"metadata,omitempty"`
-	Cache              bool              `json:"cache,omitempty"`
-	Stealth            bool              `json:"stealth,omitempty"`
-	Fingerprint        bool              `json:"fingerprint,omitempty"`
-	Readability        bool              `json:"readability,omitempty"`
-	Storageless        bool              `json:"storageless,omitempty"`
-	Sitemap            bool              `json:"sitemap,omitempty"`
-	SitemapOnly        bool              `json:"sitemap_only,omitempty"`
-	ReturnPageLinks    bool              `json:"return_page_links,omitempty"`
-	ReturnHeaders      bool              `json:"return_headers,omitempty"`
-	ReturnCookies      bool              `json:"return_cookies,omitempty"`
-	ReturnEmbeddings   bool              `json:"return_embeddings,omitempty"`
-	FullResources      bool              `json:"full_resources,omitempty"`
-	LiteMode           bool              `json:"lite_mode,omitempty"`
-	DisableHints       bool              `json:"disable_hints,omitempty"`
-	DisableIntercept   bool              `json:"disable_intercept,omitempty"`
-	RunInBackground    bool              `json:"run_in_background,omitempty"`
-	SkipConfigChecks   bool              `json:"skip_config_checks,omitempty"`
-	RespectRobots      bool              `json:"respect_robots,omitempty"`
-	Scroll             int               `json:"scroll,omitempty"`
-	RequestTimeout     int               `json:"request_timeout,omitempty"`
-	MaxCreditsPerPage  int               `json:"max_credits_per_page,omitempty"`
-	Proxy              ProxyType         `json:"proxy,omitempty"`
-	RemoteProxy        string            `json:"remote_proxy,omitempty"`
-	CountryCode        string            `json:"country_code,omitempty"`
-	Locale             string            `json:"locale,omitempty"`
-	Encoding           string            `json:"encoding,omitempty"`
-	UserAgent          string            `json:"user_agent,omitempty"`
-	Cookies            string            `json:"cookies,omitempty"`
-	RootSelector       string            `json:"root_selector,omitempty"`
-	RedirectPolicy     string            `json:"redirect_policy,omitempty"`
-	Blacklist          []string          `json:"blacklist,omitempty"`
-	Whitelist          []string          `json:"whitelist,omitempty"`
-	ExternalDomains    []string          `json:"external_domains,omitempty"`
-	Headers            map[string]string `json:"headers,omitempty"`
-	Budget             map[string]int    `json:"budget,omitempty"`
+	URL               string            `json:"url,omitempty"`
+	Limit             int               `json:"limit,omitempty"`
+	Depth             int               `json:"depth,omitempty"`
+	Request           RequestType       `json:"request,omitempty"`
+	ReturnFormat      ReturnFormat      `json:"return_format,omitempty"`
+	TLD               bool              `json:"tld,omitempty"`
+	Metadata          bool              `json:"metadata,omitempty"`
+	Cache             bool              `json:"cache,omitempty"`
+	Stealth           bool              `json:"stealth,omitempty"`
+	Fingerprint       bool              `json:"fingerprint,omitempty"`
+	Readability       bool              `json:"readability,omitempty"`
+	Storageless       bool              `json:"storageless,omitempty"`
+	Sitemap           bool              `json:"sitemap,omitempty"`
+	SitemapOnly       bool              `json:"sitemap_only,omitempty"`
+	ReturnPageLinks   bool              `json:"return_page_links,omitempty"`
+	ReturnHeaders     bool              `json:"return_headers,omitempty"`
+	ReturnCookies     bool              `json:"return_cookies,omitempty"`
+	ReturnEmbeddings  bool              `json:"return_embeddings,omitempty"`
+	FullResources     bool              `json:"full_resources,omitempty"`
+	LiteMode          bool              `json:"lite_mode,omitempty"`
+	DisableHints      bool              `json:"disable_hints,omitempty"`
+	DisableIntercept  bool              `json:"disable_intercept,omitempty"`
+	RunInBackground   bool              `json:"run_in_background,omitempty"`
+	SkipConfigChecks  bool              `json:"skip_config_checks,omitempty"`
+	RespectRobots     bool              `json:"respect_robots,omitempty"`
+	Scroll            int               `json:"scroll,omitempty"`
+	RequestTimeout    int               `json:"request_timeout,omitempty"`
+	MaxCreditsPerPage int               `json:"max_credits_per_page,omitempty"`
+	Proxy             ProxyType         `json:"proxy,omitempty"`
+	RemoteProxy       string            `json:"remote_proxy,omitempty"`
+	CountryCode       string            `json:"country_code,omitempty"`
+	Locale            string            `json:"locale,omitempty"`
+	Encoding          string            `json:"encoding,omitempty"`
+	UserAgent         string            `json:"user_agent,omitempty"`
+	Cookies           string            `json:"cookies,omitempty"`
+	RootSelector      string            `json:"root_selector,omitempty"`
+	RedirectPolicy    string            `json:"redirect_policy,omitempty"`
+	Blacklist         []string          `json:"blacklist,omitempty"`
+	Whitelist         []string          `json:"whitelist,omitempty"`
+	ExternalDomains   []string          `json:"external_domains,omitempty"`
+	Headers           map[string]string `json:"headers,omitempty"`
+	Budget            map[string]int    `json:"budget,omitempty"`
 }
 
 // SearchParams extends SpiderParams with search-specific fields.
@@ -153,10 +153,16 @@ type SearchParams struct {
 	Location         string `json:"location,omitempty"`
 	Country          string `json:"country,omitempty"`
 	Language         string `json:"language,omitempty"`
-	Num              int    `json:"num,omitempty"`
-	Page             int    `json:"page,omitempty"`
-	WebsiteLimit     int    `json:"website_limit,omitempty"`
-	QuickSearch      bool   `json:"quick_search,omitempty"`
+	// Latitude for exact-coordinate localization (must be paired with Longitude).
+	Latitude *float64 `json:"latitude,omitempty"`
+	// Longitude for exact-coordinate localization (must be paired with Latitude).
+	Longitude *float64 `json:"longitude,omitempty"`
+	// Radius is an optional bias radius in meters for coordinate localization (-1 = unset).
+	Radius       *int64 `json:"radius,omitempty"`
+	Num          int    `json:"num,omitempty"`
+	Page         int    `json:"page,omitempty"`
+	WebsiteLimit int    `json:"website_limit,omitempty"`
+	QuickSearch  bool   `json:"quick_search,omitempty"`
 }
 
 // TransformParams are the request parameters for the transform endpoint.

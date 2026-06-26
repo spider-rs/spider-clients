@@ -566,6 +566,12 @@ pub struct SearchRequestParams {
     pub country: Option<crate::shapes::country_codes::CountryCode>,
     /// The language code of the request.
     pub language: Option<String>,
+    /// Latitude for exact-coordinate localization (must be paired with `longitude`).
+    pub latitude: Option<f64>,
+    /// Longitude for exact-coordinate localization (must be paired with `latitude`).
+    pub longitude: Option<f64>,
+    /// Optional bias radius in meters for coordinate localization (-1 = unset).
+    pub radius: Option<i64>,
     /// The number of search results
     pub num: Option<u32>,
     /// The time period range.

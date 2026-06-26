@@ -158,12 +158,18 @@ async fn main() {
                             query,
                             limit,
                             return_page_links,
+                            latitude,
+                            longitude,
+                            radius,
                         } => {
                             let mut params = SearchRequestParams::default();
                             if let Some(limit) = limit {
                                 params.base.limit = Some(limit);
                             }
                             params.base.return_page_links = return_page_links;
+                            params.latitude = latitude;
+                            params.longitude = longitude;
+                            params.radius = radius;
                             println!("Searching for query: {}", query);
                             match spider
                                 .search(&query, Some(params), false, "application/json")

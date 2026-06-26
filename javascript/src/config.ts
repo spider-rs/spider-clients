@@ -692,6 +692,12 @@ export interface SearchRequestParams {
   country?: string;
   /** Optional language code (e.g., "en", "fr") */
   language?: string;
+  /** Latitude for exact-coordinate localization (must be paired with `longitude`) */
+  latitude?: number;
+  /** Longitude for exact-coordinate localization (must be paired with `latitude`) */
+  longitude?: number;
+  /** Optional bias radius in meters for coordinate localization (-1 = unset) */
+  radius?: number;
   /** Optional number of search results to retrieve */
   num?: number;
   /** Optional page number of search results to fetch */

@@ -182,6 +182,24 @@ pub enum Commands {
             required = false
         )]
         return_page_links: Option<bool>,
+        #[arg(
+            long,
+            help = "Latitude for exact-coordinate localization (pair with --longitude).",
+            required = false
+        )]
+        latitude: Option<f64>,
+        #[arg(
+            long,
+            help = "Longitude for exact-coordinate localization (pair with --latitude).",
+            required = false
+        )]
+        longitude: Option<f64>,
+        #[arg(
+            long,
+            help = "Optional bias radius in meters for coordinate localization.",
+            required = false
+        )]
+        radius: Option<i64>,
     },
     /// Unblock a given URL
     Unblocker {

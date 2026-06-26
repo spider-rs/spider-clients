@@ -463,6 +463,12 @@ class SearchRequestParams:
     location: Optional[str] = None
     country: Optional[str] = None
     language: Optional[str] = None
+    # Latitude for exact-coordinate localization (must be paired with longitude).
+    latitude: Optional[float] = None
+    # Longitude for exact-coordinate localization (must be paired with latitude).
+    longitude: Optional[float] = None
+    # Optional bias radius in meters for coordinate localization (-1 = unset).
+    radius: Optional[int] = None
     num: Optional[int] = None
     page: Optional[int] = None
     website_limit: Optional[int] = None
