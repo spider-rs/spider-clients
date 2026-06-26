@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Go module is now consumable.** `go/go.mod` pinned
+  `github.com/spider-rs/spider-browser/go` to the published `v0.3.0` and dropped
+  the local `replace` directive (a dev-only path that broke `go build` for every
+  external consumer and the release workflow). Go bumped `0.1.89 -> 0.1.90`
+  (`go/v0.1.90`); `go/v0.1.89` carries the coordinate-localization fields but an
+  unbuildable `go.mod`, so use `v0.1.90`.
+
 ## 2026-06-26
 
 ### Added
