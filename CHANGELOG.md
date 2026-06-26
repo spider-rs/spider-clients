@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- **Python unit tests mock the right boundary.** The sync client tests patched
+  `requests.post`/`requests.get`, but the client routes every call through a
+  persistent `requests.Session` (`self._session`), so the patches never
+  intercepted and the "unit" tests made real 401'd API calls in CI. They now
+  patch `Spider._post_request`/`_get_request`, unblocking the PyPI release.
 - **Go module is now consumable.** `go/go.mod` pinned
   `github.com/spider-rs/spider-browser/go` to the published `v0.3.0` and dropped
   the local `replace` directive (a dev-only path that broke `go build` for every

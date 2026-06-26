@@ -36,7 +36,7 @@ def test_init_without_api_key():
     with pytest.raises(ValueError):
         Spider(api_key=None)
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_scrape_url(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -53,7 +53,7 @@ def test_scrape_url(mock_post, spider, url, params):
     assert 'url' in response[0]
     mock_post.assert_called_once()
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_crawl_url(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -70,7 +70,7 @@ def test_crawl_url(mock_post, spider, url, params):
     assert 'url' in response[0]
     mock_post.assert_called_once()
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_crawl_url_streaming(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -83,7 +83,7 @@ def test_crawl_url_streaming(mock_post, spider, url, params):
     spider.crawl_url(url, params=params, stream=True, content_type="application/jsonl", callback=handle_json)
     mock_post.assert_called_once()
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_links(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -99,7 +99,7 @@ def test_links(mock_post, spider, url, params):
     assert 'url' in response[0]
     mock_post.assert_called_once()
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_screenshot(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -116,7 +116,7 @@ def test_screenshot(mock_post, spider, url, params):
     assert 'url' in response[0]
     mock_post.assert_called_once()
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_search(mock_post, spider, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -133,7 +133,7 @@ def test_search(mock_post, spider, params):
     assert 'url' in response[0]
     mock_post.assert_called_once()
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_transform(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -148,7 +148,7 @@ def test_transform(mock_post, spider, url, params):
     assert 'status' in response
     mock_post.assert_called_once()
 
-@patch('requests.get')
+@patch.object(Spider, '_get_request')
 def test_get_credits(mock_get, spider):
     mock_response = MagicMock()
     mock_response.status_code = 200
@@ -161,7 +161,7 @@ def test_get_credits(mock_get, spider):
     assert isinstance(response['data'], list)
     mock_get.assert_called_once()
 
-@patch('requests.post')
+@patch.object(Spider, '_post_request')
 def test_data_post(mock_post, spider, url):
     mock_response = MagicMock()
     mock_response.status_code = 204
@@ -173,7 +173,7 @@ def test_data_post(mock_post, spider, url):
     assert response is not None
     mock_post.assert_called_once()
 
-@patch('requests.get')
+@patch.object(Spider, '_get_request')
 def test_data_get(mock_get, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200
