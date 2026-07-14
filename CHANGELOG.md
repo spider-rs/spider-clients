@@ -6,7 +6,7 @@ ecosystems) — see [Releasing](#releasing) for how versions map to git tags.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## 2026-07-14
 
 ### Added
 
@@ -43,6 +43,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   external consumer and the release workflow). Go bumped `0.1.89 -> 0.1.90`
   (`go/v0.1.90`); `go/v0.1.89` carries the coordinate-localization fields but an
   unbuildable `go.mod`, so use `v0.1.90`.
+
+### Client versions
+
+| Client     | Package                                       | Version  | Release tag    |
+| ---------- | --------------------------------------------- | -------- | -------------- |
+| JavaScript | `@spider-cloud/spider-client` (npm)           | `0.2.3`  | `js-v0.2.3`    |
+| Python     | `spider_client` (PyPI)                        | `0.1.91` | `py-v0.1.91`   |
+| Rust       | `spider-client` (crates.io)                   | `0.1.90` | `rust-v0.1.90` |
+| CLI        | `spider-cloud-cli` (crates.io)                | `0.1.90` | `cli-v0.1.90`  |
+| Go         | `github.com/spider-rs/spider-clients/go`      | `0.1.91` | `go/v0.1.91`   |
+
+> Note: `js-v0.2.1`/`js-v0.2.2`, `rust-v0.1.88`/`rust-v0.1.89`, and
+> `cli-v0.1.88`/`cli-v0.1.89` were tagged but never reached their registries —
+> the npm publish lacked an `NPM_TOKEN` secret and the crates.io token had been
+> revoked (pre-2020 token format). This release supersedes them; the CLI has no
+> code changes since `0.1.89`, it is a registry catch-up release.
 
 ## 2026-06-26
 
