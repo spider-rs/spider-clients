@@ -1,5 +1,5 @@
 mod args;
-use args::{Cli, Commands};
+use args::{AiCommands, Cli, Commands, UnlimitedCommands};
 use clap::Parser;
 use keyring::Entry;
 use serde_json::json;
@@ -34,14 +34,12 @@ async fn main() {
                         Commands::Scrape {
                             url,
                             return_page_links,
-                            lite_mode,
                             proxy,
                             remote_proxy,
                         } => {
                             println!("Scraping URL: {}", url);
                             let mut params = RequestParams::default();
                             params.return_page_links = return_page_links;
-                            params.lite_mode = lite_mode;
                             params.proxy = proxy.map(Into::into);
                             params.remote_proxy = remote_proxy.map(Into::into);
 
@@ -77,7 +75,6 @@ async fn main() {
                             url,
                             limit,
                             return_page_links,
-                            lite_mode,
                             proxy,
                             remote_proxy,
                         } => {
@@ -87,7 +84,6 @@ async fn main() {
                                 params.limit = Some(limit);
                             }
                             params.return_page_links = return_page_links;
-                            params.lite_mode = lite_mode;
                             params.proxy = proxy.map(Into::into);
                             params.remote_proxy = remote_proxy.map(Into::into);
                             match spider
@@ -108,7 +104,6 @@ async fn main() {
                             url,
                             return_page_links,
                             limit,
-                            lite_mode,
                             proxy,
                             remote_proxy,
                         } => {
@@ -118,7 +113,6 @@ async fn main() {
                                 params.limit = Some(limit);
                             }
                             params.return_page_links = return_page_links;
-                            params.lite_mode = lite_mode;
                             params.proxy = proxy.map(Into::into);
                             params.remote_proxy = remote_proxy.map(Into::into);
                             match spider
@@ -133,7 +127,6 @@ async fn main() {
                             url,
                             limit,
                             return_page_links,
-                            lite_mode,
                             proxy,
                             remote_proxy,
                         } => {
@@ -142,7 +135,6 @@ async fn main() {
                                 params.limit = Some(limit);
                             }
                             params.return_page_links = return_page_links;
-                            params.lite_mode = lite_mode;
                             params.proxy = proxy.map(Into::into);
                             params.remote_proxy = remote_proxy.map(Into::into);
                             println!("Taking screenshot of URL: {}", url);
@@ -197,6 +189,160 @@ async fn main() {
                                 Err(e) => eprintln!("Error fetching credits: {:?}", e),
                             }
                         }
+                        Commands::Ai { command } => match command {
+                            AiCommands::Crawl {
+                                url,
+                                prompt,
+                                limit,
+                                proxy,
+                                remote_proxy,
+                            } => {
+                                println!("AI crawling URL: {}", url);
+                                let mut params = RequestParams::default();
+                                if let Some(limit) = limit {
+                                    params.limit = Some(limit);
+                                }
+                                params.proxy = proxy.map(Into::into);
+                                params.remote_proxy = remote_proxy.map(Into::into);
+                                match spider
+                                    .ai_crawl(&url, &prompt, Some(params), "application/json")
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with AI crawl: {:?}", e),
+                                }
+                            }
+                            AiCommands::Scrape {
+                                url,
+                                prompt,
+                                proxy,
+                                remote_proxy,
+                            } => {
+                                println!("AI scraping URL: {}", url);
+                                let mut params = RequestParams::default();
+                                params.proxy = proxy.map(Into::into);
+                                params.remote_proxy = remote_proxy.map(Into::into);
+                                match spider
+                                    .ai_scrape(&url, &prompt, Some(params), "application/json")
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with AI scrape: {:?}", e),
+                                }
+                            }
+                            AiCommands::Search { prompt, limit } => {
+                                println!("AI searching for: {}", prompt);
+                                let mut params = RequestParams::default();
+                                if let Some(limit) = limit {
+                                    params.limit = Some(limit);
+                                }
+                                match spider
+                                    .ai_search(&prompt, Some(params), "application/json")
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with AI search: {:?}", e),
+                                }
+                            }
+                            AiCommands::Browser { url, prompt } => {
+                                println!("AI browser automation on URL: {}", url);
+                                let params = RequestParams::default();
+                                match spider
+                                    .ai_browser(&url, &prompt, Some(params), "application/json")
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with AI browser: {:?}", e),
+                                }
+                            }
+                            AiCommands::Links { url, prompt, limit } => {
+                                println!("AI extracting links from URL: {}", url);
+                                let mut params = RequestParams::default();
+                                if let Some(limit) = limit {
+                                    params.limit = Some(limit);
+                                }
+                                match spider
+                                    .ai_links(&url, &prompt, Some(params), "application/json")
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with AI links: {:?}", e),
+                                }
+                            }
+                        },
+                        Commands::Unlimited { command } => match command {
+                            UnlimitedCommands::Scrape {
+                                url,
+                                return_page_links,
+                                proxy,
+                                remote_proxy,
+                            } => {
+                                println!("Unlimited scraping URL: {}", url);
+                                let mut params = RequestParams::default();
+                                params.return_page_links = return_page_links;
+                                params.proxy = proxy.map(Into::into);
+                                params.remote_proxy = remote_proxy.map(Into::into);
+                                match spider
+                                    .unlimited_scrape(&url, Some(params), "application/json")
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with unlimited scrape: {:?}", e),
+                                }
+                            }
+                            UnlimitedCommands::Crawl {
+                                url,
+                                limit,
+                                proxy,
+                                remote_proxy,
+                                return_page_links,
+                            } => {
+                                println!("Unlimited crawling URL: {}", url);
+                                let mut params = RequestParams::default();
+                                if let Some(limit) = limit {
+                                    params.limit = Some(limit);
+                                }
+                                params.return_page_links = return_page_links;
+                                params.proxy = proxy.map(Into::into);
+                                params.remote_proxy = remote_proxy.map(Into::into);
+                                match spider
+                                    .unlimited_crawl(
+                                        &url,
+                                        Some(params),
+                                        false,
+                                        "application/json",
+                                        None::<fn(serde_json::Value)>,
+                                    )
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with unlimited crawl: {:?}", e),
+                                }
+                            }
+                            UnlimitedCommands::Links {
+                                url,
+                                limit,
+                                proxy,
+                                remote_proxy,
+                                return_page_links,
+                            } => {
+                                println!("Unlimited fetching links from URL: {}", url);
+                                let mut params = RequestParams::default();
+                                if let Some(limit) = limit {
+                                    params.limit = Some(limit);
+                                }
+                                params.return_page_links = return_page_links;
+                                params.proxy = proxy.map(Into::into);
+                                params.remote_proxy = remote_proxy.map(Into::into);
+                                match spider
+                                    .unlimited_links(&url, Some(params), false, "application/json")
+                                    .await
+                                {
+                                    Ok(data) => println!("{}", json!(data)),
+                                    Err(e) => eprintln!("Error with unlimited links: {:?}", e),
+                                }
+                            }
+                        },
                         _ => {}
                     }
                 }

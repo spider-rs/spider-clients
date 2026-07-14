@@ -89,6 +89,30 @@ Fetch the account credits left.
 spider-cloud-cli get_credits
 ```
 
+### AI Studio Commands
+
+Prompt-guided endpoints grouped under `ai`. These require an active AI Studio subscription, billed separately from credits — see [spider.cloud/ai/pricing](https://spider.cloud/ai/pricing).
+
+```sh
+spider-cloud-cli ai scrape --url http://example.com --prompt "Extract the product name and price"
+spider-cloud-cli ai crawl --url http://example.com --prompt "Summarize each blog post" --limit 10
+spider-cloud-cli ai search --prompt "Find the best Rust web crawlers"
+spider-cloud-cli ai browser --url http://example.com --prompt "Click the pricing tab and read the plans"
+spider-cloud-cli ai links --url http://example.com --prompt "Only the documentation links"
+```
+
+### Unlimited Commands
+
+Flat-rate endpoints grouped under `unlimited`, billed by purchased concurrency seats rather than per-request credits. These require an active Unlimited subscription — see [spider.cloud/pricing?plan=unlimited](https://spider.cloud/pricing?plan=unlimited). When all purchased seats are in flight, requests return an immediate `429` with a `Retry-After` header (no queueing), so retry with backoff. AI/LLM extraction parameters are not accepted on these routes.
+
+```sh
+spider-cloud-cli unlimited scrape --url http://example.com
+spider-cloud-cli unlimited crawl --url http://example.com --limit 10
+spider-cloud-cli unlimited links --url http://example.com
+```
+
+See the [Unlimited API reference](https://spider.cloud/docs/api/unlimited) for details.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

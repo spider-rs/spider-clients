@@ -6,7 +6,37 @@ ecosystems) — see [Releasing](#releasing) for how versions map to git tags.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## 2026-07-14
+## 2026-07-14 — CLI ai/unlimited commands
+
+### Added
+
+- **CLI `ai` and `unlimited` command groups.** `spider-cloud-cli ai
+  <crawl|scrape|search|browser|links>` (prompt-guided; requires an active AI
+  Studio subscription, https://spider.cloud/ai/pricing) and `spider-cloud-cli
+  unlimited <scrape|crawl|links>` (flat-rate concurrency seats; requires an
+  active Unlimited subscription, https://spider.cloud/pricing?plan=unlimited).
+  This brings the CLI to parity with the other clients' AI and Unlimited
+  surfaces. Nested subcommands — run `spider-cloud-cli ai --help` /
+  `spider-cloud-cli unlimited --help` to list them.
+
+### Removed
+
+- **`lite_mode` request parameter.** Dropped the `lite_mode` field from the
+  Python, Rust, JavaScript, and Go request-parameter types and the
+  `--lite_mode` flag from the CLI. It is no longer part of the typed client
+  surface.
+
+### Client versions
+
+| Client     | Package                                       | Version  | Release tag    |
+| ---------- | --------------------------------------------- | -------- | -------------- |
+| JavaScript | `@spider-cloud/spider-client` (npm)           | `0.2.4`  | `js-v0.2.4`    |
+| Python     | `spider_client` (PyPI)                        | `0.1.92` | `py-v0.1.92`   |
+| Rust       | `spider-client` (crates.io)                   | `0.1.91` | `rust-v0.1.91` |
+| CLI        | `spider-cloud-cli` (crates.io)                | `0.1.91` | `cli-v0.1.91`  |
+| Go         | `github.com/spider-rs/spider-clients/go`      | `0.1.92` | `go/v0.1.92`   |
+
+## 2026-07-14 — Unlimited/AI routes
 
 ### Added
 

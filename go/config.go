@@ -4,7 +4,7 @@ package spider
 const (
 	BaseURL    = "https://api.spider.cloud"
 	APIVersion = "v1"
-	Version    = "0.1.91"
+	Version    = "0.1.92"
 )
 
 // API routes.
@@ -122,7 +122,6 @@ type SpiderParams struct {
 	ReturnCookies     bool              `json:"return_cookies,omitempty"`
 	ReturnEmbeddings  bool              `json:"return_embeddings,omitempty"`
 	FullResources     bool              `json:"full_resources,omitempty"`
-	LiteMode          bool              `json:"lite_mode,omitempty"`
 	DisableHints      bool              `json:"disable_hints,omitempty"`
 	DisableIntercept  bool              `json:"disable_intercept,omitempty"`
 	RunInBackground   bool              `json:"run_in_background,omitempty"`

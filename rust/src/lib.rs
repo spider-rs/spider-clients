@@ -1116,7 +1116,9 @@ impl Spider {
             );
         }
 
-        let res = self.api_post("unlimited/scrape", data, content_type).await?;
+        let res = self
+            .api_post("unlimited/scrape", data, content_type)
+            .await?;
         parse_response(res).await
     }
 

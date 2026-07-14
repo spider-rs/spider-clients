@@ -639,13 +639,6 @@ export interface SpiderParams {
    */
   evaluate_on_new_document?: string;
   /**
-   * Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy,
-   * geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
-   * targeting websites with minimal anti-bot protections.
-   */
-  lite_mode?: boolean;
-
-  /**
    * Set the maximum number of credits to use per page.
    * Credits are measured in decimal units, where 10,000 credits equal one dollar (100 credits per penny).
    * Credit limiting only applies to request that are Javascript rendered using smart_mode or browser for the 'request' type.

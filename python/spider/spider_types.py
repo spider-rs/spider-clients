@@ -439,11 +439,6 @@ class RequestParamsDict(TypedDict, total=False):
     # Credit limiting only applies to request that are Javascript rendered using smart_mode or browser for the 'request' type.
     max_credits_per_page: Optional[float]
 
-    #  Runs the request using lite_mode:Lite mode reduces data transfer costs by 50%, with trade-offs in speed, accuracy,
-    #  geo-targeting, and reliability. It’s best suited for non-urgent data collection or when
-    #  targeting websites with minimal anti-bot protections.
-    lite_mode: Optional[bool]
-
     # Proxy pool selection for outbound request routing.
     # Choose a pool based on your use case (e.g., stealth, speed, or stability).
     # - 'residential'           → cost-effective entry-level residential pool
