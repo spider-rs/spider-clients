@@ -25,6 +25,15 @@
   ],
   "author": "Jeff Mendez<jeff@spider.cloud>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spider-rs/spider-clients.git",
+    "directory": "javascript"
+  },
+  "homepage": "https://spider.cloud",
+  "bugs": {
+    "url": "https://github.com/spider-rs/spider-clients/issues"
+  },
   "devDependencies": {
     "@types/node": "22.10.7",
     "dotenv": "^16.4.7",
