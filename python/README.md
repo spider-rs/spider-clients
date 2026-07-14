@@ -242,6 +242,34 @@ result = app.ai_links(
 )
 ```
 
+## Unlimited Methods
+
+Unlimited methods require an active Unlimited subscription. See [spider.cloud/pricing?plan=unlimited](https://spider.cloud/pricing?plan=unlimited) for plans. The plan is a flat monthly rate billed by purchased concurrency seats (the number of requests in flight at once) instead of per-request credits.
+
+### Unlimited Scrape
+
+Scrape a single URL on the Unlimited plan:
+
+```python
+url = 'https://example.com'
+scraped_data = app.unlimited_scrape(url)
+```
+
+### Unlimited Crawl
+
+Crawl a website on the Unlimited plan:
+
+```python
+url = 'https://example.com'
+crawl_params = {
+    'limit': 200,
+    'request': 'smart_mode'
+}
+crawl_result = app.unlimited_crawl(url, params=crawl_params)
+```
+
+There is no queueing: when all purchased seats are in flight, the API returns an immediate `429` with a `Retry-After` header — retry with backoff. Every response carries `X-Concurrency-Limit` and `X-Concurrency-Active` headers. AI/LLM extraction params (`prompt`, `custom_prompt`, `extraction_prompt`, `extraction_schema`, model/vision params) are rejected with a `400`; AI usage is billed separately via the `ai_*` methods. See the [Unlimited API docs](https://spider.cloud/docs/api/unlimited) for details.
+
 ## Streaming
 
 If you need to stream the request use the third param:

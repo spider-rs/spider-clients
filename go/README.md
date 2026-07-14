@@ -153,6 +153,33 @@ result, err := client.AIBrowser(ctx, "https://example.com", "Click the login but
 result, err := client.AILinks(ctx, "https://example.com", "Find all documentation links", nil)
 ```
 
+## Unlimited
+
+Unlimited endpoints require an active Unlimited subscription. See https://spider.cloud/pricing?plan=unlimited for plans.
+
+```go
+// Unlimited Scrape
+pages, err := client.UnlimitedScrapeURL(ctx, "https://example.com/page", &spider.SpiderParams{
+    ReturnFormat: spider.FormatMarkdown,
+})
+
+// Unlimited Crawl
+pages, err := client.UnlimitedCrawlURL(ctx, "https://example.com", &spider.SpiderParams{
+    Limit:        50,
+    ReturnFormat: spider.FormatMarkdown,
+})
+
+// Unlimited Crawl with streaming
+err := client.UnlimitedCrawlURLStream(ctx, "https://example.com", nil, func(page spider.SpiderResponse) {
+    fmt.Printf("Received: %s\n", page.URL)
+})
+
+// Unlimited Links
+pages, err := client.UnlimitedLinks(ctx, "https://example.com", nil)
+```
+
+Unlimited plans bill a flat monthly rate for purchased concurrency seats (requests in flight at once) instead of per-request credits. Requests are never queued: when all seats are in flight the API returns an immediate `429` with a `Retry-After` header — retry with backoff. AI/LLM extraction parameters are rejected with a `400`; use the AI Studio endpoints for AI extraction. See https://spider.cloud/docs/api/unlimited for details.
+
 ## Error Handling
 
 ```go
@@ -163,6 +190,24 @@ if err != nil {
         // Need to subscribe at https://spider.cloud/ai-studio
     case *spider.AIStudioRateLimitExceeded:
         // Wait e.RetryAfterMs milliseconds before retrying
+    case *spider.APIError:
+        // HTTP error: e.StatusCode
+    default:
+        // Network or other error
+    }
+}
+```
+
+Unlimited endpoints return typed errors for plan and concurrency issues:
+
+```go
+pages, err := client.UnlimitedCrawlURL(ctx, url, nil)
+if err != nil {
+    switch e := err.(type) {
+    case *spider.UnlimitedPlanRequired:
+        // Need an active plan: https://spider.cloud/pricing?plan=unlimited
+    case *spider.UnlimitedConcurrencyLimitReached:
+        // All e.Seats seats in flight — wait e.RetryAfterMs milliseconds, then retry
     case *spider.APIError:
         // HTTP error: e.StatusCode
     default:

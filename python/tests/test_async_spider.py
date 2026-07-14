@@ -190,6 +190,157 @@ async def test_data_get(async_spider, url, params):
             assert isinstance(response['data'], list)
 
 @pytest.mark.asyncio
+async def test_ai_crawl(async_spider, url):
+    mock_response = [{"content": "data", "error": None, "status": 200, "url": url}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.ai_crawl(url, prompt="Find all blog posts"):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "ai/crawl"
+        assert mock_req.call_args[1]["data"]["prompt"] == "Find all blog posts"
+
+@pytest.mark.asyncio
+async def test_ai_scrape(async_spider, url):
+    mock_response = [{"content": "data", "error": None, "status": 200, "url": url}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.ai_scrape(url, prompt="Extract product names"):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "ai/scrape"
+        assert mock_req.call_args[1]["data"]["prompt"] == "Extract product names"
+
+@pytest.mark.asyncio
+async def test_ai_search(async_spider):
+    mock_response = [{"content": "result", "error": None, "status": 200, "url": "http://example.com"}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.ai_search(prompt="Find scraping libraries"):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "ai/search"
+        assert mock_req.call_args[1]["data"]["prompt"] == "Find scraping libraries"
+
+@pytest.mark.asyncio
+async def test_ai_browser(async_spider, url):
+    mock_response = [{"content": "data", "error": None, "status": 200, "url": url}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.ai_browser(url, prompt="Click the sign in button"):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "ai/browser"
+        assert mock_req.call_args[1]["data"]["prompt"] == "Click the sign in button"
+
+@pytest.mark.asyncio
+async def test_ai_links(async_spider, url):
+    mock_response = [{"error": None, "status": 200, "url": url}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.ai_links(url, prompt="Find all product links"):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "ai/links"
+        assert mock_req.call_args[1]["data"]["prompt"] == "Find all product links"
+
+@pytest.mark.asyncio
+async def test_unlimited_scrape(async_spider, url, params):
+    mock_response = [{"content": "data", "error": None, "status": 200, "url": url}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.unlimited_scrape(url, params=params):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+            assert 'content' in response[0]
+            assert 'error' in response[0]
+            assert 'status' in response[0]
+            assert 'url' in response[0]
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "unlimited/scrape"
+
+@pytest.mark.asyncio
+async def test_unlimited_crawl(async_spider, url, params):
+    mock_response = [{"content": "data", "error": None, "status": 200, "url": url}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.unlimited_crawl(url, params=params):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+            assert 'content' in response[0]
+            assert 'error' in response[0]
+            assert 'status' in response[0]
+            assert 'url' in response[0]
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "unlimited/crawl"
+
+@pytest.mark.asyncio
+async def test_unlimited_crawl_streaming(async_spider, url, params):
+    mock_response = b'{"url": "http://example.com"}'
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request):
+        def handle_json(json_obj):
+            json_obj = json.loads(json_obj.decode('utf-8'))
+            assert json_obj["url"] == "http://example.com"
+
+        async for response in async_spider.unlimited_crawl(url, params=params, stream=True, content_type="application/jsonl"):
+            handle_json(response)
+
+@pytest.mark.asyncio
+async def test_unlimited_links(async_spider, url, params):
+    mock_response = [{"error": None, "status": 200, "url": url}]
+
+    async def mock_request(*args, **kwargs):
+        yield mock_response
+
+    with patch.object(AsyncSpider, '_request', side_effect=mock_request) as mock_req:
+        async for response in async_spider.unlimited_links(url, params=params):
+            assert isinstance(response, list)
+            assert len(response) > 0
+            assert isinstance(response[0], dict)
+            assert 'error' in response[0]
+            assert 'status' in response[0]
+            assert 'url' in response[0]
+        mock_req.assert_called_once()
+        assert mock_req.call_args[0][1] == "unlimited/links"
+
+@pytest.mark.asyncio
 async def test_handle_error():
     async_spider = AsyncSpider(api_key="test_api_key")
     mock_response = AsyncMock(spec=aiohttp.ClientResponse)

@@ -794,6 +794,10 @@ export enum APIRoutes {
   AISearch = "ai/search",
   AIBrowser = "ai/browser",
   AILinks = "ai/links",
+  // Unlimited endpoints (requires an active Unlimited subscription)
+  UnlimitedScrape = "unlimited/scrape",
+  UnlimitedCrawl = "unlimited/crawl",
+  UnlimitedLinks = "unlimited/links",
 }
 
 /**

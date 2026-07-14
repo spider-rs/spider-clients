@@ -3,6 +3,7 @@ package spider
 import (
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -276,5 +277,210 @@ func TestAIStudio429(t *testing.T) {
 	}
 	if rateErr.RetryAfterMs != 5000 {
 		t.Errorf("expected RetryAfterMs=5000, got %d", rateErr.RetryAfterMs)
+	}
+}
+
+func TestUnlimitedCrawlURL(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Errorf("expected POST, got %s", r.Method)
+		}
+		if !strings.HasSuffix(r.URL.Path, "/v1/unlimited/crawl") {
+			t.Errorf("expected /v1/unlimited/crawl, got %s", r.URL.Path)
+		}
+
+		var body map[string]interface{}
+		json.NewDecoder(r.Body).Decode(&body)
+		if body["url"] != "https://example.com" {
+			t.Errorf("expected url in body, got %v", body["url"])
+		}
+
+		w.Header().Set("X-Concurrency-Limit", "10")
+		w.Header().Set("X-Concurrency-Active", "3")
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode([]SpiderResponse{
+			{URL: "https://example.com", Content: "# Hello", Status: 200},
+		})
+	}))
+	defer server.Close()
+
+	s := New("test-key", WithBaseURL(server.URL))
+	pages, err := s.UnlimitedCrawlURL(context.Background(), "https://example.com", &SpiderParams{
+		Limit:        5,
+		ReturnFormat: FormatMarkdown,
+	})
+	if err != nil {
+		t.Fatalf("UnlimitedCrawlURL error: %v", err)
+	}
+	if len(pages) != 1 {
+		t.Fatalf("expected 1 page, got %d", len(pages))
+	}
+	if pages[0].Content != "# Hello" {
+		t.Errorf("expected content, got %s", pages[0].Content)
+	}
+	if s.Concurrency.Limit != 10 || s.Concurrency.Active != 3 {
+		t.Errorf("expected concurrency 3/10, got %d/%d", s.Concurrency.Active, s.Concurrency.Limit)
+	}
+}
+
+func TestUnlimitedScrapeURL(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasSuffix(r.URL.Path, "/v1/unlimited/scrape") {
+			t.Errorf("expected /v1/unlimited/scrape, got %s", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode([]SpiderResponse{{URL: "https://example.com"}})
+	}))
+	defer server.Close()
+
+	s := New("test-key", WithBaseURL(server.URL))
+	pages, err := s.UnlimitedScrapeURL(context.Background(), "https://example.com", nil)
+	if err != nil {
+		t.Fatalf("UnlimitedScrapeURL error: %v", err)
+	}
+	if len(pages) != 1 {
+		t.Fatalf("expected 1 page, got %d", len(pages))
+	}
+}
+
+func TestUnlimitedLinks(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.HasSuffix(r.URL.Path, "/v1/unlimited/links") {
+			t.Errorf("expected /v1/unlimited/links, got %s", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode([]SpiderResponse{{URL: "https://example.com/a"}})
+	}))
+	defer server.Close()
+
+	s := New("test-key", WithBaseURL(server.URL))
+	pages, err := s.UnlimitedLinks(context.Background(), "https://example.com", nil)
+	if err != nil {
+		t.Fatalf("UnlimitedLinks error: %v", err)
+	}
+	if len(pages) != 1 {
+		t.Fatalf("expected 1 page, got %d", len(pages))
+	}
+}
+
+func TestUnlimitedCrawlURLStream(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Content-Type") != "application/jsonl" {
+			t.Errorf("expected jsonl content type, got %s", r.Header.Get("Content-Type"))
+		}
+		if !strings.HasSuffix(r.URL.Path, "/v1/unlimited/crawl") {
+			t.Errorf("expected /v1/unlimited/crawl, got %s", r.URL.Path)
+		}
+		w.Header().Set("Content-Type", "application/jsonl")
+		w.Write([]byte(`{"url":"https://example.com/1","content":"page1"}` + "\n"))
+		w.Write([]byte(`{"url":"https://example.com/2","content":"page2"}` + "\n"))
+	}))
+	defer server.Close()
+
+	s := New("test-key", WithBaseURL(server.URL))
+	var pages []SpiderResponse
+	err := s.UnlimitedCrawlURLStream(context.Background(), "https://example.com", nil, func(resp SpiderResponse) {
+		pages = append(pages, resp)
+	})
+	if err != nil {
+		t.Fatalf("UnlimitedCrawlURLStream error: %v", err)
+	}
+	if len(pages) != 2 {
+		t.Fatalf("expected 2 streamed pages, got %d", len(pages))
+	}
+}
+
+func TestUnlimited403PlanRequired(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte(`{"error":"unlimited_plan_required"}`))
+	}))
+	defer server.Close()
+
+	s := New("test-key", WithBaseURL(server.URL))
+	_, err := s.UnlimitedCrawlURL(context.Background(), "https://example.com", nil)
+	if err == nil {
+		t.Fatal("expected error for 403 response")
+	}
+	planErr, ok := err.(*UnlimitedPlanRequired)
+	if !ok {
+		t.Fatalf("expected UnlimitedPlanRequired, got %T: %v", err, err)
+	}
+	if planErr.Reason != "unlimited_plan_required" {
+		t.Errorf("expected reason 'unlimited_plan_required', got %q", planErr.Reason)
+	}
+}
+
+func TestUnlimited403PlanInactive(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte(`{"error":"unlimited_plan_inactive"}`))
+	}))
+	defer server.Close()
+
+	s := New("test-key", WithBaseURL(server.URL))
+	_, err := s.UnlimitedScrapeURL(context.Background(), "https://example.com", nil)
+	if err == nil {
+		t.Fatal("expected error for 403 response")
+	}
+	planErr, ok := err.(*UnlimitedPlanRequired)
+	if !ok {
+		t.Fatalf("expected UnlimitedPlanRequired, got %T: %v", err, err)
+	}
+	if planErr.Reason != "unlimited_plan_inactive" {
+		t.Errorf("expected reason 'unlimited_plan_inactive', got %q", planErr.Reason)
+	}
+}
+
+func TestUnlimited403OtherBodyIsAPIError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+	}))
+	defer server.Close()
+
+	s := New("test-key", WithBaseURL(server.URL))
+	_, err := s.UnlimitedLinks(context.Background(), "https://example.com", nil)
+	if err == nil {
+		t.Fatal("expected error for 403 response")
+	}
+	apiErr, ok := err.(*APIError)
+	if !ok {
+		t.Fatalf("expected APIError, got %T: %v", err, err)
+	}
+	if apiErr.StatusCode != 403 {
+		t.Errorf("expected status 403, got %d", apiErr.StatusCode)
+	}
+}
+
+// The 429 mapping is tested against unlimitedError directly: going through
+// doPost would exercise its full Retry-After sleep loop (~40s, as in
+// TestAIStudio429).
+func TestUnlimited429ConcurrencyLimit(t *testing.T) {
+	header := http.Header{}
+	header.Set("Retry-After", "2")
+	header.Set("X-Concurrency-Limit", "10")
+	header.Set("X-Concurrency-Active", "10")
+	resp := &http.Response{
+		StatusCode: http.StatusTooManyRequests,
+		Header:     header,
+		Body:       io.NopCloser(strings.NewReader(`{"error":"concurrency_limit_reached","seats":10,"active":10}`)),
+	}
+
+	s := New("test-key")
+	err := s.unlimitedError(resp, "POST "+RouteUnlimitedCrawl)
+	concErr, ok := err.(*UnlimitedConcurrencyLimitReached)
+	if !ok {
+		t.Fatalf("expected UnlimitedConcurrencyLimitReached, got %T: %v", err, err)
+	}
+	if concErr.Seats != 10 {
+		t.Errorf("expected Seats=10, got %d", concErr.Seats)
+	}
+	if concErr.Active != 10 {
+		t.Errorf("expected Active=10, got %d", concErr.Active)
+	}
+	if concErr.RetryAfterMs != 2000 {
+		t.Errorf("expected RetryAfterMs=2000, got %d", concErr.RetryAfterMs)
 	}
 }

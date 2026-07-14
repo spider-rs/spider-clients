@@ -584,6 +584,105 @@ class Spider:
             "ai/links", {"url": url, "prompt": prompt, **(params or {})}
         )
 
+    def unlimited_scrape(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ):
+        """
+        Scrape data from the specified URL on the Unlimited plan.
+        Requires an active Unlimited subscription: a flat monthly rate billed by
+        purchased concurrency seats (requests in flight at once) instead of
+        per-request credits. When all seats are in flight the API does not queue;
+        it returns an immediate 429 with a Retry-After header, so retry with
+        backoff. AI/LLM extraction params (prompt, custom_prompt,
+        extraction_prompt, extraction_schema, model/vision params) are not
+        allowed and return a 400; AI usage is billed separately via /ai/*.
+
+        Docs: https://spider.cloud/docs/api/unlimited
+        Plans: https://spider.cloud/pricing?plan=unlimited
+
+        :param url: The URL from which to scrape data.
+        :param params: Optional dictionary of additional parameters for the scrape request.
+        :return: JSON response containing the scraping results.
+        """
+        return self.api_post(
+            "unlimited/scrape", {"url": url, **(params or {})}, stream, content_type
+        )
+
+    def unlimited_crawl(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: Optional[bool] = False,
+        content_type: Optional[str] = "application/json",
+        callback: Optional[JsonCallback] = None,
+    ):
+        """
+        Start crawling at the specified URL on the Unlimited plan.
+        Requires an active Unlimited subscription: a flat monthly rate billed by
+        purchased concurrency seats (requests in flight at once) instead of
+        per-request credits. When all seats are in flight the API does not queue;
+        it returns an immediate 429 with a Retry-After header, so retry with
+        backoff. AI/LLM extraction params (prompt, custom_prompt,
+        extraction_prompt, extraction_schema, model/vision params) are not
+        allowed and return a 400; AI usage is billed separately via /ai/*.
+
+        Docs: https://spider.cloud/docs/api/unlimited
+        Plans: https://spider.cloud/pricing?plan=unlimited
+
+        :param url: The URL to begin crawling.
+        :param params: Optional dictionary with additional parameters to customize the crawl.
+        :param stream: Optional Boolean indicating if the response should be streamed. Defaults to False.
+        :param content_type: Optional str to determine the content-type header of the request.
+        :param callback: Optional callback to use with streaming. This will only send the data via callback.
+
+        :return: JSON response or the raw response stream if streaming enabled.
+        """
+        jsonl = stream and callable(callback)
+
+        if jsonl:
+            content_type = "application/jsonl"
+
+        response = self.api_post(
+            "unlimited/crawl", {"url": url, **(params or {})}, stream, content_type
+        )
+
+        if jsonl:
+            return self.stream_reader(response, callback)
+        else:
+            return response
+
+    def unlimited_links(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ):
+        """
+        Retrieve links from the specified URL on the Unlimited plan.
+        Requires an active Unlimited subscription: a flat monthly rate billed by
+        purchased concurrency seats (requests in flight at once) instead of
+        per-request credits. When all seats are in flight the API does not queue;
+        it returns an immediate 429 with a Retry-After header, so retry with
+        backoff. AI/LLM extraction params (prompt, custom_prompt,
+        extraction_prompt, extraction_schema, model/vision params) are not
+        allowed and return a 400; AI usage is billed separately via /ai/*.
+
+        Docs: https://spider.cloud/docs/api/unlimited
+        Plans: https://spider.cloud/pricing?plan=unlimited
+
+        :param url: The URL from which to extract links.
+        :param params: Optional parameters for the link retrieval request.
+        :return: JSON response containing the links.
+        """
+        return self.api_post(
+            "unlimited/links", {"url": url, **(params or {})}, stream, content_type
+        )
+
     def _handle_error(self, response, action):
         if response.status_code in [402, 409, 500]:
             error_message = response.json().get("error", "Unknown error occurred")

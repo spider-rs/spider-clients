@@ -9,19 +9,22 @@ const (
 
 // API routes.
 const (
-	RouteCrawl       = "crawl"
-	RouteLinks       = "links"
-	RouteScreenshot  = "screenshot"
-	RouteSearch      = "search"
-	RouteTransform   = "transform"
-	RouteUnblocker   = "unblocker"
-	RouteDataCredits = "data/credits"
-	RouteData        = "data"
-	RouteAICrawl     = "ai/crawl"
-	RouteAIScrape    = "ai/scrape"
-	RouteAISearch    = "ai/search"
-	RouteAIBrowser   = "ai/browser"
-	RouteAILinks     = "ai/links"
+	RouteCrawl           = "crawl"
+	RouteLinks           = "links"
+	RouteScreenshot      = "screenshot"
+	RouteSearch          = "search"
+	RouteTransform       = "transform"
+	RouteUnblocker       = "unblocker"
+	RouteDataCredits     = "data/credits"
+	RouteData            = "data"
+	RouteAICrawl         = "ai/crawl"
+	RouteAIScrape        = "ai/scrape"
+	RouteAISearch        = "ai/search"
+	RouteAIBrowser       = "ai/browser"
+	RouteAILinks         = "ai/links"
+	RouteUnlimitedScrape = "unlimited/scrape"
+	RouteUnlimitedCrawl  = "unlimited/crawl"
+	RouteUnlimitedLinks  = "unlimited/links"
 )
 
 // RequestType controls the rendering method.

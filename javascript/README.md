@@ -114,6 +114,24 @@ const result = await app.aiScrape(
 );
 ```
 
+### Unlimited Methods
+
+Unlimited methods require an active Unlimited subscription. See https://spider.cloud/pricing?plan=unlimited for plans.
+
+- **`unlimitedScrape(url, params)`**: Scrape data from a specified URL on the Unlimited plan.
+- **`unlimitedCrawl(url, params, stream)`**: Begin crawling from a specific URL on the Unlimited plan with optional parameters for customization and an optional streaming response.
+- **`unlimitedLinks(url, params, stream)`**: Retrieve all links from the specified URL on the Unlimited plan with optional parameters.
+
+```javascript
+// Unlimited scrape example
+const data = await app.unlimitedScrape("https://spider.cloud");
+
+// Unlimited crawl example
+const result = await app.unlimitedCrawl("https://spider.cloud", { limit: 5 });
+```
+
+The Unlimited plan bills a flat monthly rate by purchased concurrency seats (the number of requests in flight at once) instead of per-request credits. Requests are not queued: when all seats are in flight the API returns an immediate `429` with a `Retry-After` header, so retry with backoff (the SDK retries automatically). AI/LLM extraction params such as `prompt` or `extraction_schema` are rejected with a `400`; use the AI Studio methods for AI extraction. See https://spider.cloud/docs/api/unlimited for details.
+
 ### Unblocker with AI Extraction
 
 ```javascript

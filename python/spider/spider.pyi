@@ -61,6 +61,56 @@ class Spider:
         content_type: str = "application/json",
     ) -> Any: ...
     def get_credits(self) -> Any: ...
+    def ai_crawl(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> Any: ...
+    def ai_scrape(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> Any: ...
+    def ai_search(
+        self,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> Any: ...
+    def ai_browser(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> Any: ...
+    def ai_links(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> Any: ...
+    def unlimited_scrape(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ) -> Any: ...
+    def unlimited_crawl(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ) -> Any: ...
+    def unlimited_links(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ) -> Any: ...
     def data_post(
         self, table: str, data: Optional[RequestParamsDict] = None
     ) -> Any: ...

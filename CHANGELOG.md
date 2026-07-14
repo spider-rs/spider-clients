@@ -8,6 +8,28 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Unlimited plan routes.** New methods for the flat-rate Unlimited plan —
+  `/unlimited/scrape`, `/unlimited/crawl`, `/unlimited/links` — billed by
+  purchased concurrency seats rather than per-request credits. Requires an
+  active Unlimited subscription
+  ([pricing](https://spider.cloud/pricing?plan=unlimited),
+  [docs](https://spider.cloud/docs/api/unlimited)). Python
+  (`unlimited_scrape`/`unlimited_crawl`/`unlimited_links`, sync and async),
+  JavaScript (`unlimitedScrape`/`unlimitedCrawl`/`unlimitedLinks`), Go
+  (`UnlimitedScrapeURL`/`UnlimitedCrawlURL`+`Stream`/`UnlimitedLinks`, plus
+  typed `UnlimitedPlanRequired`/`UnlimitedConcurrencyLimitReached` errors and
+  a `Concurrency` field tracking the `X-Concurrency-*` headers), and Rust
+  (`unlimited_scrape`/`unlimited_crawl`/`unlimited_links`). Requests beyond
+  the purchased seats get an immediate `429` with `Retry-After` (no
+  queueing); AI/LLM extraction params are rejected with `400`.
+- **AI routes for Rust and async Python.** The Rust client gains
+  `ai_crawl`/`ai_scrape`/`ai_search`/`ai_browser`/`ai_links`, and Python's
+  `AsyncSpider` reaches AI parity with the sync client. AI routes require an
+  active AI Studio subscription, billed separately:
+  https://spider.cloud/ai/pricing
+
 ### Fixed
 
 - **Python unit tests mock the right boundary.** The sync client tests patched

@@ -157,6 +157,28 @@ let credits = spider.get_credits().await.expect("Failed to get credits");
 println!("Remaining Credits: {:?}", credits);
 ```
 
+### AI
+
+Guide crawling, scraping, search, browser automation, and link extraction with natural language prompts using `ai_crawl`, `ai_scrape`, `ai_search`, `ai_browser`, and `ai_links`. Requires an active [AI Studio subscription](https://spider.cloud/ai/pricing), billed separately from credits:
+
+```rust
+let url = "https://example.com";
+let scraped = spider.ai_scrape(url, "Extract the page title and main heading", None, "application/json").await.expect("Failed to AI scrape the URL");
+
+let results = spider.ai_search("Find the top Rust web frameworks", None, "application/json").await.expect("Failed to AI search");
+```
+
+### Unlimited
+
+`unlimited_scrape`, `unlimited_crawl`, and `unlimited_links` take the same parameters and return the same responses as `scrape_url`, `crawl_url`, and `links`, but run on the [Unlimited plan](https://spider.cloud/pricing?plan=unlimited) — a flat monthly rate billed by concurrency seats instead of per-request credits. There is no queueing: when all seats are in flight the API returns an immediate `429` with a `Retry-After` header, so retry with backoff (the SDK retries with exponential backoff automatically). AI/LLM extraction params are rejected with a `400`. See the [Unlimited docs](https://spider.cloud/docs/api/unlimited):
+
+```rust
+let url = "https://example.com";
+let scraped = spider.unlimited_scrape(url, None, "application/json").await.expect("Failed to scrape the URL");
+
+let crawl_result = spider.unlimited_crawl(url, None, false, "application/json", None::<fn(serde_json::Value)>).await.expect("Failed to crawl the URL");
+```
+
 ## Streaming
 
 If you need to use streaming, set the `stream` parameter to `true` and provide a callback function:

@@ -1,7 +1,8 @@
 // Package spider provides a Go client for the Spider web crawling API.
 //
 // The client supports all Spider API endpoints including crawling, scraping,
-// search, screenshots, transform, unblocker, and AI Studio features.
+// search, screenshots, transform, unblocker, AI Studio, and Unlimited plan
+// features.
 //
 // Basic usage:
 //
@@ -59,6 +60,15 @@ type RateLimitInfo struct {
 	ResetSeconds int
 }
 
+// ConcurrencyInfo holds the latest Unlimited concurrency state from API
+// response headers.
+type ConcurrencyInfo struct {
+	// Purchased concurrency seats (X-Concurrency-Limit header).
+	Limit int
+	// Requests currently in flight (X-Concurrency-Active header).
+	Active int
+}
+
 // Spider is the API client.
 type Spider struct {
 	apiKey      string
@@ -69,6 +79,9 @@ type Spider struct {
 
 	// RateLimit holds the latest rate limit info from API responses.
 	RateLimit RateLimitInfo
+
+	// Concurrency holds the latest Unlimited concurrency info from API responses.
+	Concurrency ConcurrencyInfo
 }
 
 // New creates a new Spider client. If apiKey is empty, the SPIDER_API_KEY
@@ -217,6 +230,60 @@ func (s *Spider) AILinks(ctx context.Context, url, prompt string, params *AIPara
 	return s.aiPost(ctx, RouteAILinks, body)
 }
 
+// ---------- Unlimited endpoints ----------
+
+// UnlimitedCrawlURL crawls a website starting from url on the Unlimited
+// plan: a flat monthly rate billed by purchased concurrency seats (the
+// number of requests in flight at once) instead of per-request credits.
+// Requires an active Unlimited subscription. Requests are never queued —
+// when all seats are in flight the API returns an immediate 429 with a
+// Retry-After header, so retry with backoff. AI/LLM extraction parameters
+// are rejected with a 400; use the AI Studio endpoints for AI extraction.
+//
+// Docs: https://spider.cloud/docs/api/unlimited
+// Pricing: https://spider.cloud/pricing?plan=unlimited
+func (s *Spider) UnlimitedCrawlURL(ctx context.Context, url string, params *SpiderParams) ([]SpiderResponse, error) {
+	body := s.mergeURL(url, params)
+	return s.unlimitedPost(ctx, RouteUnlimitedCrawl, body)
+}
+
+// UnlimitedCrawlURLStream is like UnlimitedCrawlURL but streams results
+// via JSONL, invoking cb for each page as it arrives.
+func (s *Spider) UnlimitedCrawlURLStream(ctx context.Context, url string, params *SpiderParams, cb StreamCallback) error {
+	body := s.mergeURL(url, params)
+	return s.unlimitedPostStream(ctx, RouteUnlimitedCrawl, body, cb)
+}
+
+// UnlimitedScrapeURL scrapes a single page on the Unlimited plan: a flat
+// monthly rate billed by purchased concurrency seats (the number of
+// requests in flight at once) instead of per-request credits. Requires an
+// active Unlimited subscription. Requests are never queued — when all
+// seats are in flight the API returns an immediate 429 with a Retry-After
+// header, so retry with backoff. AI/LLM extraction parameters are
+// rejected with a 400; use the AI Studio endpoints for AI extraction.
+//
+// Docs: https://spider.cloud/docs/api/unlimited
+// Pricing: https://spider.cloud/pricing?plan=unlimited
+func (s *Spider) UnlimitedScrapeURL(ctx context.Context, url string, params *SpiderParams) ([]SpiderResponse, error) {
+	body := s.mergeURL(url, params)
+	return s.unlimitedPost(ctx, RouteUnlimitedScrape, body)
+}
+
+// UnlimitedLinks retrieves all links from url on the Unlimited plan: a
+// flat monthly rate billed by purchased concurrency seats (the number of
+// requests in flight at once) instead of per-request credits. Requires an
+// active Unlimited subscription. Requests are never queued — when all
+// seats are in flight the API returns an immediate 429 with a Retry-After
+// header, so retry with backoff. AI/LLM extraction parameters are
+// rejected with a 400; use the AI Studio endpoints for AI extraction.
+//
+// Docs: https://spider.cloud/docs/api/unlimited
+// Pricing: https://spider.cloud/pricing?plan=unlimited
+func (s *Spider) UnlimitedLinks(ctx context.Context, url string, params *SpiderParams) ([]SpiderResponse, error) {
+	body := s.mergeURL(url, params)
+	return s.unlimitedPost(ctx, RouteUnlimitedLinks, body)
+}
+
 // ---------- Internal HTTP helpers ----------
 
 func (s *Spider) endpoint(route string) string {
@@ -245,6 +312,19 @@ func (s *Spider) updateRateLimit(header http.Header) {
 	if v := header.Get("RateLimit-Reset"); v != "" {
 		if n, err := strconv.Atoi(v); err == nil {
 			s.RateLimit.ResetSeconds = n
+		}
+	}
+}
+
+func (s *Spider) updateConcurrency(header http.Header) {
+	if v := header.Get("X-Concurrency-Limit"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			s.Concurrency.Limit = n
+		}
+	}
+	if v := header.Get("X-Concurrency-Active"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil {
+			s.Concurrency.Active = n
 		}
 	}
 }
@@ -288,6 +368,7 @@ func (s *Spider) doPost(ctx context.Context, route string, body interface{}, jso
 		}
 
 		s.updateRateLimit(resp.Header)
+		s.updateConcurrency(resp.Header)
 
 		if resp.StatusCode == http.StatusTooManyRequests {
 			retryAfter := 1
@@ -440,6 +521,74 @@ func (s *Spider) aiPost(ctx context.Context, route string, body interface{}) (js
 		return nil, &AIStudioRateLimitExceeded{RetryAfterMs: retryAfter}
 	default:
 		return nil, &APIError{StatusCode: resp.StatusCode, Action: "AI POST " + route}
+	}
+}
+
+func (s *Spider) unlimitedPost(ctx context.Context, route string, body interface{}) ([]SpiderResponse, error) {
+	resp, err := s.doPost(ctx, route, body, false)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, s.unlimitedError(resp, "POST "+route)
+	}
+
+	var results []SpiderResponse
+	if err := json.NewDecoder(resp.Body).Decode(&results); err != nil {
+		return nil, fmt.Errorf("spider: decode response: %w", err)
+	}
+	return results, nil
+}
+
+func (s *Spider) unlimitedPostStream(ctx context.Context, route string, body interface{}, cb StreamCallback) error {
+	resp, err := s.doPost(ctx, route, body, true)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return s.unlimitedError(resp, "POST stream "+route)
+	}
+
+	return streamJSONL(resp.Body, cb)
+}
+
+// unlimitedError maps a non-OK response from an Unlimited route to a
+// typed error.
+func (s *Spider) unlimitedError(resp *http.Response, action string) error {
+	switch resp.StatusCode {
+	case http.StatusForbidden:
+		var body struct {
+			Error string `json:"error"`
+		}
+		if json.NewDecoder(resp.Body).Decode(&body) == nil &&
+			(body.Error == "unlimited_plan_required" || body.Error == "unlimited_plan_inactive") {
+			return &UnlimitedPlanRequired{Reason: body.Error}
+		}
+		return &APIError{StatusCode: resp.StatusCode, Action: action}
+	case http.StatusTooManyRequests:
+		e := &UnlimitedConcurrencyLimitReached{RetryAfterMs: 1000}
+		if ra := resp.Header.Get("Retry-After"); ra != "" {
+			if secs, err := strconv.Atoi(ra); err == nil {
+				e.RetryAfterMs = secs * 1000
+			}
+		}
+		if v := resp.Header.Get("X-Concurrency-Limit"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil {
+				e.Seats = n
+			}
+		}
+		if v := resp.Header.Get("X-Concurrency-Active"); v != "" {
+			if n, err := strconv.Atoi(v); err == nil {
+				e.Active = n
+			}
+		}
+		return e
+	default:
+		return &APIError{StatusCode: resp.StatusCode, Action: action}
 	}
 }
 

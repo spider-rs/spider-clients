@@ -847,6 +847,413 @@ impl Spider {
         parse_response(res).await
     }
 
+    /// AI-guided crawling of a website using a natural language prompt.
+    ///
+    /// Requires an active AI Studio subscription (billed separately from credits):
+    /// <https://spider.cloud/ai/pricing>
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to start crawling.
+    /// * `prompt` - Natural language instruction for what to crawl and extract.
+    /// * `params` - Optional request parameters.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn ai_crawl(
+        &self,
+        url: &str,
+        prompt: &str,
+        params: Option<RequestParams>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        if !url.is_empty() {
+            data.insert(
+                "url".to_string(),
+                serde_json::Value::String(url.to_string()),
+            );
+        }
+
+        data.insert(
+            "prompt".to_string(),
+            serde_json::Value::String(prompt.to_string()),
+        );
+
+        let res = self.api_post("ai/crawl", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// AI-guided scraping of a URL using a natural language prompt.
+    ///
+    /// Requires an active AI Studio subscription (billed separately from credits):
+    /// <https://spider.cloud/ai/pricing>
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to scrape.
+    /// * `prompt` - Natural language description of the data to extract.
+    /// * `params` - Optional request parameters.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn ai_scrape(
+        &self,
+        url: &str,
+        prompt: &str,
+        params: Option<RequestParams>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        if !url.is_empty() {
+            data.insert(
+                "url".to_string(),
+                serde_json::Value::String(url.to_string()),
+            );
+        }
+
+        data.insert(
+            "prompt".to_string(),
+            serde_json::Value::String(prompt.to_string()),
+        );
+
+        let res = self.api_post("ai/scrape", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// AI-enhanced web search using a natural language query.
+    ///
+    /// Requires an active AI Studio subscription (billed separately from credits):
+    /// <https://spider.cloud/ai/pricing>
+    ///
+    /// # Arguments
+    ///
+    /// * `prompt` - Natural language search query.
+    /// * `params` - Optional request parameters.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn ai_search(
+        &self,
+        prompt: &str,
+        params: Option<RequestParams>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        data.insert(
+            "prompt".to_string(),
+            serde_json::Value::String(prompt.to_string()),
+        );
+
+        let res = self.api_post("ai/search", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// AI-guided browser automation using natural language commands.
+    ///
+    /// Requires an active AI Studio subscription (billed separately from credits):
+    /// <https://spider.cloud/ai/pricing>
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to automate.
+    /// * `prompt` - Natural language description of the browser actions.
+    /// * `params` - Optional request parameters.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn ai_browser(
+        &self,
+        url: &str,
+        prompt: &str,
+        params: Option<RequestParams>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        if !url.is_empty() {
+            data.insert(
+                "url".to_string(),
+                serde_json::Value::String(url.to_string()),
+            );
+        }
+
+        data.insert(
+            "prompt".to_string(),
+            serde_json::Value::String(prompt.to_string()),
+        );
+
+        let res = self.api_post("ai/browser", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// AI-guided link extraction and filtering using a natural language prompt.
+    ///
+    /// Requires an active AI Studio subscription (billed separately from credits):
+    /// <https://spider.cloud/ai/pricing>
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to extract links from.
+    /// * `prompt` - Natural language description of the links to find.
+    /// * `params` - Optional request parameters.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn ai_links(
+        &self,
+        url: &str,
+        prompt: &str,
+        params: Option<RequestParams>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        if !url.is_empty() {
+            data.insert(
+                "url".to_string(),
+                serde_json::Value::String(url.to_string()),
+            );
+        }
+
+        data.insert(
+            "prompt".to_string(),
+            serde_json::Value::String(prompt.to_string()),
+        );
+
+        let res = self.api_post("ai/links", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// Scrapes a URL on the Unlimited plan. Takes the same parameters and
+    /// returns the same responses as [`Spider::scrape_url`].
+    ///
+    /// Requires an active Unlimited subscription — a flat monthly rate billed by
+    /// purchased concurrency seats (the number of requests in flight at once)
+    /// instead of per-request credits. Without one the API returns `403` with
+    /// `{"error":"unlimited_plan_required"}` or `{"error":"unlimited_plan_inactive"}`.
+    ///
+    /// There is no queueing: when all purchased seats are in flight the API
+    /// returns an immediate `429` with a `Retry-After` header — callers should
+    /// retry with backoff (this client already retries with exponential backoff).
+    /// Every response carries `X-Concurrency-Limit` and `X-Concurrency-Active`
+    /// headers. AI/LLM extraction params (`prompt`, `extraction_schema`,
+    /// model/vision params) are not allowed and are rejected with `400`.
+    ///
+    /// Docs: <https://spider.cloud/docs/api/unlimited> — Pricing:
+    /// <https://spider.cloud/pricing?plan=unlimited>
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to scrape.
+    /// * `params` - Optional request parameters.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn unlimited_scrape(
+        &self,
+        url: &str,
+        params: Option<RequestParams>,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        if !url.is_empty() {
+            data.insert(
+                "url".to_string(),
+                serde_json::Value::String(url.to_string()),
+            );
+        }
+
+        let res = self.api_post("unlimited/scrape", data, content_type).await?;
+        parse_response(res).await
+    }
+
+    /// Crawls a URL on the Unlimited plan. Takes the same parameters and
+    /// returns the same responses as [`Spider::crawl_url`].
+    ///
+    /// Requires an active Unlimited subscription — a flat monthly rate billed by
+    /// purchased concurrency seats (the number of requests in flight at once)
+    /// instead of per-request credits. Without one the API returns `403` with
+    /// `{"error":"unlimited_plan_required"}` or `{"error":"unlimited_plan_inactive"}`.
+    ///
+    /// There is no queueing: when all purchased seats are in flight the API
+    /// returns an immediate `429` with a `Retry-After` header — callers should
+    /// retry with backoff (this client already retries with exponential backoff).
+    /// Every response carries `X-Concurrency-Limit` and `X-Concurrency-Active`
+    /// headers. AI/LLM extraction params (`prompt`, `extraction_schema`,
+    /// model/vision params) are not allowed and are rejected with `400`.
+    ///
+    /// Docs: <https://spider.cloud/docs/api/unlimited> — Pricing:
+    /// <https://spider.cloud/pricing?plan=unlimited>
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to crawl.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    /// * `callback` - Optional callback function to handle each streamed chunk.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn unlimited_crawl(
+        &self,
+        url: &str,
+        params: Option<RequestParams>,
+        stream: bool,
+        content_type: &str,
+        callback: Option<impl Fn(serde_json::Value) + Send>,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        use tokio_util::codec::{FramedRead, LinesCodec};
+
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        data.insert("url".into(), serde_json::Value::String(url.to_string()));
+
+        let res = self.api_post("unlimited/crawl", data, content_type).await?;
+
+        if stream {
+            if let Some(callback) = callback {
+                let stream = res.bytes_stream();
+
+                let stream_reader = tokio_util::io::StreamReader::new(
+                    stream
+                        .map(|r| r.map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))),
+                );
+
+                let mut lines = FramedRead::new(stream_reader, LinesCodec::new());
+
+                while let Some(line_result) = lines.next().await {
+                    match line_result {
+                        Ok(line) => match serde_json::from_str::<serde_json::Value>(&line) {
+                            Ok(value) => {
+                                callback(value);
+                            }
+                            Err(_e) => {
+                                continue;
+                            }
+                        },
+                        Err(_e) => return Ok(serde_json::Value::Null),
+                    }
+                }
+
+                Ok(serde_json::Value::Null)
+            } else {
+                Ok(serde_json::Value::Null)
+            }
+        } else {
+            parse_response(res).await
+        }
+    }
+
+    /// Fetches links from a URL on the Unlimited plan. Takes the same parameters
+    /// and returns the same responses as [`Spider::links`].
+    ///
+    /// Requires an active Unlimited subscription — a flat monthly rate billed by
+    /// purchased concurrency seats (the number of requests in flight at once)
+    /// instead of per-request credits. Without one the API returns `403` with
+    /// `{"error":"unlimited_plan_required"}` or `{"error":"unlimited_plan_inactive"}`.
+    ///
+    /// There is no queueing: when all purchased seats are in flight the API
+    /// returns an immediate `429` with a `Retry-After` header — callers should
+    /// retry with backoff (this client already retries with exponential backoff).
+    /// Every response carries `X-Concurrency-Limit` and `X-Concurrency-Active`
+    /// headers. AI/LLM extraction params (`prompt`, `extraction_schema`,
+    /// model/vision params) are not allowed and are rejected with `400`.
+    ///
+    /// Docs: <https://spider.cloud/docs/api/unlimited> — Pricing:
+    /// <https://spider.cloud/pricing?plan=unlimited>
+    ///
+    /// # Arguments
+    ///
+    /// * `url` - The URL to fetch links from.
+    /// * `params` - Optional request parameters.
+    /// * `stream` - Whether streaming is enabled.
+    /// * `content_type` - The content type of the request.
+    ///
+    /// # Returns
+    ///
+    /// The response from the API as a JSON value.
+    pub async fn unlimited_links(
+        &self,
+        url: &str,
+        params: Option<RequestParams>,
+        _stream: bool,
+        content_type: &str,
+    ) -> Result<serde_json::Value, reqwest::Error> {
+        let mut data = HashMap::new();
+
+        if let Ok(params) = serde_json::to_value(params) {
+            if let Some(ref p) = params.as_object() {
+                data.extend(p.iter().map(|(k, v)| (k.to_string(), v.clone())));
+            }
+        }
+
+        data.insert("url".into(), serde_json::Value::String(url.to_string()));
+
+        let res = self.api_post("unlimited/links", data, content_type).await?;
+        parse_response(res).await
+    }
+
     /// Unblock a URL.
     ///
     /// # Arguments
@@ -1035,6 +1442,62 @@ mod tests {
     async fn test_links() {
         let response: Result<serde_json::Value, Error> = SPIDER_CLIENT
             .links("https://example.com", None, false, "application/json")
+            .await;
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_ai_scrape() {
+        let response = SPIDER_CLIENT
+            .ai_scrape(
+                "https://example.com",
+                "Extract the page title",
+                None,
+                "application/json",
+            )
+            .await;
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_ai_search() {
+        let response = SPIDER_CLIENT
+            .ai_search("Find the top sports websites", None, "application/json")
+            .await;
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_unlimited_scrape() {
+        let response = SPIDER_CLIENT
+            .unlimited_scrape("https://example.com", None, "application/json")
+            .await;
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_unlimited_crawl() {
+        let response = SPIDER_CLIENT
+            .unlimited_crawl(
+                "https://example.com",
+                None,
+                false,
+                "application/json",
+                None::<fn(serde_json::Value)>,
+            )
+            .await;
+        assert!(response.is_ok());
+    }
+
+    #[tokio::test]
+    #[ignore]
+    async fn test_unlimited_links() {
+        let response: Result<serde_json::Value, Error> = SPIDER_CLIENT
+            .unlimited_links("https://example.com", None, false, "application/json")
             .await;
         assert!(response.is_ok());
     }

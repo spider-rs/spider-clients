@@ -238,6 +238,202 @@ class AsyncSpider:
         async for response in self._request("GET", f"data/{table}", params=params):
             yield response
 
+    async def ai_crawl(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> AsyncIterator[Any]:
+        """
+        AI-guided crawling using natural language prompts.
+        Requires an active AI Studio subscription, billed separately.
+        See https://spider.cloud/ai/pricing for plans.
+
+        :param url: The URL to start crawling.
+        :param prompt: Natural language instruction for what to crawl and extract.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with crawl results.
+        """
+        data = {"url": url, "prompt": prompt, **(params or {})}
+        async for response in self._request("POST", "ai/crawl", data=data):
+            yield response
+
+    async def ai_scrape(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> AsyncIterator[Any]:
+        """
+        AI-guided scraping using natural language prompts.
+        Requires an active AI Studio subscription, billed separately.
+        See https://spider.cloud/ai/pricing for plans.
+
+        :param url: The URL to scrape.
+        :param prompt: Natural language description of data to extract.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with scraped data.
+        """
+        data = {"url": url, "prompt": prompt, **(params or {})}
+        async for response in self._request("POST", "ai/scrape", data=data):
+            yield response
+
+    async def ai_search(
+        self,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> AsyncIterator[Any]:
+        """
+        AI-enhanced web search using natural language queries.
+        Requires an active AI Studio subscription, billed separately.
+        See https://spider.cloud/ai/pricing for plans.
+
+        :param prompt: Natural language search query.
+        :param params: Optional search parameters.
+        :return: JSON response with search results.
+        """
+        data = {"prompt": prompt, **(params or {})}
+        async for response in self._request("POST", "ai/search", data=data):
+            yield response
+
+    async def ai_browser(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> AsyncIterator[Any]:
+        """
+        AI-guided browser automation using natural language commands.
+        Requires an active AI Studio subscription, billed separately.
+        See https://spider.cloud/ai/pricing for plans.
+
+        :param url: The URL to automate.
+        :param prompt: Natural language description of browser actions.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with automation results.
+        """
+        data = {"url": url, "prompt": prompt, **(params or {})}
+        async for response in self._request("POST", "ai/browser", data=data):
+            yield response
+
+    async def ai_links(
+        self,
+        url: str,
+        prompt: str,
+        params: Optional[RequestParamsDict] = None,
+    ) -> AsyncIterator[Any]:
+        """
+        AI-guided link extraction and filtering.
+        Requires an active AI Studio subscription, billed separately.
+        See https://spider.cloud/ai/pricing for plans.
+
+        :param url: The URL to extract links from.
+        :param prompt: Natural language description of what links to find.
+        :param params: Optional dictionary of additional parameters.
+        :return: JSON response with filtered links.
+        """
+        data = {"url": url, "prompt": prompt, **(params or {})}
+        async for response in self._request("POST", "ai/links", data=data):
+            yield response
+
+    async def unlimited_scrape(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ) -> AsyncIterator[Any]:
+        """
+        Scrape data from the specified URL on the Unlimited plan.
+        Requires an active Unlimited subscription: a flat monthly rate billed by
+        purchased concurrency seats (requests in flight at once) instead of
+        per-request credits. When all seats are in flight the API does not queue;
+        it returns an immediate 429 with a Retry-After header, so retry with
+        backoff. AI/LLM extraction params (prompt, custom_prompt,
+        extraction_prompt, extraction_schema, model/vision params) are not
+        allowed and return a 400; AI usage is billed separately via /ai/*.
+
+        Docs: https://spider.cloud/docs/api/unlimited
+        Plans: https://spider.cloud/pricing?plan=unlimited
+
+        :param url: The URL from which to scrape data.
+        :param params: Optional dictionary of additional parameters for the scrape request.
+        :return: JSON response containing the scraping results.
+        """
+        data = {"url": url, **(params or {})}
+        async for response in self._request(
+            "POST", "unlimited/scrape", data=data, stream=stream, content_type=content_type
+        ):
+            yield response
+
+    async def unlimited_crawl(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+        callback: Optional[JsonCallback] = None,
+    ) -> AsyncIterator[Any]:
+        """
+        Start crawling at the specified URL on the Unlimited plan.
+        Requires an active Unlimited subscription: a flat monthly rate billed by
+        purchased concurrency seats (requests in flight at once) instead of
+        per-request credits. When all seats are in flight the API does not queue;
+        it returns an immediate 429 with a Retry-After header, so retry with
+        backoff. AI/LLM extraction params (prompt, custom_prompt,
+        extraction_prompt, extraction_schema, model/vision params) are not
+        allowed and return a 400; AI usage is billed separately via /ai/*.
+
+        Docs: https://spider.cloud/docs/api/unlimited
+        Plans: https://spider.cloud/pricing?plan=unlimited
+
+        :param url: The URL to begin crawling.
+        :param params: Optional dictionary with additional parameters to customize the crawl.
+        :param stream: Boolean indicating if the response should be streamed. Defaults to False.
+        :return: JSON response or the raw response stream if streaming enabled.
+        """
+        data = {"url": url, **(params or {})}
+        if stream and callback:
+            content_type = "application/jsonl"
+
+        async for response in self._request(
+            "POST", "unlimited/crawl", data=data, stream=stream, content_type=content_type
+        ):
+            if stream and callback:
+                await self._stream_reader(response, callback)
+            else:
+                yield response
+
+    async def unlimited_links(
+        self,
+        url: str,
+        params: Optional[RequestParamsDict] = None,
+        stream: bool = False,
+        content_type: str = "application/json",
+    ) -> AsyncIterator[Any]:
+        """
+        Retrieve links from the specified URL on the Unlimited plan.
+        Requires an active Unlimited subscription: a flat monthly rate billed by
+        purchased concurrency seats (requests in flight at once) instead of
+        per-request credits. When all seats are in flight the API does not queue;
+        it returns an immediate 429 with a Retry-After header, so retry with
+        backoff. AI/LLM extraction params (prompt, custom_prompt,
+        extraction_prompt, extraction_schema, model/vision params) are not
+        allowed and return a 400; AI usage is billed separately via /ai/*.
+
+        Docs: https://spider.cloud/docs/api/unlimited
+        Plans: https://spider.cloud/pricing?plan=unlimited
+
+        :param url: The URL from which to extract links.
+        :param params: Optional parameters for the link retrieval request.
+        :return: JSON response containing the links.
+        """
+        data = {"url": url, **(params or {})}
+        async for response in self._request(
+            "POST", "unlimited/links", data=data, stream=stream, content_type=content_type
+        ):
+            yield response
+
     async def _stream_reader(
         self, response: Any, callback: Callable[[Dict[str, Any]], None]
     ) -> None:

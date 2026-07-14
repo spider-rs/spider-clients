@@ -100,6 +100,74 @@ def test_links(mock_post, spider, url, params):
     mock_post.assert_called_once()
 
 @patch.object(Spider, '_post_request')
+def test_unlimited_scrape(mock_post, spider, url, params):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [{"content": "data", "error": None, "status": 200, "url": url}]
+    mock_post.return_value = mock_response
+
+    response = spider.unlimited_scrape(url, params=params)
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
+    mock_post.assert_called_once()
+    assert mock_post.call_args[0][0].endswith("unlimited/scrape")
+
+@patch.object(Spider, '_post_request')
+def test_unlimited_crawl(mock_post, spider, url, params):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [{"content": "data", "error": None, "status": 200, "url": url}]
+    mock_post.return_value = mock_response
+
+    response = spider.unlimited_crawl(url, params=params)
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'content' in response[0]
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
+    mock_post.assert_called_once()
+    assert mock_post.call_args[0][0].endswith("unlimited/crawl")
+
+@patch.object(Spider, '_post_request')
+def test_unlimited_crawl_streaming(mock_post, spider, url, params):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.raw = BytesIO(b'{"url": "http://example.com"}\n')
+    mock_post.return_value = mock_response
+
+    callback_data = []
+    def handle_json(json_obj):
+        callback_data.append(json_obj)
+
+    spider.unlimited_crawl(url, params=params, stream=True, callback=handle_json)
+    assert callback_data == [{"url": "http://example.com"}]
+    mock_post.assert_called_once()
+
+@patch.object(Spider, '_post_request')
+def test_unlimited_links(mock_post, spider, url, params):
+    mock_response = MagicMock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = [{"error": None, "status": 200, "url": url}]
+    mock_post.return_value = mock_response
+
+    response = spider.unlimited_links(url, params=params)
+    assert isinstance(response, list)
+    assert len(response) > 0
+    assert isinstance(response[0], dict)
+    assert 'error' in response[0]
+    assert 'status' in response[0]
+    assert 'url' in response[0]
+    mock_post.assert_called_once()
+    assert mock_post.call_args[0][0].endswith("unlimited/links")
+
+@patch.object(Spider, '_post_request')
 def test_screenshot(mock_post, spider, url, params):
     mock_response = MagicMock()
     mock_response.status_code = 200

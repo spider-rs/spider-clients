@@ -534,6 +534,98 @@ export class Spider {
   }
 
   /**
+   * Scrapes data from a specified URL on the Unlimited plan.
+   * Requires an active Unlimited subscription - a flat monthly rate billed by
+   * purchased concurrency seats (requests in flight at once) instead of per-request credits.
+   * Requests are not queued: when all seats are in flight the API returns an immediate
+   * 429 with a Retry-After header, so retry with backoff.
+   * AI/LLM extraction params (e.g. `prompt`, `extraction_schema`) are not allowed and
+   * return a 400; AI usage is billed separately via the AI methods.
+   * See https://spider.cloud/docs/api/unlimited for details and
+   * https://spider.cloud/pricing?plan=unlimited for plans.
+   * @param {string} url - The URL to scrape.
+   * @param {GenericParams} [params={}] - Additional parameters for the scraping request.
+   * @returns {Promise<any>} The scraped data from the URL.
+   */
+  async unlimitedScrape(url: string, params: GenericParams = {}) {
+    return this._apiPost(APIRoutes.UnlimitedScrape, { url: url, ...params });
+  }
+
+  /**
+   * Initiates a crawling job starting from the specified URL on the Unlimited plan.
+   * Requires an active Unlimited subscription - a flat monthly rate billed by
+   * purchased concurrency seats (requests in flight at once) instead of per-request credits.
+   * Requests are not queued: when all seats are in flight the API returns an immediate
+   * 429 with a Retry-After header, so retry with backoff.
+   * AI/LLM extraction params (e.g. `prompt`, `extraction_schema`) are not allowed and
+   * return a 400; AI usage is billed separately via the AI methods.
+   * See https://spider.cloud/docs/api/unlimited for details and
+   * https://spider.cloud/pricing?plan=unlimited for plans.
+   * @param {string} url - The URL to start crawling.
+   * @param {GenericParams} [params={}] - Additional parameters for the crawl.
+   * @param {boolean} [stream=false] - Whether to receive the response as a stream.
+   * @param {function} [callback=function] - The callback function when streaming per chunk. If this is set with stream you will not get a end response.
+   * @returns {Promise<any | Response>} The result of the crawl, either structured data or a Response object if streaming.
+   */
+  async unlimitedCrawl(
+    url: string,
+    params: GenericParams = {},
+    stream = false,
+    cb?: ChunkCallbackFunction
+  ): Promise<SpiderCoreResponse[] | void> {
+    const jsonl = stream && cb;
+    const res = await this._apiPost(
+      APIRoutes.UnlimitedCrawl,
+      { url, ...params },
+      stream,
+      !!jsonl
+    );
+
+    if (jsonl) {
+      return await streamReader(res, cb);
+    }
+
+    return res;
+  }
+
+  /**
+   * Retrieves all links from the specified URL on the Unlimited plan.
+   * Requires an active Unlimited subscription - a flat monthly rate billed by
+   * purchased concurrency seats (requests in flight at once) instead of per-request credits.
+   * Requests are not queued: when all seats are in flight the API returns an immediate
+   * 429 with a Retry-After header, so retry with backoff.
+   * AI/LLM extraction params (e.g. `prompt`, `extraction_schema`) are not allowed and
+   * return a 400; AI usage is billed separately via the AI methods.
+   * See https://spider.cloud/docs/api/unlimited for details and
+   * https://spider.cloud/pricing?plan=unlimited for plans.
+   * @param {string} url - The URL from which to gather links.
+   * @param {GenericParams} [params={}] - Additional parameters for the crawl.
+   * @param {boolean} [stream=false] - Whether to receive the response as a stream.
+   * @param {function} [callback=function] - The callback function when streaming per chunk. If this is set with stream you will not get a end response.
+   * @returns {Promise<any | Response>} The result of the crawl, either structured data or a Response object if streaming.
+   */
+  async unlimitedLinks(
+    url: string,
+    params: GenericParams = {},
+    stream = false,
+    cb?: ChunkCallbackFunction
+  ): Promise<SpiderCoreResponse[] | void> {
+    const jsonl = stream && cb;
+    const res = await this._apiPost(
+      APIRoutes.UnlimitedLinks,
+      { url, ...params },
+      stream,
+      !!jsonl
+    );
+
+    if (jsonl) {
+      return await streamReader(res, cb);
+    }
+
+    return res;
+  }
+
+  /**
    * Creates a SpiderBrowser instance for WebSocket-based browser automation (CDP/BiDi).
    * @param {Omit<SpiderBrowserOptions, 'apiKey'>} [options] - Browser options (excluding apiKey, which is inherited from the client).
    * @returns {SpiderBrowser} A new SpiderBrowser instance.
