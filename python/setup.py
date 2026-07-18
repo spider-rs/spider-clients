@@ -15,7 +15,13 @@ setup(
     author_email="jeff@spider.cloud",
     description="Python SDK for Spider Cloud API",
     packages=find_packages(),
-    install_requires=["requests", "ijson", "tenacity", "aiohttp"],
+    install_requires=[
+        "requests",
+        "ijson",
+        "tenacity",
+        "aiohttp",
+        "spider-browser>=0.3.0",
+    ],
     long_description=read_file("README.md"),
     long_description_content_type="text/markdown",
     classifiers=[

@@ -1,9 +1,12 @@
 import os, tenacity, json, aiohttp, logging
-from typing import Optional, Dict, Any, AsyncIterator, Callable
+from typing import Optional, Dict, Any, AsyncIterator, Callable, TYPE_CHECKING
 from aiohttp import ClientSession, ClientResponse
 from types import TracebackType
 from typing import Type
 from spider.spider_types import RequestParamsDict, JsonCallback, QueryRequest
+
+if TYPE_CHECKING:
+    from spider.browser import SpiderBrowser
 
 
 class AsyncSpider:
@@ -433,6 +436,27 @@ class AsyncSpider:
             "POST", "unlimited/links", data=data, stream=stream, content_type=content_type
         ):
             yield response
+
+    def browser(self, **options: Any) -> "SpiderBrowser":
+        """
+        Create a SpiderBrowser for WebSocket-based browser automation
+        (pre-warmed browsers, stealth, smart retry, and AI actions) using this
+        client's API key. Keyword arguments are forwarded to
+        SpiderBrowserOptions (e.g. browser, stealth, country, captcha, record,
+        mode, proxy_url, llm).
+
+        Example:
+            async with app.browser(stealth=1) as browser:
+                await browser.page.goto("https://example.com")
+
+        :param options: Optional SpiderBrowserOptions fields; api_key defaults
+            to this client's API key.
+        :return: A SpiderBrowser instance (async; use ``async with`` or ``await browser.init()``).
+        """
+        from spider.browser import SpiderBrowser, SpiderBrowserOptions
+
+        options.setdefault("api_key", self.api_key)
+        return SpiderBrowser(SpiderBrowserOptions(**options))
 
     async def _stream_reader(
         self, response: Any, callback: Callable[[Dict[str, Any]], None]

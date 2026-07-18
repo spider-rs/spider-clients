@@ -1,5 +1,5 @@
 import os, requests, logging, ijson, tenacity, time
-from typing import Optional, Dict
+from typing import Any, Optional, Dict, TYPE_CHECKING
 from dataclasses import dataclass
 from requests.adapters import HTTPAdapter
 from spider.spider_types import (
@@ -9,6 +9,9 @@ from spider.spider_types import (
     JsonCallback,
     QueryRequest,
 )
+
+if TYPE_CHECKING:
+    from spider.browser import SpiderBrowser
 
 
 @dataclass
@@ -682,6 +685,27 @@ class Spider:
         return self.api_post(
             "unlimited/links", {"url": url, **(params or {})}, stream, content_type
         )
+
+    def browser(self, **options: Any) -> "SpiderBrowser":
+        """
+        Create a SpiderBrowser for WebSocket-based browser automation
+        (pre-warmed browsers, stealth, smart retry, and AI actions) using this
+        client's API key. Keyword arguments are forwarded to
+        SpiderBrowserOptions (e.g. browser, stealth, country, captcha, record,
+        mode, proxy_url, llm).
+
+        Example:
+            async with app.browser(stealth=1) as browser:
+                await browser.page.goto("https://example.com")
+
+        :param options: Optional SpiderBrowserOptions fields; api_key defaults
+            to this client's API key.
+        :return: A SpiderBrowser instance (async; use ``async with`` or ``await browser.init()``).
+        """
+        from spider.browser import SpiderBrowser, SpiderBrowserOptions
+
+        options.setdefault("api_key", self.api_key)
+        return SpiderBrowser(SpiderBrowserOptions(**options))
 
     def _handle_error(self, response, action):
         if response.status_code in [402, 409, 500]:
