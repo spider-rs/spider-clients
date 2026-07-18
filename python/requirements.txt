@@ -5,3 +5,4 @@ aiohttp
 python-dotenv
 ijson
 tenacity
+spider-browser>=0.3.0

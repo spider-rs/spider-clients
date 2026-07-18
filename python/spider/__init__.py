@@ -9,3 +9,31 @@ from .spider import (
     AI_STUDIO_DOCS_URL,
 )
 from .async_spider import AsyncSpider
+
+# Browser automation
+from .browser import (
+    SpiderBrowser,
+    SpiderBrowserOptions,
+    SpiderPage,
+    BrowserType,
+    SpiderEventEmitter,
+)
+
+# Browser AI
+from .browser import (
+    Agent,
+    AgentOptions,
+    AgentResult,
+    LLMConfig,
+    create_provider,
+    act,
+    observe,
+    extract,
+    ObserveResult,
+)
+
+# Smart retry
+from .browser import (
+    RetryEngine,
+    RetryContext,
+)

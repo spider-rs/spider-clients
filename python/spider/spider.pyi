@@ -1,5 +1,6 @@
 from typing import Optional, Dict, Any
 from spider_types import RequestParamsDict
+from spider_browser import SpiderBrowser
 
 class Spider:
     api_key: str
@@ -111,6 +112,7 @@ class Spider:
         stream: bool = False,
         content_type: str = "application/json",
     ) -> Any: ...
+    def browser(self, **options: Any) -> SpiderBrowser: ...
     def data_post(
         self, table: str, data: Optional[RequestParamsDict] = None
     ) -> Any: ...
