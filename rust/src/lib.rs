@@ -60,6 +60,7 @@
 //! - `utils`: Utility functions used by the Spider client.
 //!
 
+pub mod browser;
 pub mod shapes;
 
 use backon::ExponentialBuilder;
@@ -67,6 +68,7 @@ use backon::Retryable;
 use reqwest::Client;
 use reqwest::{Error, Response};
 use serde::Serialize;
+pub use browser::*;
 pub use shapes::{request::*, response::*};
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};

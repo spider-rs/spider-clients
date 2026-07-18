@@ -23,6 +23,7 @@ tokio-util = "0.7"
 csv = {version = "1", optional = true }
 quick-xml = { version = "0.38", features = ["serialize"], optional = true }
 strum = { version = "0.27", features = ["derive"] }
+spider-browser = "0.3"
 
 [features]
 csv=["dep:csv"]
