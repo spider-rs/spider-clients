@@ -173,29 +173,6 @@ pub enum Commands {
         )]
         radius: Option<i64>,
     },
-    /// Unblock a given URL
-    Unblocker {
-        #[arg(short, long, help = "The URL to unblock")]
-        url: String,
-        #[arg(
-            short,
-            long,
-            help = "Returns the link(s) found on the page that match the crawler query.",
-            required = false
-        )]
-        return_page_links: Option<bool>,
-        #[arg(
-            long,
-            help = "Select proxy pool (e.g. residential, mobile, isp)",
-            value_enum
-        )]
-        proxy: Option<ProxyType>,
-        #[arg(
-            long,
-            help = "Use a remote proxy at ~50% reduced cost for file downloads."
-        )]
-        remote_proxy: Option<String>,
-    },
     /// Transform the provided data
     Transform {
         #[arg(short, long, help = "The data to transform")]

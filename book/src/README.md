@@ -10,6 +10,5 @@
 - Subscriptions
 - AI Scraping and Event Driven Actions
 - SERP Search
-- Unblocker
 - Blacklisting and Budgeting Depth
 - Exponential Backoff

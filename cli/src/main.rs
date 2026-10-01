@@ -51,26 +51,6 @@ async fn main() {
                                 Err(e) => eprintln!("Error scraping URL: {:?}", e),
                             }
                         }
-                        Commands::Unblocker {
-                            url,
-                            return_page_links,
-                            proxy,
-                            remote_proxy,
-                        } => {
-                            println!("Unblocking URL: {}", url);
-                            let mut params = RequestParams::default();
-                            params.return_page_links = return_page_links;
-                            params.proxy = proxy.map(Into::into);
-                            params.remote_proxy = remote_proxy.map(Into::into);
-
-                            match spider
-                                .scrape_url(&url, Some(params), "application/json")
-                                .await
-                            {
-                                Ok(data) => println!("{}", json!(data)),
-                                Err(e) => eprintln!("Error scraping URL: {:?}", e),
-                            }
-                        }
                         Commands::Crawl {
                             url,
                             limit,

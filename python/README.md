@@ -133,57 +133,13 @@ You can check the remaining credits on your account:
 credits = app.get_credits()
 ```
 
-### Unblocker
+### Protected pages
 
-Access blocked or protected content with anti-bot bypass:
+Pages behind bot checks go through `scrape_url` with `stealth` on. For AI extraction from those pages, see the AI Studio methods below.
 
 ```python
 url = 'https://protected-site.com'
-result = app.unblocker(url)
-```
-
-### Unblocker with AI Extraction
-
-Unblock and extract structured data using AI:
-
-```python
-url = 'https://protected-site.com/products'
-result = app.unblocker(url, params={
-    'custom_prompt': 'Extract all product names and prices as JSON'
-})
-# Extracted data is available in result[0]['metadata']['extracted_data']
-```
-
-### Unblocker with JSON Schema Extraction
-
-Use JSON Schema for structured, validated extraction output:
-
-```python
-url = 'https://protected-site.com/products'
-result = app.unblocker(url, params={
-    'extraction_schema': {
-        'name': 'products',
-        'description': 'Product listing extraction',
-        'schema': '''{
-            "type": "object",
-            "properties": {
-                "products": {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "properties": {
-                            "name": {"type": "string"},
-                            "price": {"type": "number"}
-                        },
-                        "required": ["name", "price"]
-                    }
-                }
-            }
-        }''',
-        'strict': True
-    }
-})
-# Extracted data conforms to the schema in result[0]['metadata']['extracted_data']
+result = app.scrape_url(url, params={'stealth': True})
 ```
 
 ## AI Studio Methods
