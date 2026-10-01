@@ -6,6 +6,29 @@ ecosystems) — see [Releasing](#releasing) for how versions map to git tags.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-10-01 — Remove the unblocker endpoint
+
+### Removed
+
+- **`/unblocker` methods.** The unblocker endpoint is deprecated. Use
+  `/scrape` (or `/ai/scrape`) with `stealth: true` instead. Dropped
+  `unblock_url` from Python, `unblock_url`
+  and `multi_unblock_url` from Rust, `unblocker` and `APIRoutes.Unblocker`
+  from JavaScript, `Unblocker` and `RouteUnblocker` from Go, and the
+  `unblocker` command from the CLI. The API route stays up for older client
+  versions, marked deprecated. Docs that pointed at the unblocker now show
+  `scrape` with `stealth` on.
+
+### Client versions
+
+| Client     | Package                                       | Version  | Release tag    |
+| ---------- | --------------------------------------------- | -------- | -------------- |
+| JavaScript | `@spider-cloud/spider-client` (npm)           | `0.3.0`  | `js-v0.3.0`    |
+| Python     | `spider_client` (PyPI)                        | `0.2.0`  | `py-v0.2.0`    |
+| Rust       | `spider-client` (crates.io)                   | `0.2.0`  | `rust-v0.2.0`  |
+| CLI        | `spider-cloud-cli` (crates.io)                | `0.2.0`  | `cli-v0.2.0`   |
+| Go         | `github.com/spider-rs/spider-clients/go`      | `0.2.0`  | `go/v0.2.0`    |
+
 ## 2026-07-14 — CLI ai/unlimited commands
 
 ### Added

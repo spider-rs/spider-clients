@@ -115,15 +115,18 @@ let crawl_params = RequestParams {
 let crawl_result = spider.search(query, Some(crawl_params), false, "application/json").await.expect("Failed to perform search");
 ```
 
-### Unblocking a URL
+### Scraping a protected page
 
-To unblock data from a single URL:
+Pages behind bot checks go through `scrape_url` with `stealth` on:
 
 ```rust
 let url = "https://example.com";
-let scraped_data = spider.unblock_url(url, None, false, "application/json").await.expect("Failed to scrape the URL");
+let params = RequestParams {
+    stealth: Some(true),
+    ..Default::default()
+};
+let scraped_data = spider.scrape_url(url, Some(params), "application/json").await.expect("Failed to scrape the URL");
 ```
-
 
 ### Retrieving Links from a URL(s)
 

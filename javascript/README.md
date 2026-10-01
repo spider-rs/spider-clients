@@ -93,7 +93,6 @@ app.crawlUrl(url, crawlParams, stream, streamCallback);
 - **`links(url, params)`**: Retrieve all links from the specified URL with optional parameters.
 - **`screenshot(url, params)`**: Take a screenshot of the specified URL.
 - **`transform(data, params)`**: Perform a fast HTML transformation to markdown or text.
-- **`unblocker(url, params)`**: Unblock challenging websites with anti-bot bypass. Supports AI extraction with `custom_prompt`.
 - **`getCredits()`**: Retrieve account's remaining credits.
 
 ### AI Studio Methods
@@ -132,45 +131,12 @@ const result = await app.unlimitedCrawl("https://spider.cloud", { limit: 5 });
 
 The Unlimited plan bills a flat monthly rate by purchased concurrency seats (the number of requests in flight at once) instead of per-request credits. Requests are not queued: when all seats are in flight the API returns an immediate `429` with a `Retry-After` header, so retry with backoff (the SDK retries automatically). AI/LLM extraction params such as `prompt` or `extraction_schema` are rejected with a `400`; use the AI Studio methods for AI extraction. See https://spider.cloud/docs/api/unlimited for details.
 
-### Unblocker with AI Extraction
+### Protected pages
+
+Pages behind bot checks go through `scrapeUrl` with `stealth` on. For AI extraction from those pages, use the AI Studio methods above.
 
 ```javascript
-// Unblock and extract data using AI
-const result = await app.unblocker("https://protected-site.com/products", {
-  custom_prompt: "Extract all product names and prices as JSON"
-});
-// Extracted data is available in result[0].metadata.extracted_data
-```
-
-### Unblocker with JSON Schema Extraction
-
-Use JSON Schema for structured, validated extraction output:
-
-```javascript
-const result = await app.unblocker("https://protected-site.com/products", {
-  extraction_schema: {
-    name: "products",
-    description: "Product listing extraction",
-    schema: JSON.stringify({
-      type: "object",
-      properties: {
-        products: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              name: { type: "string" },
-              price: { type: "number" }
-            },
-            required: ["name", "price"]
-          }
-        }
-      }
-    }),
-    strict: true
-  }
-});
-// Extracted data conforms to the schema in result[0].metadata.extracted_data
+const result = await app.scrapeUrl("https://protected-site.com", { stealth: true });
 ```
 
 ### Browser Automation

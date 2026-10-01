@@ -1,7 +1,7 @@
 // Package spider provides a Go client for the Spider web crawling API.
 //
 // The client supports all Spider API endpoints including crawling, scraping,
-// search, screenshots, transform, unblocker, AI Studio, and Unlimited plan
+// search, screenshots, transform, AI Studio, and Unlimited plan
 // features.
 //
 // Basic usage:
@@ -165,12 +165,6 @@ func (s *Spider) Search(ctx context.Context, query string, params *SearchParams)
 func (s *Spider) Transform(ctx context.Context, params *TransformParams) ([]SpiderResponse, error) {
 	body := structToMap(params)
 	return s.apiPost(ctx, RouteTransform, body)
-}
-
-// Unblocker fetches a URL through anti-bot bypass.
-func (s *Spider) Unblocker(ctx context.Context, url string, params *SpiderParams) ([]SpiderResponse, error) {
-	body := s.mergeURL(url, params)
-	return s.apiPost(ctx, RouteUnblocker, body)
 }
 
 // GetCredits returns the account credit balance.

@@ -4,7 +4,7 @@ package spider
 const (
 	BaseURL    = "https://api.spider.cloud"
 	APIVersion = "v1"
-	Version    = "0.1.92"
+	Version    = "0.2.0"
 )
 
 // API routes.
@@ -14,7 +14,6 @@ const (
 	RouteScreenshot      = "screenshot"
 	RouteSearch          = "search"
 	RouteTransform       = "transform"
-	RouteUnblocker       = "unblocker"
 	RouteDataCredits     = "data/credits"
 	RouteData            = "data"
 	RouteAICrawl         = "ai/crawl"
