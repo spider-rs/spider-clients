@@ -1,0 +1,57 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "langchain-spider"
+version = "0.1.0"
+description = "LangChain integration for Spider: a web page loader plus scrape and search tools"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+authors = [{ name = "Spider", email = "support@spider.cloud" }]
+keywords = ["langchain", "spider", "web-scraping", "web-crawler", "web-search", "document-loader"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Internet :: WWW/HTTP",
+]
+dependencies = [
+    "langchain-core>=1.0,<2",
+    "httpx>=0.25,<1",
+]
+
+[project.urls]
+Homepage = "https://github.com/spider-rs/spider-clients/tree/main/langchain"
+Repository = "https://github.com/spider-rs/spider-clients"
+Issues = "https://github.com/spider-rs/spider-clients/issues"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=9.0.3",
+    "pytest-asyncio>=1.0",
+    "pytest-socket>=0.7",
+    "langchain-tests>=1.1.9,<2",
+]
+lint = ["ruff>=0.15"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["langchain_spider"]
+
+[tool.hatch.build.targets.sdist]
+include = ["langchain_spider", "tests", "README.md", "LICENSE"]
+
+[tool.pytest.ini_options]
+addopts = "--disable-socket --allow-unix-socket"
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests/unit_tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["UP007", "UP045"]
