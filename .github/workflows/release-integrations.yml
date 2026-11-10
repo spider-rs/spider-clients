@@ -1,0 +1,68 @@
+name: Release integration packages
+
+# Tag ai-sdk-v*, activepieces-v* or langchain-v* to publish that package.
+on:
+  push:
+    tags:
+      - "ai-sdk-v*.*.*"
+      - "activepieces-v*.*.*"
+      - "langchain-v*.*.*"
+
+jobs:
+  npm:
+    if: startsWith(github.ref_name, 'ai-sdk-v') || startsWith(github.ref_name, 'activepieces-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          registry-url: "https://registry.npmjs.org"
+      - name: Pick the package
+        id: pkg
+        run: |
+          case "$GITHUB_REF_NAME" in
+            ai-sdk-v*) echo "dir=ai-sdk" >> "$GITHUB_OUTPUT"; echo "out=." >> "$GITHUB_OUTPUT" ;;
+            activepieces-v*) echo "dir=activepieces" >> "$GITHUB_OUTPUT"; echo "out=./dist" >> "$GITHUB_OUTPUT" ;;
+          esac
+      - name: Check the tag matches the version
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: |
+          want="${GITHUB_REF_NAME##*-v}"
+          have="$(node -p "require('./package.json').version")"
+          test "$want" = "$have" || { echo "tag $want != package.json $have"; exit 1; }
+      - working-directory: ${{ steps.pkg.outputs.dir }}
+        run: npm ci && npm test && npm run build
+      - name: Publish
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish ${{ steps.pkg.outputs.out }} --provenance --access public
+
+  pypi:
+    if: startsWith(github.ref_name, 'langchain-v')
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: langchain
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check the tag matches the version
+        run: |
+          want="${GITHUB_REF_NAME##*-v}"
+          have="$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")"
+          test "$want" = "$have" || { echo "tag $want != pyproject $have"; exit 1; }
+      - run: pip install build twine==5.0.0 && pip install -e ".[test]"
+      - run: pytest -q
+      - run: python -m build
+      - name: Publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: twine upload dist/*
