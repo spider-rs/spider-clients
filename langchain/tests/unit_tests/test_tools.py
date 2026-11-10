@@ -4,7 +4,7 @@ import pytest
 from langchain_core.messages import ToolMessage
 from langchain_core.tools import ToolException
 
-from langchain_spider import SpiderAPIError, SpiderScrapeTool, SpiderSearchTool
+from langchain_spider import SpiderAPIError, SpiderScrapeTool, SpiderSearchTool, SpiderToolkit
 
 from .conftest import Recorder, reply
 
@@ -155,3 +155,13 @@ async def test_async_tools() -> None:
     rec2 = Recorder(reply({"content": [{"title": "t", "description": "d", "url": "u"}]}))
     search = SpiderSearchTool(api_key="k", async_client=rec2.async_client())
     assert await search.ainvoke({"query": "q"}) == [{"title": "t", "description": "d", "url": "u"}]
+
+
+def test_toolkit_shares_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SPIDER_API_KEY", "env-key")
+    rec = Recorder(reply({"content": []}))
+    tools = SpiderToolkit(client=rec.client(), max_content_chars=10).get_tools()
+    assert [t.name for t in tools] == ["spider_search", "spider_scrape"]
+    assert all(t.max_content_chars == 10 for t in tools)
+    tools[0].invoke({"query": "q"})
+    assert rec.requests[0].headers["authorization"] == "Bearer env-key"

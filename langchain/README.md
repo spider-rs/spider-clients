@@ -1,11 +1,12 @@
 # langchain-spider
 
-LangChain integration for [Spider](https://spider.cloud/?utm_source=langchain&utm_medium=directory&utm_campaign=langchain-listing). It has three classes:
+LangChain integration for [Spider](https://spider.cloud/?utm_source=langchain&utm_medium=directory&utm_campaign=langchain-listing). It has four classes:
 
 | Class | Kind | Spider route | Returns |
 |---|---|---|---|
 | `SpiderScrapeTool` | Tool | `POST /scrape` | One page as markdown, text or raw HTML |
 | `SpiderSearchTool` | Tool | `POST /search` | Ranked results with title, description and URL, or each result's page content |
+| `SpiderToolkit` | Toolkit | both of the above | `[SpiderSearchTool, SpiderScrapeTool]` with shared settings |
 | `SpiderLoader` | Document loader | `POST /scrape` or `POST /crawl` | One `Document` per page |
 
 It depends on `langchain-core` and `httpx` and nothing else.
@@ -40,14 +41,15 @@ scrape.invoke({"url": "https://spider.cloud"})
 # "# Spider ..." (markdown)
 ```
 
-Give them to an agent:
+Give them to an agent. `SpiderToolkit` builds both tools with the same settings:
 
 ```python
 from langchain.agents import create_agent
+from langchain_spider import SpiderToolkit
 
 agent = create_agent(
     model="openai:gpt-5-mini",
-    tools=[SpiderSearchTool(), SpiderScrapeTool()],
+    tools=SpiderToolkit(max_content_chars=20_000).get_tools(),
 )
 result = agent.invoke(
     {"messages": [{"role": "user", "content": "Summarize the latest Rust release notes."}]}

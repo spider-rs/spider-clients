@@ -9,9 +9,9 @@ from langchain_core.callbacks import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
 )
-from langchain_core.tools import BaseTool, ToolException
+from langchain_core.tools import BaseTool, BaseToolkit, ToolException
 from langchain_core.utils import secret_from_env
-from pydantic import BaseModel, Field, SecretStr
+from pydantic import BaseModel, ConfigDict, Field, SecretStr
 
 from langchain_spider._client import (
     API_KEY_ENV,
@@ -321,3 +321,39 @@ class SpiderSearchTool(_SpiderBaseTool):
             tbs=tbs,
         )
         return self._result(await self._apost("search", body, require_key=True))
+
+
+class SpiderToolkit(BaseToolkit):
+    """Both Spider tools with shared settings.
+
+    Instantiate:
+        .. code-block:: python
+
+            from langchain_spider import SpiderToolkit
+
+            tools = SpiderToolkit(max_content_chars=20_000).get_tools()
+    """
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    api_key: Optional[SecretStr] = Field(default_factory=secret_from_env(API_KEY_ENV, default=None))
+    """Spider API key. Defaults to the ``SPIDER_API_KEY`` env var."""
+    base_url: str = DEFAULT_BASE_URL
+    timeout: float = DEFAULT_TIMEOUT
+    params: dict[str, Any] = Field(default_factory=dict)
+    max_content_chars: Optional[int] = None
+    client: Optional[httpx.Client] = Field(default=None, exclude=True)
+    async_client: Optional[httpx.AsyncClient] = Field(default=None, exclude=True)
+
+    def get_tools(self) -> list[BaseTool]:
+        """Return ``[SpiderSearchTool, SpiderScrapeTool]`` built from these settings."""
+        shared: dict[str, Any] = {
+            "api_key": self.api_key,
+            "base_url": self.base_url,
+            "timeout": self.timeout,
+            "params": dict(self.params),
+            "max_content_chars": self.max_content_chars,
+            "client": self.client,
+            "async_client": self.async_client,
+        }
+        return [SpiderSearchTool(**shared), SpiderScrapeTool(**shared)]
