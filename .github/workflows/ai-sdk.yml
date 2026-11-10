@@ -1,0 +1,35 @@
+name: AI SDK tools CI
+
+on:
+  push:
+    branches: ["main"]
+    paths: ["ai-sdk/**", ".github/workflows/ai-sdk.yml"]
+  pull_request:
+    branches: ["main"]
+    paths: ["ai-sdk/**", ".github/workflows/ai-sdk.yml"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [22.x, 24.x]
+
+    defaults:
+      run:
+        working-directory: ./ai-sdk
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+          cache-dependency-path: ./ai-sdk/package-lock.json
+
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
