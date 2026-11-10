@@ -45,6 +45,11 @@ jobs:
   pypi:
     if: startsWith(github.ref_name, 'langchain-v')
     runs-on: ubuntu-latest
+    # PyPI trusted publishing: the project's publisher (or a pending publisher)
+    # names spider-rs/spider-clients, workflow release-integrations.yml, no environment.
+    permissions:
+      contents: read
+      id-token: write
     defaults:
       run:
         working-directory: langchain
@@ -58,11 +63,10 @@ jobs:
           want="${GITHUB_REF_NAME##*-v}"
           have="$(python -c "import tomllib;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")"
           test "$want" = "$have" || { echo "tag $want != pyproject $have"; exit 1; }
-      - run: pip install build twine==5.0.0 && pip install -e ".[test]"
+      - run: pip install build && pip install -e ".[test]"
       - run: pytest -q
       - run: python -m build
       - name: Publish
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: twine upload dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: langchain/dist
