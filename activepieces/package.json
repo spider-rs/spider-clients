@@ -1,0 +1,35 @@
+{
+  "name": "@spider-cloud/piece-spider",
+  "version": "0.1.0",
+  "description": "Spider piece for Activepieces: scrape, crawl, search and collect links with the Spider API.",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spider-rs/spider-clients.git",
+    "directory": "activepieces"
+  },
+  "homepage": "https://github.com/spider-rs/spider-clients/tree/main/activepieces",
+  "keywords": [
+    "activepieces",
+    "activepieces-piece",
+    "spider",
+    "web-scraping",
+    "crawler"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "npm run typecheck && node scripts/bundle.mjs",
+    "test": "vitest run",
+    "pack": "npm run build && npm pack ./dist --pack-destination ."
+  },
+  "devDependencies": {
+    "@activepieces/pieces-common": "0.12.5",
+    "@activepieces/pieces-framework": "0.32.0",
+    "@activepieces/shared": "0.95.1",
+    "@types/node": "20.17.6",
+    "esbuild": "0.24.0",
+    "typescript": "5.6.3",
+    "vitest": "2.1.8"
+  }
+}
