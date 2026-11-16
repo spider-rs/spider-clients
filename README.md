@@ -1,6 +1,6 @@
 # Spider Clients
 
-Discover the ultimate toolkit for integrating the fastest and most efficient web crawler **Spider** into your projects. This repository provides client libraries designed to streamline your use of [Spider Cloud](https://spider.cloud) services from various programming environments. Whether you're tackling web crawling or data indexing, our high-performance solutions have you covered.
+Discover the ultimate toolkit for integrating the fastest and most efficient web crawler **Spider** into your projects. This repository provides client libraries designed to streamline your use of [Spider Cloud](https://spider.cloud) services from various programming environments. Whether you're tackling web crawling or data indexing, our high-performance solutions have you covered. Before you pick a client, you can read about [web scraping with Spider](https://spider.cloud/web-scraping/?utm_source=github&utm_medium=readme&utm_campaign=spider-clients) to see what a request returns and what it costs.
 
 ## Python
 

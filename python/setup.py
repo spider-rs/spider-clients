@@ -10,6 +10,12 @@ setup(
     name="spider_client",
     version="0.2.0",
     url="https://github.com/spider-rs/spider-clients/tree/main/python",
+    project_urls={
+        "Homepage": "https://spider.cloud",
+        "Documentation": "https://spider.cloud/docs/api",
+        "Web scraping guide": "https://spider.cloud/web-scraping/?utm_source=pypi&utm_medium=directory&utm_campaign=spider-clients",
+        "Source": "https://github.com/spider-rs/spider-clients/tree/main/python",
+    },
     license="MIT",
     author="Spider",
     author_email="jeff@spider.cloud",
