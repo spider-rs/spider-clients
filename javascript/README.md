@@ -58,6 +58,8 @@ app
   });
 ```
 
+The `request` param chooses between a plain HTTP fetch and a browser. Our guide shows [what each kind of fetch returns](https://spider.cloud/web-scraping/?utm_source=github&utm_medium=readme&utm_campaign=spider-clients) on real pages.
+
 A real world crawl example streaming the response.
 
 ```javascript
